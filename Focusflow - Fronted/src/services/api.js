@@ -29,6 +29,13 @@ export async function login(email, password) {
   localStorage.setItem("token", data.token);
   return data;
 }
+export async function resetPassword(email) {
+  return (await api.post("/reset-password", { email })).data;
+}
+
+export async function updatePassword(newPassword) {
+  return (await api.post("/update-password", { newPassword })).data;
+}
 
 export async function getProfile() {
   return (await api.get("/profile")).data;
