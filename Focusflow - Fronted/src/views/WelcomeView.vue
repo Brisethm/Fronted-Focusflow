@@ -39,13 +39,13 @@ export default {
   name: "BienvenidaView",
   data() {
     return {
-      userName: "", // 👈 aquí guardamos el nombre
+      userName: "",
     };
   },
   async mounted() {
     try {
       const profile = await getProfile();
-      this.userName = profile.nombre; // 👈 tu backend devuelve "nombre"
+      this.userName = profile.nombre;
     } catch (error) {
       console.error("Error obteniendo perfil:", error);
     }

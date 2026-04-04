@@ -30,13 +30,14 @@
                         <circle cx="50" cy="50" fill="url(#centerGradientYellow)" r="12"></circle>
                     </svg>
 
-                   
+
                 </div>
                 <h1 class="text-3xl font-bold text-gray-800 dark:text-white mb-2">
                     Restablece tu contraseña
                 </h1>
                 <p class="text-base text-gray-600 dark:text-gray-300">
-                    Ingresa tu correo electrónico y te enviaremos un enlace para crear una nueva contraseña.
+                    Ingresa tu correo electrónico y si el correo existe, recibirás un enlacete un enlace para crear una
+                    nueva contraseña.
                 </p>
             </div>
 
@@ -57,89 +58,106 @@
                 </div>
 
                 <button type="submit"
-                    class="w-full h-12 px-5 rounded-lg bg-primary text-white font-bold tracking-wide hover:bg-primary/90 transition-colors duration-300 flex items-center justify-center">
-                    Enviar enlace
+                    class="w-full h-12 px-5 rounded-lg bg-primary text-white font-bold tracking-wide hover:bg-primary/90 transition-colors duration-300 flex items-center justify-center"
+                    :disabled="loading">
+                    <span v-if="!loading">Enviar enlace</span>
+                    <svg v-else class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
+                        viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                        </circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z">
+                        </path>
+                    </svg>
                 </button>
             </form>
 
             <div class="w-full max-w-sm text-center mt-2">
                 <p class="text-sm text-gray-600 dark:text-gray-400">
-                    ¿Ya tienes cuenta?
+                    Regresar al
                     <router-link to="/login" class="font-medium text-primary hover:underline">
-                        Inicia sesión
+                        Inicio de sesión
                     </router-link>
                 </p>
             </div>
         </div>
 
         <div class="hidden md:flex w-1/2 items-center justify-center bg-gray-100 dark:bg-gray-900 h-full">
-            <img :src="loginIllustration" alt="Imagen de Freepik" class="max-w-full h-auto" />
+            <img :src="forgotPasswordIllustration" alt="Imagen de Freepik" class="max-w-full h-auto" />
         </div>
     </div>
 </template>
 
 
 <script>
-import loginIllustration from "../assets/login-illustration.svg";
+import { useToast } from "vue-toastification"
+import forgotPasswordIllustration from "../assets/forgot-password-illustration.svg";
 import { resetPassword } from "../services/api";
 
 export default {
-  name: "ResetPasswordView",
-  data() {
-    return {
-      loginIllustration,
-      form: {
-        email: "",
-      },
-      errors: {
-        email: ""
-      },
-      loading: false,
-      submitted: false,
-    };
-  },
-  methods: {
-    validateEmail() {
-      const email = this.form.email.trim();
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-      if (!email) return "El correo es obligatorio";
-      if (email.includes(" ")) return "El correo no debe contener espacios";
-      if (!email.includes("@")) return "Debe incluir un '@'";
-      if (!emailRegex.test(email)) return "Ejemplo válido: usuario@correo.com";
-
-      return "";
+    name: "ResetPasswordView",
+    data() {
+        return {
+            forgotPasswordIllustration,
+            form: {
+                email: "",
+            },
+            errors: {
+                email: ""
+            },
+            loading: false,
+            submitted: false,
+        };
     },
-    validateField(field) {
-      const validators = {
-        email: this.validateEmail,
-      };
-      this.errors[field] = validators[field]();
-    },
-    validateForm() {
-      Object.keys(this.errors).forEach((field) => {
-        this.validateField(field);
-      });
-      return !Object.values(this.errors).some((e) => e);
-    },
-    async handleSubmit() {
-      this.submitted = true;
-      const isValid = this.validateForm();
-      if (!isValid) return;
+    methods: {
+        validateEmail() {
+            const email = this.form.email.trim();
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-      this.loading = true;
-      try {
-        await resetPassword(this.form.email);
-        this.loading = false;
-        alert("Revisa tu correo, te enviamos un enlace para restablecer tu contraseña.");
-        this.$router.push("/login");
-      } catch (error) {
-        this.loading = false;
-        alert("Error al enviar el correo: " + (error.response?.data || error.message));
-      }
-    }
-  },
+            if (!email) return "El correo es obligatorio";
+            if (email.includes(" ")) return "El correo no debe contener espacios";
+            if (!email.includes("@")) return "Debe incluir un '@'";
+            if (!emailRegex.test(email)) return "Ejemplo válido: usuario@correo.com";
+
+            return "";
+        },
+        validateField(field) {
+            const validators = {
+                email: this.validateEmail,
+            };
+            this.errors[field] = validators[field]();
+        },
+        validateForm() {
+            Object.keys(this.errors).forEach((field) => {
+                this.validateField(field);
+            });
+            return !Object.values(this.errors).some((e) => e);
+        },
+        async handleSubmit() {
+            const toast = useToast()
+
+            this.submitted = true;
+            const isValid = this.validateForm();
+            if (!isValid) return;
+
+            this.loading = true;
+
+            try {
+                await resetPassword(this.form.email);
+                this.loading = false;
+
+                toast.success("Si el correo existe, recibirás un enlace en breve con los pasos para restablecer tu contraseña.");
+                timeout: 6000
+                this.$router.push("/login");
+            } catch (error) {
+                this.loading = false;
+
+                toast.error(
+                    "Error al enviar el correo: " +
+                    (error.response?.data || error.message)
+                );
+                timeout: 6000
+            }
+        }
+    },
 };
 </script>
-
-<style src="../styles/login.css"></style>

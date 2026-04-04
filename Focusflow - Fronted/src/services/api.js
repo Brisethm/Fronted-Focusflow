@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://localhost:5097/api/Auth",
+  baseURL: "http://localhost:5097/api",
 });
 
 // Interceptor para incluir el token en cada request
@@ -16,7 +16,7 @@ api.interceptors.request.use((config) => {
 // Funciones de servicio
 export async function register(email, password, nombre) {
   return (
-    await api.post("/register", {
+    await api.post("/Auth/register", {
       email: email,
       password: password,
       nombre: nombre,
@@ -25,7 +25,7 @@ export async function register(email, password, nombre) {
 }
 
 export async function login(email, password) {
-  const data = (await api.post("/login", { email, password })).data;
+  const data = (await api.post("/Auth/login", { email, password })).data;
   localStorage.setItem("token", data.token);
   return data;
 }

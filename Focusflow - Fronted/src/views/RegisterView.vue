@@ -269,5 +269,3 @@ export default {
   },
 };
 </script>
-
-<style src="../styles/register.css"></style>
