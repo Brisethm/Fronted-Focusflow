@@ -30,13 +30,13 @@ export async function login(email, password) {
   return data;
 }
 export async function resetPassword(email) {
-  return (await api.post("/reset-password", { email })).data;
+  return (await api.post("/Auth/reset-password", { email })).data;
 }
 
 export async function updatePassword(newPassword) {
-  return (await api.post("/update-password", { newPassword })).data;
+  return (await api.post("/Auth/update-password", { newPassword })).data;
 }
 
 export async function getProfile() {
-  return (await api.get("/profile")).data;
+  return (await api.get("/Auth/profile")).data;
 }
