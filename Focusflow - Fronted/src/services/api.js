@@ -40,3 +40,19 @@ export async function updatePassword(newPassword) {
 export async function getProfile() {
   return (await api.get("/Auth/profile")).data;
 }
+
+export async function createEmotionalRecord({
+  estadoAnimo,
+  nivelEnergia,
+  notaOpcional,
+  fechaRegistro,
+}) {
+  return (
+    await api.post("/RegistrosEmocionales", {
+      estadoAnimo,
+      nivelEnergia,
+      notaOpcional,
+      fechaRegistro,
+    })
+  ).data;
+}
