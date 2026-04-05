@@ -142,10 +142,15 @@
         </div>
     </div>
 </template>
-
 <script>
 import updatePasswordIllustration from "../assets/update-password-illustration.svg";
-import { updatePassword } from "../services/api";
+import { createClient } from "@supabase/supabase-js";
+import { useToast } from "vue-toastification"; // Importa la función de toast
+
+const supabase = createClient(
+    import.meta.env.VITE_SUPABASE_URL,
+    import.meta.env.VITE_SUPABASE_ANON_KEY
+);
 
 export default {
     name: "UpdatePasswordView",
@@ -165,6 +170,10 @@ export default {
             submitted: false,
         };
     },
+    setup() {
+        const toast = useToast();
+        return { toast };
+    },
     methods: {
         togglePassword() {
             this.showPassword = !this.showPassword;
@@ -172,15 +181,15 @@ export default {
 
         validatePassword() {
             const password = this.form.password;
-            const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,16}$/;
+            const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,20}$/;
 
             if (!password) return "La contraseña es obligatoria";
             if (!regex.test(password)) {
                 return "Debe tener 8-20 caracteres, mayúscula, minúscula y un número";
             }
-
             return "";
         },
+
         validateConfirmPassword() {
             if (!this.form.confirmPassword) return "Confirma tu contraseña";
             if (this.form.password !== this.form.confirmPassword) {
@@ -194,7 +203,6 @@ export default {
                 password: this.validatePassword,
                 confirmPassword: this.validateConfirmPassword,
             };
-
             this.errors[field] = validators[field]();
         },
 
@@ -202,8 +210,7 @@ export default {
             Object.keys(this.errors).forEach((field) => {
                 this.validateField(field);
             });
-
-            return !Object.values(this.errors).some((e) => e);
+            return !Object.values(this.errors).some(Boolean);
         },
 
         async handleSubmit() {
@@ -213,29 +220,30 @@ export default {
             this.loading = true;
 
             try {
-                // 🔥 Llamada real
-                await updatePassword(this.form.password);
+                const { error } = await supabase.auth.updateUser({
+                    password: this.form.password,
+                });
 
-                toast.success("Contraseña actualizada correctamente");
-
-                // ⏳ pequeña pausa para UX
-                setTimeout(() => {
-                    this.$router.push("/login");
-                }, 2000);
-
-            } catch (error) {
-
-                // 👇 backend debería mandar este caso
-                if (error.response?.data?.message === "same_password") {
-                    toast.error("La nueva contraseña no puede ser igual a la anterior");
+                if (error) {
+                    this.toast.error("Error: " + error.message, { timeout: 6000 });
                 } else {
-                    toast.error("Error al actualizar la contraseña");
+                    this.toast.success(
+                        "Contraseña actualizada correctamente",
+                        { timeout: 3000 }
+                    );
+                    setTimeout(() => {
+                        this.$router.push("/login");
+                    }, 2000);
                 }
-
+            } catch (error) {
+                console.error("Error actualizando contraseña:", error);
+                this.toast.error(
+                    "Error inesperado al actualizar la contraseña",
+                    { timeout: 3000 }
+                );
             } finally {
                 this.loading = false;
             }
-
         },
     },
 };
