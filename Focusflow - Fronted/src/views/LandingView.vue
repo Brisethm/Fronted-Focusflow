@@ -39,14 +39,6 @@
 
         </div>
 
-        <!-- LINK SECUNDARIO -->
-        <p class="text-sm text-gray-500 mt-6">
-          ¿Olvidaste tu contraseña?
-          <span class="text-primary cursor-pointer hover:underline" @click="goToForgot">
-            Restablecer
-          </span>
-        </p>
-
       </div>
 
       <!-- CARRUSEL DE MEDITACIÓN -->

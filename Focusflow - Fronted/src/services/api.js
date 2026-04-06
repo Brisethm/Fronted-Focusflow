@@ -53,6 +53,8 @@ export async function createEmotionalRecord({
       nivelEnergia,
       notaOpcional,
       fechaRegistro,
+    }, {
+      timeout: 10000,
     })
   ).data;
 }

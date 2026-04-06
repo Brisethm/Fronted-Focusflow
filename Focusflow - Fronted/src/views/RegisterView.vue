@@ -159,7 +159,7 @@
     </div>
 
     <div class="hidden md:flex w-1/2 items-center justify-center bg-gray-100 dark:bg-gray-900 h-full">
-      <img :src="registerIllustration" alt="Imagen de Freepik" class="max-w-full h-auto" />
+      <img :src="registerIllustration" alt="Tomado de Freepik" class="max-w-full h-auto" />
     </div>
   </div>
 </template>

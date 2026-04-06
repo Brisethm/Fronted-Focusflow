@@ -29,15 +29,12 @@
                         </g>
                         <circle cx="50" cy="50" fill="url(#centerGradientYellow)" r="12"></circle>
                     </svg>
-
-
                 </div>
                 <h1 class="text-3xl font-bold text-gray-800 dark:text-white mb-2">
                     Restablece tu contraseña
                 </h1>
                 <p class="text-base text-gray-600 dark:text-gray-300">
-                    Ingresa tu correo electrónico y si el correo existe, recibirás un enlacete un enlace para crear una
-                    nueva contraseña.
+                    Ingresa tu correo electrónico y si el correo existe, recibirás un enlace para crear una nueva contraseña.
                 </p>
             </div>
 
@@ -59,8 +56,9 @@
 
                 <button type="submit"
                     class="w-full h-12 px-5 rounded-lg bg-primary text-white font-bold tracking-wide hover:bg-primary/90 transition-colors duration-300 flex items-center justify-center"
-                    :disabled="loading">
-                    <span v-if="!loading">Enviar enlace</span>
+                    :disabled="loading || resendTimer > 0">
+                    <span v-if="!loading && resendTimer === 0">Enviar enlace</span>
+                    <span v-else-if="resendTimer > 0">Reenviar en {{ resendTimer }}s</span>
                     <svg v-else class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
                         viewBox="0 0 24 24">
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
@@ -82,11 +80,10 @@
         </div>
 
         <div class="hidden md:flex w-1/2 items-center justify-center bg-gray-100 dark:bg-gray-900 h-full">
-            <img :src="forgotPasswordIllustration" alt="Imagen de Freepik" class="max-w-full h-auto" />
+            <img :src="forgotPasswordIllustration" alt="Tomado de Freepik" class="max-w-full h-auto" />
         </div>
     </div>
 </template>
-
 
 <script>
 import { useToast } from "vue-toastification"
@@ -98,14 +95,11 @@ export default {
     data() {
         return {
             forgotPasswordIllustration,
-            form: {
-                email: "",
-            },
-            errors: {
-                email: ""
-            },
+            form: { email: "" },
+            errors: { email: "" },
             loading: false,
             submitted: false,
+            resendTimer: 0, // temporizador de 60s
         };
     },
     methods: {
@@ -121,19 +115,17 @@ export default {
             return "";
         },
         validateField(field) {
-            const validators = {
-                email: this.validateEmail,
-            };
+            const validators = { email: this.validateEmail };
             this.errors[field] = validators[field]();
         },
         validateForm() {
             Object.keys(this.errors).forEach((field) => {
                 this.validateField(field);
             });
-            return !Object.values(this.errors).some((e) => e);
+            Object.values(this.errors).some(Boolean)
         },
         async handleSubmit() {
-            const toast = useToast()
+            const toast = useToast();
 
             this.submitted = true;
             const isValid = this.validateForm();
@@ -145,17 +137,25 @@ export default {
                 await resetPassword(this.form.email);
                 this.loading = false;
 
-                toast.success("Si el correo existe, recibirás un enlace en breve con los pasos para restablecer tu contraseña.");
-                timeout: 6000
-                this.$router.push("/login");
+                toast.success(
+                    "Si el correo existe, recibirás un enlace en breve con los pasos para restablecer tu contraseña.",
+                    { timeout: 6000 }
+                );
+
+                // iniciar temporizador de 60s
+                this.resendTimer = 60;
+                const interval = setInterval(() => {
+                    this.resendTimer--;
+                    if (this.resendTimer <= 0) clearInterval(interval);
+                }, 1000);
+
             } catch (error) {
                 this.loading = false;
 
                 toast.error(
-                    "Error al enviar el correo: " +
-                    (error.response?.data || error.message)
+                    "Error al enviar el correo: " + (error.response?.data || error.message),
+                    { timeout: 6000 }
                 );
-                timeout: 6000
             }
         }
     },

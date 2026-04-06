@@ -86,10 +86,16 @@
                         {{ errors.password }}
                     </p>
                 </div>
+                <div class="w-full max-w-sm text-left mt-2">
+                    <p class="text-sm text-gray-600 dark:text-gray-400">
+                         <router-link to="/forgot-password" class="font-medium text-primary hover:underline">
+                        ¿Olvidaste tu contraseña?
+                        </router-link>
+                    </p>
+                </div>
 
 
-
-                <div class="mb-6">
+                <div class="mb-6 mt-4">
                     <div class="flex items-center">
                         <input id="rememberMe" type="checkbox" v-model="form.rememberMe"
                             class="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary" />
@@ -128,7 +134,7 @@
         </div>
 
         <div class="hidden md:flex w-1/2 items-center justify-center bg-gray-100 dark:bg-gray-900 h-full">
-            <img :src="loginIllustration" alt="Imagen de Freepik" class="max-w-full h-auto" />
+            <img :src="loginIllustration" alt="Tomado de Freepik" class="max-w-full h-auto" />
         </div>
     </div>
 </template>
@@ -136,6 +142,7 @@
 <script>
 import loginIllustration from "../assets/login-illustration.svg";
 import { login } from "../services/api";
+import { useToast } from "vue-toastification";
 
 export default {
     name: "LoginView",
@@ -154,6 +161,7 @@ export default {
             },
             loading: false,
             submitted: false,
+            toast: useToast()
         };
     },
     methods: {
@@ -202,8 +210,6 @@ export default {
 
             try {
                 const response = await login(this.form.email, this.form.password);
-
-                // 👇 Si el usuario marcó "Recuérdame", guardamos en localStorage
                 if (this.form.rememberMe) {
                     localStorage.setItem("token", response.token);
                 } else {
@@ -212,16 +218,14 @@ export default {
 
                 this.loading = false;
                 alert("Login exitoso: " + JSON.stringify(response));
-                // Aquí puedes redirigir al dashboard con Vue Router
                 this.$router.push("/dashboard");
             } catch (error) {
                 this.loading = false;
-                alert("Error en el login: " + (error.response?.data || error.message));
+                console.error(error);
+                this.toast.error("Usuario y/o contraseña incorrectos", { timeout: 3000 });
             }
         }
-
-
-
-    },
+    }
 };
+
 </script>

@@ -54,35 +54,28 @@
                   </div>
                 </div>
                 <div class="relative">
-                  <input
-                    id="energy-level"
-                    v-model="energy"
-                    class="w-full h-2 rounded-full appearance-none cursor-pointer"
-                    :style="energyTrackStyle"
-                    max="5"
-                    min="1"
-                    name="energy"
-                    type="range" />
+                  <input id="energy-level" v-model="energy"
+                    class="w-full h-2 rounded-full appearance-none cursor-pointer" :style="energyTrackStyle" max="5"
+                    min="1" name="energy" type="range" />
                 </div>
                 <div class="flex items-center justify-between text-xs mt-3 text-slate-500 dark:text-slate-400">
-                  <span class="flex items-center gap-1"><span class="material-symbols-outlined text-amber-500">battery_alert</span> Muy bajo</span>
-                  <span class="flex items-center gap-1"><span class="material-symbols-outlined text-cyan-500">battery_std</span> Medio</span>
-                  <span class="flex items-center gap-1"><span class="material-symbols-outlined text-emerald-500">battery_full</span> Muy alto</span>
+                  <span class="flex items-center gap-1"><span
+                      class="material-symbols-outlined text-amber-500">battery_alert</span> Muy bajo</span>
+                  <span class="flex items-center gap-1"><span
+                      class="material-symbols-outlined text-cyan-500">battery_std</span> Medio</span>
+                  <span class="flex items-center gap-1"><span
+                      class="material-symbols-outlined text-emerald-500">battery_full</span> Muy alto</span>
                 </div>
               </div>
 
               <div>
-                <label class="block dashboard-section-title text-slate-800 dark:text-slate-100 mb-3">
+                <h3 class="block dashboard-section-title text-slate-800 dark:text-slate-100 mb-3">
                   Estado de ánimo
-                </label>
+                </h3>
                 <div class="grid grid-cols-3 sm:grid-cols-6 gap-2 text-center">
-                  <button
-                    v-for="option in moodOptions"
-                    :key="option.value"
-                    :aria-pressed="mood === option.value"
+                  <button v-for="option in moodOptions" :key="option.value" :aria-pressed="mood === option.value"
                     class="flex flex-col items-center gap-1.5 p-2 rounded-lg border transition-colors"
-                    :class="mood === option.value ? activeMoodClass : inactiveMoodClass"
-                    type="button"
+                    :class="mood === option.value ? activeMoodClass : inactiveMoodClass" type="button"
                     @click="mood = option.value">
                     <span class="text-2xl emoji-bounce">{{ option.emoji }}</span>
                     <span class="text-xs font-medium">{{ option.label }}</span>
@@ -91,18 +84,17 @@
               </div>
 
               <div>
-                <label class="block dashboard-section-title text-purple-700 dark:text-purple-400 mb-3" for="wellbeing-note">
+                <label class="block dashboard-section-title text-purple-700 dark:text-purple-400 mb-3"
+                  for="wellbeing-note">
                   Nota opcional
                 </label>
-                <textarea
-                  id="wellbeing-note"
-                  v-model.trim="optionalNote"
+                <textarea id="wellbeing-note" v-model.trim="optionalNote"
                   class="dashboard-note-box w-full rounded-2xl px-3 py-3 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-500 dark:placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-400"
-                  placeholder="Describe brevemente como te sientes o qué influye en tu día."
-                  rows="3"></textarea>
+                  placeholder="Describe brevemente como te sientes o qué influye en tu día." rows="3"></textarea>
               </div>
 
-              <div class="rounded-2xl border border-slate-200 dark:border-slate-700 p-4 bg-white/80 dark:bg-slate-900/90 shadow-sm">
+              <div
+                class="rounded-2xl border border-slate-200 dark:border-slate-700 p-4 bg-white/80 dark:bg-slate-900/90 shadow-sm">
                 <p class="text-sm dashboard-section-title text-slate-900 dark:text-slate-100">Registro actual</p>
                 <p class="text-sm text-slate-600 dark:text-slate-400 mt-1">
                   <span class="font-semibold text-slate-900 dark:text-slate-100">Emoción:</span>
@@ -124,10 +116,14 @@
               <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
                 <button
                   class="inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-cyan-500/20 transition hover:from-cyan-400 hover:to-blue-500 disabled:cursor-not-allowed disabled:opacity-60"
-                  :disabled="isSaving"
-                  type="submit">
+                  :disabled="isSaving || saveTimer > 0" type="submit">
                   <span class="material-symbols-outlined text-base">bolt</span>
-                  {{ isSaving ? "Guardando..." : "Guardar registro" }}
+                  <span v-if="saveTimer === 0">
+                    {{ isSaving ? "Guardando..." : "Guardar registro" }}
+                  </span>
+                  <span v-else>
+                    Puedes guardar otro registro en {{ saveTimer }}s
+                  </span>
                 </button>
                 <p v-if="errorMessage" class="text-sm text-red-500">
                   {{ errorMessage }}
@@ -140,7 +136,8 @@
             <h2 class="text-xl font-bold text-content-light dark:text-content-dark mb-4">Tareas</h2>
             <div class="space-y-3">
               <div class="flex items-center gap-4 p-3 rounded-lg bg-background-light dark:bg-background-dark shadow-sm">
-                <div class="flex items-center justify-center rounded-full size-10 bg-primary/10 dark:bg-primary/20 text-primary">
+                <div
+                  class="flex items-center justify-center rounded-full size-10 bg-primary/10 dark:bg-primary/20 text-primary">
                   <svg class="icon" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
                     <path
                       d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Z" />
@@ -152,7 +149,8 @@
                 </div>
               </div>
               <div class="flex items-center gap-4 p-3 rounded-lg bg-background-light dark:bg-background-dark shadow-sm">
-                <div class="flex items-center justify-center rounded-full size-10 bg-primary/10 dark:bg-primary/20 text-primary">
+                <div
+                  class="flex items-center justify-center rounded-full size-10 bg-primary/10 dark:bg-primary/20 text-primary">
                   <svg class="icon" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
                     <path
                       d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Z" />
@@ -164,14 +162,16 @@
                 </div>
               </div>
               <div class="flex items-center gap-4 p-3 rounded-lg bg-background-light dark:bg-background-dark shadow-sm">
-                <div class="flex items-center justify-center rounded-full size-10 bg-primary/10 dark:bg-primary/20 text-primary">
+                <div
+                  class="flex items-center justify-center rounded-full size-10 bg-primary/10 dark:bg-primary/20 text-primary">
                   <svg class="icon" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
                     <path
                       d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Z" />
                   </svg>
                 </div>
                 <div class="flex-1">
-                  <p class="font-medium text-content-light dark:text-content-dark">Preparar la presentacion del cliente</p>
+                  <p class="font-medium text-content-light dark:text-content-dark">Preparar la presentacion del cliente
+                  </p>
                   <p class="text-sm text-subtle-light dark:text-subtle-dark">2:00 PM</p>
                 </div>
               </div>
@@ -239,7 +239,7 @@
 </template>
 
 <script setup>
-import { computed, ref } from "vue";
+import { computed, onBeforeUnmount, ref } from "vue";
 import { createEmotionalRecord } from "../services/api";
 import "../styles/dashboard.css";
 
@@ -259,6 +259,8 @@ const saveStatus = ref("Sin guardar");
 const lastSavedAt = ref("");
 const isSaving = ref(false);
 const errorMessage = ref("");
+const saveTimer = ref(0);
+let saveTimerInterval = null;
 
 const inactiveMoodClass =
   "border-transparent text-subtle-light dark:text-subtle-dark hover:bg-gray-100 dark:hover:bg-white/5";
@@ -320,7 +322,34 @@ function formatSavedAt(dateString) {
   });
 }
 
+function startSaveCooldown() {
+  if (saveTimerInterval) {
+    clearInterval(saveTimerInterval);
+  }
+
+  saveTimer.value = 60;
+  saveTimerInterval = setInterval(() => {
+    saveTimer.value -= 1;
+
+    if (saveTimer.value <= 0) {
+      saveTimer.value = 0;
+      clearInterval(saveTimerInterval);
+      saveTimerInterval = null;
+    }
+  }, 1000);
+}
+
+function markRecordAsSaved(fechaRegistro) {
+  lastSavedAt.value = formatSavedAt(fechaRegistro);
+  saveStatus.value = "Guardado";
+  startSaveCooldown();
+}
+
 async function saveEmotionalRecord() {
+  if (isSaving.value || saveTimer.value > 0) {
+    return;
+  }
+
   const fechaRegistro = new Date().toISOString();
 
   isSaving.value = true;
@@ -335,18 +364,31 @@ async function saveEmotionalRecord() {
       fechaRegistro,
     });
 
-    lastSavedAt.value = formatSavedAt(fechaRegistro);
-    saveStatus.value = "Guardado";
+    markRecordAsSaved(fechaRegistro);
   } catch (error) {
     console.error("No se pudo guardar el registro emocional.", error);
+
+    if (error?.code === "ECONNABORTED") {
+      markRecordAsSaved(fechaRegistro);
+      errorMessage.value =
+        "El servidor tardó demasiado en confirmar la respuesta, pero el registro probablemente ya quedó guardado.";
+      return;
+    }
+
     saveStatus.value = "Error al guardar";
     errorMessage.value =
       error?.response?.data?.message ||
-      "No pudimos guardar el registro. Verifica tu sesion e intenta de nuevo.";
+      "No pudimos guardar el registro. Verifica tu sesión e intenta de nuevo.";
   } finally {
     isSaving.value = false;
   }
 }
+
+onBeforeUnmount(() => {
+  if (saveTimerInterval) {
+    clearInterval(saveTimerInterval);
+  }
+});
 </script>
 
 <style src="../styles/dashboard.css"></style>
