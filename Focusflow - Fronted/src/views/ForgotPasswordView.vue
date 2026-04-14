@@ -99,7 +99,7 @@ export default {
             errors: { email: "" },
             loading: false,
             submitted: false,
-            resendTimer: 0, // temporizador de 60s
+            resendTimer: 0,
         };
     },
     methods: {
@@ -122,7 +122,7 @@ export default {
             Object.keys(this.errors).forEach((field) => {
                 this.validateField(field);
             });
-            Object.values(this.errors).some(Boolean)
+            return !Object.values(this.errors).some((e) => e);
         },
         async handleSubmit() {
             const toast = useToast();

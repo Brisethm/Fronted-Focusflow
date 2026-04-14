@@ -327,7 +327,7 @@ function startSaveCooldown() {
     clearInterval(saveTimerInterval);
   }
 
-  saveTimer.value = 60;
+  saveTimer.value = 120;
   saveTimerInterval = setInterval(() => {
     saveTimer.value -= 1;
 
