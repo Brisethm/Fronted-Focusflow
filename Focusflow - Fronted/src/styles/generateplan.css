@@ -1,0 +1,9 @@
+body {
+  min-height: max(884px, 100dvh);
+  background-color: #f7f8fc;
+  color: #333333;
+}
+.dark body {
+  background-color: #101c22;
+  color: #f0f0f0;
+}

@@ -337,14 +337,27 @@ async function submitQuestionnaire() {
     perfil: calculateProfile(scores),
   };
 
+  localStorage.setItem("questionnaireProfile", payload.perfil);
+  localStorage.setItem("questionnaireResult", JSON.stringify(payload));
+
   isSubmitting.value = true;
   errorMessage.value = "";
 
   try {
     const response = await submitQuestionnaireRequest(payload);
-    localStorage.setItem("questionnaireProfile", payload.perfil);
-    localStorage.setItem("questionnaireResult", JSON.stringify(response ?? payload));
-    await router.push("/dashboard");
+
+    if (response) {
+      const questionnaireId =
+        response.idCuestionario || response.id || response.questionnaireId || null;
+
+      if (questionnaireId) {
+        localStorage.setItem("questionnaireId", questionnaireId.toString());
+      }
+
+      localStorage.setItem("questionnaireResult", JSON.stringify(response));
+    }
+
+    await router.push("/generated-plan");
   } catch (error) {
     errorMessage.value =
       error?.response?.data?.message ||

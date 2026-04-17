@@ -11,6 +11,7 @@ const routes = [
   { path: "/data-policy", name: "DataPolicy", component: () => import("../views/DataPolicyView.vue") },
   { path: "/welcome", name: "Welcome", component: () => import("../views/WelcomeView.vue") },
   { path: "/onboarding-questionnaire", name: "OnboardingQuestionnaire", component: () => import("../views/OnboardingQuestionnaireView.vue") },
+  { path: "/generated-plan", name: "GeneratedPlan", component: () => import("../views/GeneratedPlanView.vue") },
   { path: "/forgot-password", name: "ForgotPassword", component: () => import("../views/ForgotPasswordView.vue") },
   { path: "/update-password", name: "UpdatePassword", component: () => import("../views/UpdatePasswordView.vue") },
   { path: "/dashboard", name: "Dashboard", component: () => import("../views/DashboardView.vue") },
