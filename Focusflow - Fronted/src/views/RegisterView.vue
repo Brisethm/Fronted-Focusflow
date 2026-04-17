@@ -107,9 +107,6 @@
           </p>
         </div>
 
-
-
-
         <div class="mb-6">
           <div class="flex items-start">
             <input id="terms" type="checkbox" v-model="form.terms"
@@ -210,16 +207,15 @@ export default {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
       if (!email) return "El correo es obligatorio";
-      if (email.includes(" ")) return "El correo no debe contener espacios";
-      if (!email.includes("@")) return "Debe incluir un '@'";
       if (!emailRegex.test(email)) return "Ejemplo válido: usuario@correo.com";
 
       return "";
     },
 
+
     validatePassword() {
       const password = this.form.password;
-      const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,16}$/;
+      const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,20}$/;
 
       if (!password) return "La contraseña es obligatoria";
       if (!regex.test(password)) {
@@ -257,15 +253,21 @@ export default {
       this.loading = true;
 
       try {
-        const response = await register(this.form.email, this.form.password, this.form.name);
+        const response = await register(
+          this.form.email,
+          this.form.password,
+          this.form.name
+        );
         this.loading = false;
+        localStorage.setItem("userName", this.form.name);
+        this.$router.push("/welcome");
         alert("Registro exitoso: " + JSON.stringify(response));
       } catch (error) {
         this.loading = false;
-        alert("Error en el registro: " + error.message);
+        const message = error?.message || "Error desconocido";
+        alert("Error en el registro: " + message);
       }
     }
-
   },
 };
 </script>

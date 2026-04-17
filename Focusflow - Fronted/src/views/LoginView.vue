@@ -88,8 +88,8 @@
                 </div>
                 <div class="w-full max-w-sm text-left mt-2">
                     <p class="text-sm text-gray-600 dark:text-gray-400">
-                         <router-link to="/forgot-password" class="font-medium text-primary hover:underline">
-                        ¿Olvidaste tu contraseña?
+                        <router-link to="/forgot-password" class="font-medium text-primary hover:underline">
+                            ¿Olvidaste tu contraseña?
                         </router-link>
                     </p>
                 </div>
@@ -209,13 +209,7 @@ export default {
             this.loading = true;
 
             try {
-                const response = await login(this.form.email, this.form.password);
-                if (this.form.rememberMe) {
-                    localStorage.setItem("token", response.token);
-                } else {
-                    sessionStorage.setItem("token", response.token);
-                }
-
+                const response = await login(this.form.email, this.form.password, this.form.rememberMe);
                 this.loading = false;
                 alert("Login exitoso: " + JSON.stringify(response));
                 this.$router.push("/dashboard");
@@ -224,6 +218,7 @@ export default {
                 console.error(error);
                 this.toast.error("Usuario y/o contraseña incorrectos", { timeout: 3000 });
             }
+
         }
     }
 };
