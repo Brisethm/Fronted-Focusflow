@@ -348,10 +348,16 @@ async function submitQuestionnaire() {
 
     if (response) {
       const questionnaireId =
-        response.idCuestionario || response.id || response.questionnaireId || null;
+        response.idCuestionario || response.id || response.questionnaireId || response?.data?.idCuestionario || null;
+
+      console.log("Response from API:", response);
+      console.log("Extracted questionnaireId:", questionnaireId);
 
       if (questionnaireId) {
         localStorage.setItem("questionnaireId", questionnaireId.toString());
+        console.log("Questionnaire ID saved:", questionnaireId);
+      } else {
+        console.warn("No questionnaireId found in response");
       }
 
       localStorage.setItem("questionnaireResult", JSON.stringify(response));
@@ -363,6 +369,7 @@ async function submitQuestionnaire() {
       error?.response?.data?.message ||
       error?.message ||
       "No se pudo guardar el cuestionario.";
+    console.error("Error submitting questionnaire:", error);
   } finally {
     isSubmitting.value = false;
   }

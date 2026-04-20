@@ -161,3 +161,25 @@ export async function submitQuestionnaire(payload) {
     })
   ).data;
 }
+
+export async function createPersonalizedPlan({
+  horaDescanso,
+  enfoqueDiario,
+  pausasDiarias,
+  idCuestionario,
+}) {
+  return (
+    await api.post(
+      "/PlanesPersonalizados",
+      {
+        horaDescanso,
+        enfoqueDiario,
+        pausasDiarias,
+        idCuestionario,
+      },
+      {
+        timeout: 10000,
+      }
+    )
+  ).data;
+}
