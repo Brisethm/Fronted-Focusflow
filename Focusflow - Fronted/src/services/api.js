@@ -183,3 +183,12 @@ export async function createPersonalizedPlan({
     )
   ).data;
 }
+
+// ========== Planes Personalizados ==========
+export async function getUserPlans() {
+  return (await api.get("/PlanesPersonalizados")).data;
+}
+
+export async function updatePlan(idPlan, planData) {
+  return (await api.put(`/PlanesPersonalizados/${idPlan}`, planData)).data;
+}

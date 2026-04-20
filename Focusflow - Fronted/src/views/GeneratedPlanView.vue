@@ -363,6 +363,6 @@ function startDay() {
 }
 
 function adjustPlan() {
-  router.push("/dashboard");
+  router.push("/ajustar-plan");
 }
 </script>
