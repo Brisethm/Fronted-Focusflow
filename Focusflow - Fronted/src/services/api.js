@@ -162,6 +162,29 @@ export async function submitQuestionnaire(payload) {
   ).data;
 }
 
+export async function createTask({
+  titulo,
+  prioridad,
+  nivel_esfuerzo,
+  fecha_limite,
+  descripcion,
+  icono,
+  recordatorio,
+  estado = "En progreso",
+}) {
+  return (
+    await api.post("/Tareas", {
+      titulo,
+      prioridad,
+      nivelEsfuerzo: nivel_esfuerzo,
+      estado,
+      fechaLimite: fecha_limite,
+      ...(descripcion && { descripcion }),
+      ...(icono && { icono }),
+      ...(recordatorio && { recordatorio }),
+    })
+  ).data;
+}
 export async function createPersonalizedPlan({
   horaDescanso,
   enfoqueDiario,

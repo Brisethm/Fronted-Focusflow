@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import RegisterView from "../views/RegisterView.vue";
 import LoginView from "../views/LoginView.vue";
 import LandingView from "../views/LandingView.vue";
+import CreateTask from '../views/CreateTaskView.vue';
 
 const routes = [
   { path: "/", name: "Landing", component: LandingView },
@@ -15,6 +16,7 @@ const routes = [
   { path: "/forgot-password", name: "ForgotPassword", component: () => import("../views/ForgotPasswordView.vue") },
   { path: "/update-password", name: "UpdatePassword", component: () => import("../views/UpdatePasswordView.vue") },
   { path: "/dashboard", name: "Dashboard", component: () => import("../views/DashboardView.vue") },
+  { path: "/create-task", name: "CreateTask", component: CreateTask },
 ];
 
 const router = createRouter({
