@@ -6,7 +6,7 @@ const api = axios.create({
 
 // Interceptor para incluir el token en cada request
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("token") || sessionStorage.getItem("token");
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -55,6 +55,30 @@ export async function createEmotionalRecord({
       fechaRegistro,
     }, {
       timeout: 10000,
+    })
+  ).data;
+}
+
+export async function createTask({
+  titulo,
+  prioridad,
+  nivel_esfuerzo,
+  fecha_limite,
+  descripcion,
+  icono,
+  recordatorio,
+  estado = "En progreso",
+}) {
+  return (
+    await api.post("/Tareas", {
+      titulo,
+      prioridad,
+      nivelEsfuerzo: nivel_esfuerzo,
+      estado,
+      fechaLimite: fecha_limite,
+      ...(descripcion && { descripcion }),
+      ...(icono && { icono }),
+      ...(recordatorio && { recordatorio }),
     })
   ).data;
 }
