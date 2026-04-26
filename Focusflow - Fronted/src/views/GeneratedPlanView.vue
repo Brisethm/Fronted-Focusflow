@@ -1,21 +1,22 @@
 <template>
   <div class="font-display">
-    <div class="relative flex flex-col min-h-screen w-full group/design-root overflow-x-hidden">
+    <div
+      class="relative flex flex-col min-h-screen w-full group/design-root overflow-x-hidden"
+    >
       <header class="px-6 pt-8 pb-4">
-        <div class="flex justify-between items-center">
-          <button class="p-2 rounded-full">
-            <span class="material-symbols-outlined text-text-light dark:text-text-dark">arrow_back_ios_new</span>
-          </button>
-          <h1 class="generated-plan-title text-3xl font-extrabold tracking-tight">
-            Tu Plan Personalizado
+        <div class="flex justify-center items-center">
+          <h1
+            class="generated-plan-title text-3xl font-extrabold tracking-tight text-center"
+          >
+            Tu plan personalizado
           </h1>
-          <div class="w-10"></div>
         </div>
       </header>
-      <main class="flex-grow flex flex-col px-6 py-4">
+      <main class="flex-grow flex flex-col px-6 py-4 overflow-y-auto">
         <div class="mb-4 text-center">
           <div
-            class="inline-flex min-w-[240px] items-center justify-center gap-4 rounded-full border border-violet-200 bg-violet-50 px-5 py-3 shadow-sm">
+            class="inline-flex min-w-[240px] items-center justify-center gap-4 rounded-full border border-violet-200 bg-violet-50 px-5 py-3 shadow-sm"
+          >
             <span class="text-3xl">{{ profileBadge.emoji }}</span>
             <div class="text-center">
               <p class="text-xs uppercase tracking-[0.3em] text-violet-600">
@@ -28,31 +29,42 @@
           </div>
         </div>
         <div class="mb-6 text-center">
-          <p class="mx-auto max-w-xl text-xl font-semibold text-slate-800 dark:text-slate-100">
+          <p
+            class="mx-auto max-w-xl text-xl font-semibold text-slate-800 dark:text-slate-100"
+          >
             Basado en tus respuestas, este es tu plan para empezar a construir
             un mayor equilibrio.
           </p>
           <p class="mt-3 text-sm text-slate-500 dark:text-slate-400">
             {{ planIntro }}
           </p>
-          <div v-if="planDetails"
-            class="plan-details-card mt-6 overflow-hidden rounded-[32px] border border-violet-200 bg-white/95 shadow-[0_20px_60px_rgba(139,92,246,0.12)] text-left mx-auto max-w-4xl">
+          <div
+            v-if="planDetails"
+            class="plan-details-card mt-6 overflow-hidden rounded-[32px] border border-violet-200 bg-white/95 shadow-[0_20px_60px_rgba(139,92,246,0.12)] text-left mx-auto max-w-4xl"
+          >
             <div
-              class="relative overflow-hidden bg-gradient-to-br from-[#f5ecff] via-[#ecdbff] to-[#e6cffb] px-6 py-5 text-violet-900">
+              class="relative overflow-hidden bg-gradient-to-br from-[#f5ecff] via-[#ecdbff] to-[#e6cffb] px-6 py-5 text-violet-900"
+            >
               <div class="flex items-center justify-between gap-4">
                 <div>
-                  <p class="text-xs uppercase tracking-[0.22em] text-violet-600/90">
+                  <p
+                    class="text-xs uppercase tracking-[0.22em] text-violet-600/90"
+                  >
                     Bienestar emocional
                   </p>
                   <h3 class="mt-2 text-2xl font-bold">
                     Tu mejor versión empieza por dentro.
                   </h3>
                 </div>
-                <div class="flex h-16 w-16 items-center justify-center rounded-3xl bg-white/80 text-3xl">
+                <div
+                  class="flex h-16 w-16 items-center justify-center rounded-3xl bg-white/80 text-3xl"
+                >
                   🧘
                 </div>
               </div>
-              <div class="mt-4 rounded-3xl border border-white/60 bg-white/70 p-4 text-left">
+              <div
+                class="mt-4 rounded-3xl border border-white/60 bg-white/70 p-4 text-left"
+              >
                 <p class="text-sm text-violet-900/75">
                   Este plan te ayuda a equilibrar tu descanso, a enfocarte y a
                   realizar pausas con un estilo de vida motivador.
@@ -87,18 +99,19 @@
               </div>
             </div>
           </div>
-          <p v-if="creationStatus" class="mt-4 text-sm font-medium text-emerald-700 dark:text-emerald-300">
-            {{ creationStatus }}
-          </p>
-          <p v-if="errorMessage" class="mt-4 text-sm font-medium text-red-600 dark:text-red-400">
-            {{ errorMessage }}
-          </p>
         </div>
         <div class="space-y-6">
-          <div v-for="card in planCards" :key="card.title" :class="`${card.wrapperClass} p-6 rounded-3xl shadow-sm`">
+          <div
+            v-for="card in planCards"
+            :key="card.title"
+            :class="`${card.wrapperClass} p-6 rounded-3xl shadow-sm`"
+          >
             <div class="flex items-center gap-4">
               <div class="bg-white/90 p-3 rounded-full shadow-sm">
-                <span class="material-symbols-outlined text-violet-700 text-3xl">{{ card.icon }}</span>
+                <span
+                  class="material-symbols-outlined text-violet-700 text-3xl"
+                  >{{ card.icon }}</span
+                >
               </div>
               <div>
                 <h2 class="font-bold text-lg text-violet-900">
@@ -113,15 +126,45 @@
           </div>
         </div>
       </main>
-      <footer class="px-6 pb-8 pt-4 sticky bottom-0 bg-background-light dark:bg-background-dark">
+      <footer
+        class="px-6 pb-8 pt-4 sticky bottom-0 bg-background-light dark:bg-background-dark"
+      >
         <div class="flex flex-col gap-4 max-w-md mx-auto">
-          <button @click="startDay"
-            class="w-full h-14 px-5 rounded-xl bg-violet-700 text-white font-bold tracking-wide shadow-lg hover:bg-violet-800 transition-colors duration-300 flex items-center justify-center gap-2">
-            <span class="material-symbols-outlined">play_arrow</span>
-            Comenzar mi día
+          <button
+            @click="startDay"
+            :disabled="loading"
+            class="w-full h-14 px-5 rounded-xl bg-violet-700 text-white font-bold tracking-wide shadow-lg hover:bg-violet-800 transition-colors duration-300 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <span v-if="!loading" class="material-symbols-outlined"
+              >play_arrow</span
+            >
+            <svg
+              v-else
+              class="animate-spin h-5 w-5 text-white"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                class="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="4"
+              ></circle>
+              <path
+                class="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+              ></path>
+            </svg>
+            {{ loading ? "Guardando plan..." : "Comenzar mi día" }}
           </button>
-          <button @click="adjustPlan"
-            class="w-full h-12 px-5 rounded-xl bg-violet-100 text-violet-900 font-bold tracking-wide hover:bg-violet-200 transition-colors duration-300">
+          <button
+            @click="adjustPlan"
+            class="w-full h-12 px-5 rounded-xl bg-violet-100 text-violet-900 font-bold tracking-wide hover:bg-violet-200 transition-colors duration-300"
+          >
             Ajustar mi plan
           </button>
         </div>
@@ -131,16 +174,20 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from "vue";
+import { computed, ref } from "vue";
 import { useRouter } from "vue-router";
-import { createPersonalizedPlan} from "../services/api";
+import { createPersonalizedPlan } from "../services/api";
+import { useToast } from "vue-toastification";
 
 const router = useRouter();
+const toast = useToast();
 
 /* ======================
    FUENTE DE VERDAD
 ====================== */
-const profile = ref(localStorage.getItem("questionnaireProfile") || "inestable");
+const profile = ref(
+  localStorage.getItem("questionnaireProfile") || "inestable",
+);
 const questionnaireId = ref(localStorage.getItem("questionnaireId") || null);
 
 /* ======================
@@ -178,13 +225,18 @@ const planIntro = computed(() => {
 const profilePlanMapping = {
   saturado: { horaDescanso: "22:00:00", enfoqueDiario: 3, pausasDiarias: 3 },
   critico: { horaDescanso: "21:30:00", enfoqueDiario: 1, pausasDiarias: 5 },
-  procrastinador: { horaDescanso: "23:00:00", enfoqueDiario: 5, pausasDiarias: 2 },
+  procrastinador: {
+    horaDescanso: "23:00:00",
+    enfoqueDiario: 5,
+    pausasDiarias: 2,
+  },
   inestable: { horaDescanso: "22:30:00", enfoqueDiario: 3, pausasDiarias: 2 },
   equilibrado: { horaDescanso: "23:00:00", enfoqueDiario: 1, pausasDiarias: 1 },
 };
 
 const planDetails = computed(() => {
-  const plan = profilePlanMapping[profile.value] || profilePlanMapping.inestable;
+  const plan =
+    profilePlanMapping[profile.value] || profilePlanMapping.inestable;
 
   return {
     horaDescanso: plan.horaDescanso,
@@ -197,7 +249,8 @@ const planDetails = computed(() => {
    CARDS
 ====================== */
 const planCards = computed(() => {
-  const plan = profilePlanMapping[profile.value] || profilePlanMapping.inestable;
+  const plan =
+    profilePlanMapping[profile.value] || profilePlanMapping.inestable;
 
   return [
     {
@@ -207,22 +260,22 @@ const planCards = computed(() => {
         profile.value === "critico"
           ? "Pausa energética"
           : profile.value === "saturado"
-          ? "Relajación suave"
-          : profile.value === "procrastinador"
-          ? "Pausa estratégica"
-          : profile.value === "equilibrado"
-          ? "Pausa de recarga"
-          : "Pausa equilibrante",
+            ? "Relajación suave"
+            : profile.value === "procrastinador"
+              ? "Pausa estratégica"
+              : profile.value === "equilibrado"
+                ? "Pausa de recarga"
+                : "Pausa equilibrante",
       description:
         profile.value === "critico"
           ? "Tu mente necesita respiro; haz pausas cortas para evitar agotamiento."
           : profile.value === "saturado"
-          ? "Cinco minutos de pausa te ayudan a bajar la intensidad del día."
-          : profile.value === "procrastinador"
-          ? "Haz pequeñas desconexiones para recuperar foco sin bloquearte."
-          : profile.value === "equilibrado"
-          ? "Mantén tu buen ritmo con descansos conscientes que te recargan."
-          : "Pausas breves te ayudan a mantener equilibrio y claridad mental.",
+            ? "Cinco minutos de pausa te ayudan a bajar la intensidad del día."
+            : profile.value === "procrastinador"
+              ? "Haz pequeñas desconexiones para recuperar foco sin bloquearte."
+              : profile.value === "equilibrado"
+                ? "Mantén tu buen ritmo con descansos conscientes que te recargan."
+                : "Pausas breves te ayudan a mantener equilibrio y claridad mental.",
       wrapperClass: "p-6 rounded-3xl border bg-[#f5f3ff] border-[#ddd6fe]",
     },
     {
@@ -233,12 +286,12 @@ const planCards = computed(() => {
         profile.value === "critico"
           ? "Dormir temprano te ayuda a recuperar energía y calmar la sobrecarga."
           : profile.value === "saturado"
-          ? "Una hora de descanso estable reduce el estrés acumulado."
-          : profile.value === "procrastinador"
-          ? "Un horario fijo de sueño te da estructura y más energía."
-          : profile.value === "equilibrado"
-          ? "Seguir este horario refuerza el equilibrio que ya tienes."
-          : "Dormir a esta hora mejora tu claridad y descanso emocional.",
+            ? "Una hora de descanso estable reduce el estrés acumulado."
+            : profile.value === "procrastinador"
+              ? "Un horario fijo de sueño te da estructura y más energía."
+              : profile.value === "equilibrado"
+                ? "Seguir este horario refuerza el equilibrio que ya tienes."
+                : "Dormir a esta hora mejora tu claridad y descanso emocional.",
       wrapperClass: "p-6 rounded-3xl border bg-[#f5f3ff] border-[#ddd6fe]",
     },
     {
@@ -249,12 +302,12 @@ const planCards = computed(() => {
         profile.value === "critico"
           ? "Una tarea prioritaria para avanzar sin generar presión extra."
           : profile.value === "saturado"
-          ? "Tres objetivos claros te permiten manejar mejor el ritmo."
-          : profile.value === "procrastinador"
-          ? "Cinco tareas pequeñas te ayudan a crear impulso hoy."
-          : profile.value === "equilibrado"
-          ? "Una sola meta diaria te permite mantener el balance perfecto."
-          : "Tres enfoques te ayudan a organizar tu jornada con fluidez.",
+            ? "Tres objetivos claros te permiten manejar mejor el ritmo."
+            : profile.value === "procrastinador"
+              ? "Cinco tareas pequeñas te ayudan a crear impulso hoy."
+              : profile.value === "equilibrado"
+                ? "Una sola meta diaria te permite mantener el balance perfecto."
+                : "Tres enfoques te ayudan a organizar tu jornada con fluidez.",
       wrapperClass: "p-6 rounded-3xl border bg-[#f5f3ff] border-[#ddd6fe]",
     },
   ];
@@ -318,23 +371,25 @@ function getTasksForProfile(profile) {
 /* ======================
    API
 ====================== */
-const creationStatus = ref("");
-const errorMessage = ref("");
+const loading = ref(false);
 
 async function createPlanAndTasks() {
   if (!questionnaireId.value) {
-    errorMessage.value = "No se encontró el cuestionario.";
-    return;
+    toast.error(
+      "No se encontró el cuestionario. Por favor, completa el cuestionario primero.",
+      { timeout: 4000 },
+    );
+    return false;
   }
 
   const planCreatedKey = `personalizedPlanCreated_${questionnaireId.value}`;
 
   if (localStorage.getItem(planCreatedKey) === "true") {
-    creationStatus.value = "El plan ya fue guardado.";
-    return;
+    return true;
   }
 
-  const planData = profilePlanMapping[profile.value] || profilePlanMapping.inestable;
+  const planData =
+    profilePlanMapping[profile.value] || profilePlanMapping.inestable;
 
   try {
     await createPersonalizedPlan({
@@ -345,21 +400,30 @@ async function createPlanAndTasks() {
     });
 
     localStorage.setItem(planCreatedKey, "true");
-    creationStatus.value = "Plan guardado correctamente.";
-  } catch {
-    errorMessage.value = "Error al guardar el plan.";
+    return true;
+  } catch (error) {
+    console.error("Error al guardar el plan:", error);
+    toast.error("Error al guardar el plan. Por favor, intenta de nuevo.", {
+      timeout: 4000,
+    });
+    return false;
   }
 }
-
-onMounted(() => {
-  createPlanAndTasks();
-});
 
 /* ======================
    NAV
 ====================== */
-function startDay() {
-  router.push("/dashboard");
+async function startDay() {
+  loading.value = true;
+
+  const planCreated = await createPlanAndTasks();
+
+  loading.value = false;
+
+  if (planCreated) {
+    toast.success("Plan guardado correctamente.", { timeout: 3000 });
+    router.push("/dashboard");
+  }
 }
 
 function adjustPlan() {
