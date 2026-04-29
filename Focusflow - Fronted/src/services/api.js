@@ -178,8 +178,8 @@ export async function createTask({
       prioridad,
       nivelEsfuerzo: nivel_esfuerzo,
       estado,
+      descripcion,
       fechaLimite: fecha_limite,
-      ...(descripcion && { descripcion }),
       ...(icono && { icono }),
       ...(recordatorio && { recordatorio }),
     })
@@ -207,11 +207,34 @@ export async function createPersonalizedPlan({
   ).data;
 }
 
-// ========== Planes Personalizados ==========
 export async function getUserPlans() {
   return (await api.get("/PlanesPersonalizados")).data;
 }
 
 export async function updatePlan(idPlan, planData) {
   return (await api.put(`/PlanesPersonalizados/${idPlan}`, planData)).data;
+}
+
+export async function getTasks() {
+  return (await api.get("/Tareas")).data;
+}
+
+export async function getFocusSessions() {
+  return (await api.get("/SesionesEnfoque")).data;
+}
+
+export async function createFocusSession({ duracionMinutos, tipo, fecha }) {
+  return (
+    await api.post(
+      "/SesionesEnfoque",
+      {
+        duracionMinutos,
+        tipo,
+        fecha,
+      },
+      {
+        timeout: 10000,
+      }
+    )
+  ).data;
 }

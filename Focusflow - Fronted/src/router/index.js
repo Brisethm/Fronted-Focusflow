@@ -16,6 +16,8 @@ const routes = [
   { path: "/forgot-password", name: "ForgotPassword", component: () => import("../views/ForgotPasswordView.vue") },
   { path: "/update-password", name: "UpdatePassword", component: () => import("../views/UpdatePasswordView.vue") },
   { path: "/dashboard", name: "Dashboard", component: () => import("../views/DashboardView.vue") },
+  { path: "/tasks", name: "Tasks", component: () => import("../views/TasksView.vue") },
+  { path: "/focus", name: "Focus", component: () => import("../views/FocusView.vue") },
   { path: "/create-task", name: "CreateTask", component: CreateTask },
   { path: "/ajustar-plan", name: "AjustarPlan", component: () => import("../views/AdjustPlanView.vue") },
 ];
