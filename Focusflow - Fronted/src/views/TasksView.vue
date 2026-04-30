@@ -118,8 +118,10 @@ const deleteTask = async () => {
   if (!taskToDelete.value) return
   
   try {
+    // Usamos el ID mapeado
     await apiDeleteTask(taskToDelete.value.id)
-    // Actualizar la lista local
+    
+    // Actualizar la lista local filtrando por el ID
     tasks.value = tasks.value.filter(t => t.id !== taskToDelete.value.id)
     showDeleteModal.value = false
     taskToDelete.value = null
@@ -135,17 +137,21 @@ onMounted(async () => {
     loading.value = true
     const data = await getTasks()
 
-    // 👇 Log para ver qué llega exactamente de la API
     console.log('Zona horaria del navegador:', userTimeZone)
     console.log('Tareas crudas:', JSON.stringify(data, null, 2))
-    data.forEach(task => {
-      const parsed = parseUtcDateTime(task.fecha_limite)
-      console.log(
-        `Tarea: "${task.titulo}" | Raw: ${task.fecha_limite} | Parseado: ${parsed} | Formateado: ${formatDate(task.fecha_limite)}`
-      )
+    
+    // 👇 SOLUCIÓN: Mapeamos los datos agregando la propiedad 'id' basada en 'idTarea'
+    tasks.value = data.map(task => {
+      // Opcional: dejamos un log útil de la fecha correcta
+      const parsed = parseUtcDateTime(task.fechaLimite)
+      console.log(`Tarea: "${task.titulo}" | Formateado: ${formatDate(task.fechaLimite)}`)
+      
+      return {
+        ...task,
+        id: task.idTarea // Creamos la propiedad id que Vue y tus funciones esperan
+      }
     })
 
-    tasks.value = data
   } catch (e) {
     error.value = 'Error al cargar las tareas'
     console.error(e)
