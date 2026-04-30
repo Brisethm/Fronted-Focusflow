@@ -51,8 +51,8 @@
       <!-- Action rows -->
       <div class="actions">
         <!-- Link task -->
-        <button class="action-row" :style="linkedTask ? { background: '#ffffff', borderColor: accent } : {}"
-          @click="showTaskModal = true">
+        <button v-if="mode !== 'Descanso'" class="action-row"
+          :style="linkedTask ? { background: '#ffffff', borderColor: accent } : {}" @click="showTaskModal = true">
           <div class="action-left">
             <div class="action-icon" :style="{ background: linkedTask ? '#ffffff' : 'var(--surface)' }">
               <svg width="22" height="22" :fill="linkedTask ? accent : 'var(--muted)'" viewBox="0 0 256 256">
@@ -284,13 +284,13 @@ function switchMode(m) {
 
   // 3. Si no hay sesión en curso (o confirmaste el cambio), se hace el cambio normal
   clearTimer()
-  mode.value         = m
-  minutes.value      = MODES[m].defaultMin
+  mode.value = m
+  minutes.value = MODES[m].defaultMin
   totalSeconds.value = minutes.value * 60
-  secondsLeft.value  = totalSeconds.value
-  running.value      = false
-  completed.value    = false
-  saved.value        = false
+  secondsLeft.value = totalSeconds.value
+  running.value = false
+  completed.value = false
+  saved.value = false
 }
 
 function handleStart() {
