@@ -143,13 +143,15 @@
 </template>
 
 <script>
-import { createTask } from '../services/api'
+import { createTask, updateTask } from '../services/api'
 import { useToast } from 'vue-toastification'
 
 export default {
   name: 'CreateTask',
   data() {
     return {
+      taskId: null,
+      isEditing: false,
       task: {
         nombre: '',
         icono: '',
@@ -175,6 +177,31 @@ export default {
         recordatorio: false,
       },
       toast: useToast(),
+    }
+  },
+  created() {
+    // Verificar si hay una tarea para editar
+    const editingTask = sessionStorage.getItem('editingTask')
+    if (editingTask) {
+      const task = JSON.parse(editingTask)
+      this.task = {
+        nombre: task.titulo || '',
+        icono: task.icono || '',
+        esfuerzo: task.nivel_esfuerzo || '',
+        prioridad: task.prioridad || '',
+        descripcion: task.descripcion || '',
+        fechaLimite: task.fecha_limite ? this.formatDateForInput(task.fecha_limite) : '',
+        recordatorio: task.recordatorio ? this.formatDateForInput(task.recordatorio) : '',
+      }
+      this.taskId = task.id
+      this.isEditing = true
+      // Cambiar el título del formulario
+      this.$nextTick(() => {
+        const titleEl = document.querySelector('.card-title')
+        if (titleEl) titleEl.textContent = 'Editar tarea'
+      })
+      // Limpiar el sessionStorage
+      sessionStorage.removeItem('editingTask')
     }
   },
   methods: {
@@ -225,6 +252,17 @@ export default {
         timeParts[2] || 0
       ).toISOString()
     },
+    formatDateForInput(utcDate) {
+      if (!utcDate) return ''
+      const date = new Date(utcDate)
+      if (isNaN(date.getTime())) return ''
+      const year = date.getFullYear()
+      const month = String(date.getMonth() + 1).padStart(2, '0')
+      const day = String(date.getDate()).padStart(2, '0')
+      const hours = String(date.getHours()).padStart(2, '0')
+      const minutes = String(date.getMinutes()).padStart(2, '0')
+      return `${year}-${month}-${day}T${hours}:${minutes}`
+    },
     validateForm() {
       const fields = ['nombre', 'esfuerzo', 'prioridad', 'fechaLimite']
       fields.forEach((field) => {
@@ -239,7 +277,7 @@ export default {
       }
 
       try {
-        const data = await createTask({
+        const taskData = {
           titulo: this.task.nombre,
           prioridad: this.task.prioridad,
           nivel_esfuerzo: this.task.esfuerzo,
@@ -247,12 +285,24 @@ export default {
           descripcion: this.task.descripcion,
           icono: this.task.icono,
           recordatorio: this.toUtcString(this.task.recordatorio),
-        })
+        }
 
-        this.toast.success('Tarea generada con éxito', {
-          position: 'top-right',
-          timeout: 4000,
-        })
+        let data
+        if (this.isEditing && this.taskId) {
+          // Actualizar tarea existente
+          data = await updateTask(this.taskId, taskData)
+          this.toast.success('Tarea actualizada con éxito', {
+            position: 'top-right',
+            timeout: 4000,
+          })
+        } else {
+          // Crear nueva tarea
+          data = await createTask(taskData)
+          this.toast.success('Tarea generada con éxito', {
+            position: 'top-right',
+            timeout: 4000,
+          })
+        }
         console.log(data)
 
         this.task = {

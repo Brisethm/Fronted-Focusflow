@@ -206,6 +206,21 @@ export async function createPersonalizedPlan({
     )
   ).data;
 }
+export async function getTasks() {
+  return (await api.get("/Tareas")).data;
+}
+export async function getTaskById(id) {
+  return (await api.get(`/Tareas/${id}`)).data;
+}
+// Actualizar una tarea existente (PUT)
+export async function updateTask(id, taskData) {
+  return (await api.put(`/Tareas/${id}`, taskData)).data;
+}
+
+// Eliminar una tarea (DELETE)
+export async function deleteTask(id) {
+  return (await api.delete(`/Tareas/${id}`)).data;
+}
 
 export async function getUserPlans() {
   return (await api.get("/PlanesPersonalizados")).data;
@@ -215,9 +230,6 @@ export async function updatePlan(idPlan, planData) {
   return (await api.put(`/PlanesPersonalizados/${idPlan}`, planData)).data;
 }
 
-export async function getTasks() {
-  return (await api.get("/Tareas")).data;
-}
 
 export async function getFocusSessions() {
   return (await api.get("/SesionesEnfoque")).data;
@@ -237,4 +249,29 @@ export async function createFocusSession({ duracionMinutos, tipo, fecha }) {
       }
     )
   ).data;
+}
+// --- ENDPOINTS DE TRANSACCIONES ---
+
+// Obtener todas las transacciones (GET)
+export async function getTransacciones() {
+  return (await api.get("/Transacciones")).data;
+}
+
+// Obtener una transacción específica por su ID (GET por ID)
+export async function getTransaccionById(id) {
+  return (await api.get(`/Transacciones/${id}`)).data;
+}
+
+// Crear una nueva transacción (POST)
+export async function createTransaccion(transaccionData) {
+  return (await api.post("/Transacciones", transaccionData)).data;
+}
+
+// El 'id' viaja en la URL: http://localhost:5097/api/Transacciones/5
+export async function updateTransaccion(id, transaccionData) {
+  return (await api.put(`/Transacciones/${id}`, transaccionData)).data;
+}
+
+export async function deleteTransaccion(id) {
+  return (await api.delete(`/Transacciones/${id}`)).data;
 }
