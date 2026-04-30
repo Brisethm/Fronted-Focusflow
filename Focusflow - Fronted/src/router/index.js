@@ -18,6 +18,7 @@ const routes = [
   { path: "/dashboard", name: "Dashboard", component: () => import("../views/DashboardView.vue") },
   { path: "/tasks", name: "Tasks", component: () => import("../views/TasksView.vue") },
   { path: "/focus", name: "Focus", component: () => import("../views/FocusView.vue") },
+  { path: "/transactions", name: "Transactions", component: () => import("../views/TransactionsView.vue") },
   { path: "/create-task", name: "CreateTask", component: CreateTask },
   { path: "/ajustar-plan", name: "AjustarPlan", component: () => import("../views/AdjustPlanView.vue") },
 ];
