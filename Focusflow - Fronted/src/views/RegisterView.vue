@@ -264,7 +264,21 @@ export default {
         alert("Registro exitoso: " + JSON.stringify(response));
       } catch (error) {
         this.loading = false;
-        const message = error?.message || "Error desconocido";
+        let message = "Error desconocido";
+        if (error.response) {
+          const status = error.response.status;
+          if (status === 409) {
+            message = "El usuario ya existe. Intenta con otro correo electrónico.";
+          } else if (status === 400) {
+            message = "Datos inválidos. Verifica la información e intenta de nuevo.";
+          } else if (status === 500) {
+            message = "Error del servidor. Intenta de nuevo más tarde.";
+          } else {
+            message = error.response.data?.message || error.message || "Error en el registro";
+          }
+        } else {
+          message = error?.message || "Error en el registro";
+        }
         alert("Error en el registro: " + message);
       }
     }
