@@ -133,46 +133,63 @@
           </section>
 
           <section>
-            <h2 class="text-xl font-bold text-content-light dark:text-content-dark mb-4">Tareas</h2>
-            <div class="space-y-3">
-              <div class="flex items-center gap-4 p-3 rounded-lg bg-background-light dark:bg-background-dark shadow-sm">
-                <div
-                  class="flex items-center justify-center rounded-full size-10 bg-primary/10 dark:bg-primary/20 text-primary">
-                  <svg class="icon" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
-                    <path
-                      d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Z" />
-                  </svg>
+            <div class="flex items-center justify-between mb-4 gap-4">
+              <h2 class="text-xl font-bold text-content-light dark:text-content-dark">Tareas</h2>
+              <button type="button"
+                class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800"
+                @click="goToCreateTask">
+                <span class="material-symbols-outlined text-base">add</span>
+                Nueva tarea
+              </button>
+            </div>
+            <div class="space-y-8">
+              <div v-for="group in taskGroups" :key="group.title">
+                <div class="mb-4 flex items-center justify-between gap-3">
+                  <h3 class="text-base font-semibold text-slate-900 dark:text-slate-100">{{ group.title }}</h3>
+                  <p class="text-sm text-slate-500 dark:text-slate-400">{{ group.tasks.length }} tareas</p>
                 </div>
-                <div class="flex-1">
-                  <p class="font-medium text-content-light dark:text-content-dark">Revisar el informe de marketing</p>
-                  <p class="text-sm text-subtle-light dark:text-subtle-dark">10:00 AM</p>
-                </div>
-              </div>
-              <div class="flex items-center gap-4 p-3 rounded-lg bg-background-light dark:bg-background-dark shadow-sm">
-                <div
-                  class="flex items-center justify-center rounded-full size-10 bg-primary/10 dark:bg-primary/20 text-primary">
-                  <svg class="icon" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
-                    <path
-                      d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Z" />
-                  </svg>
-                </div>
-                <div class="flex-1">
-                  <p class="font-medium text-content-light dark:text-content-dark">Llamada con el equipo de ventas</p>
-                  <p class="text-sm text-subtle-light dark:text-subtle-dark">11:30 AM</p>
-                </div>
-              </div>
-              <div class="flex items-center gap-4 p-3 rounded-lg bg-background-light dark:bg-background-dark shadow-sm">
-                <div
-                  class="flex items-center justify-center rounded-full size-10 bg-primary/10 dark:bg-primary/20 text-primary">
-                  <svg class="icon" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
-                    <path
-                      d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Z" />
-                  </svg>
-                </div>
-                <div class="flex-1">
-                  <p class="font-medium text-content-light dark:text-content-dark">Preparar la presentacion del cliente
-                  </p>
-                  <p class="text-sm text-subtle-light dark:text-subtle-dark">2:00 PM</p>
+                <div class="space-y-3">
+                  <article v-for="task in group.tasks" :key="task.id"
+                    class="rounded-[26px] border border-slate-200 bg-white p-4 shadow-sm transition hover:shadow-md dark:border-slate-800 dark:bg-slate-950">
+                    <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                      <div class="flex items-start gap-3">
+                        <label class="relative flex h-11 w-11 cursor-pointer items-center justify-center rounded-2xl border border-slate-300 bg-slate-100 text-slate-700 transition hover:border-slate-400 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200">
+                          <input type="checkbox" v-model="task.selected" class="peer sr-only" />
+                          <span class="flex h-9 w-9 items-center justify-center rounded-2xl bg-white text-lg font-semibold text-slate-900 shadow-sm peer-checked:bg-sky-600 peer-checked:text-white dark:bg-slate-950 dark:text-slate-200">
+                            {{ task.icon }}
+                          </span>
+                        </label>
+                        <div class="min-w-0">
+                          <p class="text-base font-semibold text-slate-900 dark:text-slate-100">{{ task.title }}</p>
+                          <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">{{ task.time }}</p>
+                        </div>
+                      </div>
+
+                      <span
+                        class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold"
+                        :class="statusPillClass(task.status)">
+                        {{ statusLabel(task.status) }}
+                      </span>
+                    </div>
+
+                    <div class="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                      <div class="flex flex-wrap gap-2">
+                        <button v-for="option in statusOptions" :key="option.value" type="button"
+                          class="rounded-full border px-3 py-1 text-xs font-semibold transition"
+                          :class="task.status === option.value ? option.activeClass : option.inactiveClass"
+                          @click="updateTaskStatusLocal(task.id, option.value)">
+                          {{ option.label }}
+                        </button>
+                      </div>
+                      <div class="flex flex-wrap items-center gap-2 text-sm">
+                        <span class="inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.12em]"
+                          :class="priorityBadgeClass(task.priority)">
+                          {{ priorityLabel(task.priority) }}
+                        </span>
+                        <span class="text-slate-500 dark:text-slate-400">{{ effortLabel(task.effort) }}</span>
+                      </div>
+                    </div>
+                  </article>
                 </div>
               </div>
             </div>
@@ -183,10 +200,10 @@
             <div class="p-4 rounded-lg bg-background-light dark:bg-background-dark shadow-sm">
               <div class="flex justify-between items-center mb-2">
                 <p class="font-medium text-content-light dark:text-content-dark">Tareas completadas</p>
-                <p class="text-sm font-medium text-subtle-light dark:text-subtle-dark">3/4</p>
+                <p class="text-sm font-medium text-subtle-light dark:text-subtle-dark">{{ completedTasks }}/{{ totalTasks }}</p>
               </div>
               <div class="w-full bg-border-light dark:bg-border-dark rounded-full h-2">
-                <div class="bg-primary h-2 rounded-full" style="width: 75%"></div>
+                <div :class="progressBarClass" class="h-2 rounded-full" :style="{ width: progressPercentage + '%' }"></div>
               </div>
             </div>
           </section>
@@ -203,13 +220,13 @@
             </svg>
             <span class="text-xs font-medium">Inicio</span>
           </a>
-          <a class="flex flex-col items-center gap-1 p-2 text-subtle-light dark:text-subtle-dark" href="#">
+          <button type="button" class="flex flex-col items-center gap-1 p-2 text-subtle-light dark:text-subtle-dark" @click="goToTasks">
             <svg class="icon" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
               <path
                 d="M173.66,98.34a8,8,0,0,1,0,11.32l-56,56a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L112,148.69l50.34-50.35A8,8,0,0,1,173.66,98.34ZM224,48V208a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V48A16,16,0,0,1,48,32H208A16,16,0,0,1,224,48ZM208,208V48H48V208H208Z" />
             </svg>
             <span class="text-xs font-medium">Tareas</span>
-          </a>
+          </button>
           <a class="flex flex-col items-center gap-1 p-2 text-subtle-light dark:text-subtle-dark" href="#">
             <svg class="icon" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
               <path
@@ -239,8 +256,9 @@
 </template>
 
 <script setup>
-import { computed, onBeforeUnmount, ref } from "vue";
-import { createEmotionalRecord } from "../services/api";
+import { computed, onBeforeUnmount, onMounted, ref } from "vue";
+import { useRouter } from "vue-router";
+import { createEmotionalRecord, getStoredTasks, updateTaskStatus } from "../services/api";
 import "../styles/dashboard.css";
 
 const moodOptions = [
@@ -269,6 +287,134 @@ const activeMoodClass =
 
 const selectedMoodLabel = computed(() => {
   return moodOptions.find((option) => option.value === mood.value)?.label ?? "Sin definir";
+});
+
+const statusOptions = [
+  {
+    value: "todo",
+    label: "Por hacer",
+    activeClass: "border-slate-900 bg-slate-900 text-white dark:border-slate-100",
+    inactiveClass:
+      "border-slate-200 bg-slate-100 text-slate-700 hover:border-slate-300 hover:bg-slate-200 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200",
+  },
+  {
+    value: "in-progress",
+    label: "En progreso",
+    activeClass: "border-amber-500 bg-amber-500 text-white dark:border-amber-300",
+    inactiveClass:
+      "border-amber-200 bg-amber-100 text-amber-700 hover:border-amber-300 hover:bg-amber-200 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-300",
+  },
+  {
+    value: "done",
+    label: "Finalizada",
+    activeClass: "border-emerald-500 bg-emerald-500 text-white dark:border-emerald-300",
+    inactiveClass:
+      "border-emerald-200 bg-emerald-100 text-emerald-700 hover:border-emerald-300 hover:bg-emerald-200 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-300",
+  },
+];
+
+const router = useRouter();
+const allTasks = ref([]);
+const taskGroups = ref([]);
+
+function goToCreateTask() {
+  router.push('/create-task');
+}
+
+function goToTasks() {
+  router.push('/tasks');
+}
+
+function parseLocalDate(value) {
+  if (!value) return null;
+  if (/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+    return new Date(value + "T00:00");
+  }
+  return new Date(value);
+}
+
+function isSameDay(dateA, dateB) {
+  return (
+    dateA.getFullYear() === dateB.getFullYear() &&
+    dateA.getMonth() === dateB.getMonth() &&
+    dateA.getDate() === dateB.getDate()
+  );
+}
+
+function loadTasks() {
+  const tasks = getStoredTasks();
+  allTasks.value = tasks;
+  const today = new Date();
+  const tomorrow = new Date(today);
+  tomorrow.setDate(today.getDate() + 1);
+
+  const grouped = {
+    Hoy: tasks.filter(task => {
+      const taskDate = parseLocalDate(task.fechaLimite);
+      return taskDate && !Number.isNaN(taskDate.getTime()) && isSameDay(taskDate, today);
+    }),
+    Mañana: tasks.filter(task => {
+      const taskDate = parseLocalDate(task.fechaLimite);
+      return taskDate && !Number.isNaN(taskDate.getTime()) && isSameDay(taskDate, tomorrow);
+    }),
+  };
+
+  taskGroups.value = Object.entries(grouped)
+    .filter(([_, tasks]) => tasks.length > 0)
+    .map(([title, tasks]) => ({ title, tasks }));
+}
+
+function updateTaskStatusLocal(taskId, newStatus) {
+  updateTaskStatus(taskId, newStatus);
+  loadTasks(); // Recargar las tareas después de actualizar
+}
+
+function statusLabel(status) {
+  if (status === "todo") return "Por hacer";
+  if (status === "in-progress") return "En progreso";
+  return "Finalizada";
+}
+
+function statusPillClass(status) {
+  if (status === "todo") {
+    return "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300";
+  }
+  if (status === "in-progress") {
+    return "bg-amber-100 text-amber-700 dark:bg-amber-500/10 dark:text-amber-300";
+  }
+  return "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300";
+}
+
+function priorityLabel(priority) {
+  if (priority === "alta") return "Prioridad Alta";
+  if (priority === "media") return "Prioridad Media";
+  return "Prioridad Baja";
+}
+
+function priorityBadgeClass(priority) {
+  if (priority === "alta") {
+    return "bg-red-100 text-red-700 dark:bg-red-500/10 dark:text-red-300";
+  }
+  if (priority === "media") {
+    return "bg-amber-100 text-amber-700 dark:bg-amber-500/10 dark:text-amber-300";
+  }
+  return "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300";
+}
+
+function effortLabel(effort) {
+  if (effort === "alto") return "Esfuerzo Alto";
+  if (effort === "medio") return "Esfuerzo Medio";
+  return "Esfuerzo Bajo";
+}
+
+const totalTasks = computed(() => allTasks.value.length);
+const completedTasks = computed(() => allTasks.value.filter((task) => task.status === "done").length);
+const progressPercentage = computed(() => {
+  if (totalTasks.value === 0) return 0;
+  return Math.round((completedTasks.value / totalTasks.value) * 100);
+});
+const progressBarClass = computed(() => {
+  return completedTasks.value > 0 ? "bg-primary" : "bg-transparent";
 });
 
 const energyLabel = computed(() => {
@@ -389,6 +535,32 @@ onBeforeUnmount(() => {
     clearInterval(saveTimerInterval);
   }
 });
+
+onMounted(() => {
+  loadTasks();
+});
 </script>
+
+<style scoped>
+.task-checkbox input[type="checkbox"] {
+  display: none;
+}
+
+.task-checkbox span {
+  width: 36px;
+  height: 36px;
+}
+
+.task-checkbox input[type="checkbox"] + span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.task-checkbox input[type="checkbox"]:checked + span {
+  background-color: #0f172a;
+  color: #ffffff;
+}
+</style>
 
 <style src="../styles/dashboard.css"></style>

@@ -136,14 +136,40 @@
           ></textarea>
         </div>
 
-        <button type="submit" class="button-primary">Añadir Tarea</button>
+        <button type="submit" class="button-primary">{{ isEditing ? 'Actualizar Tarea' : 'Añadir Tarea' }}</button>
       </form>
     </section>
+
+    <footer class="sticky bottom-0 bg-background-light dark:bg-background-dark border-t border-border-light dark:border-border-dark">
+      <nav class="flex justify-around py-3">
+        <button type="button" class="flex flex-col items-center gap-1 p-1 text-subtle-light dark:text-subtle-dark" @click="goToDashboard">
+          <span class="material-symbols-outlined text-xl">home</span>
+          <span class="text-[11px] font-medium">Inicio</span>
+        </button>
+        <button type="button" class="flex flex-col items-center gap-1 p-1 text-subtle-light dark:text-subtle-dark" @click="goToTasks">
+          <span class="material-symbols-outlined text-xl">checklist</span>
+          <span class="text-[11px] font-medium">Tareas</span>
+        </button>
+        <button type="button" class="flex flex-col items-center gap-1 p-1 text-subtle-light dark:text-subtle-dark" @click="goToGeneratedPlan">
+          <span class="material-symbols-outlined text-xl">track_changes</span>
+          <span class="text-[11px] font-medium">Enfoque</span>
+        </button>
+        <button type="button" class="flex flex-col items-center gap-1 p-1 text-subtle-light dark:text-subtle-dark" @click="goToBienestar">
+          <span class="material-symbols-outlined text-xl">favorite</span>
+          <span class="text-[11px] font-medium">Bienestar</span>
+        </button>
+        <button type="button" class="flex flex-col items-center gap-1 p-1 text-subtle-light dark:text-subtle-dark" @click="goToFinanzas">
+          <span class="material-symbols-outlined text-xl">attach_money</span>
+          <span class="text-[11px] font-medium">Finanzas</span>
+        </button>
+      </nav>
+      <div class="h-safe-bottom"></div>
+    </footer>
   </div>
 </template>
 
 <script>
-import { createTask } from '../services/api'
+import { createTask, saveTaskToStorage, getStoredTaskById, updateTaskInStorage } from '../services/api'
 import { useToast } from 'vue-toastification'
 
 export default {
@@ -159,6 +185,8 @@ export default {
         fechaLimite: '',
         recordatorio: '',
       },
+      isEditing: false,
+      editingTaskId: null,
       emojiOptions: ['😊', '💡', '🔥', '🎯', '🧠', '⭐'],
       errors: {
         nombre: '',
@@ -178,6 +206,25 @@ export default {
     }
   },
   methods: {
+    loadTaskForEdit() {
+      const taskId = this.$route.query.id
+      if (!taskId) return
+
+      const storedTask = getStoredTaskById(taskId)
+      if (!storedTask) return
+
+      this.editingTaskId = storedTask.id
+      this.isEditing = true
+      this.task = {
+        nombre: storedTask.title,
+        icono: storedTask.icon,
+        esfuerzo: storedTask.effort,
+        prioridad: storedTask.priority,
+        descripcion: storedTask.descripcion || '',
+        fechaLimite: storedTask.fechaLimite || '',
+        recordatorio: storedTask.recordatorio || '',
+      }
+    },
     touchField(field) {
       this.touched[field] = true
       this.validateField(field)
@@ -192,6 +239,21 @@ export default {
     selectEffort(value) {
       this.task.esfuerzo = value
       this.touchField('esfuerzo')
+    },
+    goToDashboard() {
+      this.$router.push('/dashboard')
+    },
+    goToTasks() {
+      this.$router.push('/tasks')
+    },
+    goToGeneratedPlan() {
+      this.$router.push('/generated-plan')
+    },
+    goToBienestar() {
+      this.$router.push('/dashboard')
+    },
+    goToFinanzas() {
+      this.$router.push('/dashboard')
     },
     validateField(field) {
       const value = this.task[field]
@@ -224,21 +286,50 @@ export default {
       }
 
       try {
-        const data = await createTask({
-          titulo: this.task.nombre,
-          prioridad: this.task.prioridad,
-          nivel_esfuerzo: this.task.esfuerzo,
-          fecha_limite: this.task.fechaLimite,
-          descripcion: this.task.descripcion,
-          icono: this.task.icono,
-          recordatorio: this.task.recordatorio,
-        })
+        if (this.isEditing && this.editingTaskId) {
+          const updated = updateTaskInStorage(this.editingTaskId, {
+            titulo: this.task.nombre,
+            prioridad: this.task.prioridad,
+            nivel_esfuerzo: this.task.esfuerzo,
+            fecha_limite: this.task.fechaLimite,
+            descripcion: this.task.descripcion,
+            icono: this.task.icono,
+            recordatorio: this.task.recordatorio,
+          })
+          if (!updated) {
+            throw new Error('No se pudo actualizar la tarea seleccionada')
+          }
+        } else {
+          const data = await createTask({
+            titulo: this.task.nombre,
+            prioridad: this.task.prioridad,
+            nivel_esfuerzo: this.task.esfuerzo,
+            fecha_limite: this.task.fechaLimite,
+            descripcion: this.task.descripcion,
+            icono: this.task.icono,
+            recordatorio: this.task.recordatorio,
+          })
 
-        this.toast.success('Tarea generada con éxito', {
+          // Guardar la tarea en localStorage para mostrar en el dashboard
+          saveTaskToStorage({
+            titulo: this.task.nombre,
+            prioridad: this.task.prioridad,
+            nivel_esfuerzo: this.task.esfuerzo,
+            fecha_limite: this.task.fechaLimite,
+            descripcion: this.task.descripcion,
+            icono: this.task.icono,
+            recordatorio: this.task.recordatorio,
+          })
+
+          console.log(data)
+        }
+
+        this.toast.success(this.isEditing ? 'Tarea editada con éxito' : 'Tarea generada con éxito', {
           position: 'top-right',
           timeout: 4000,
         })
-        console.log(data)
+
+        this.$router.push('/tasks')
 
         this.task = {
           nombre: '',
@@ -269,6 +360,9 @@ export default {
         alert(message)
       }
     },
+  },
+  mounted() {
+    this.loadTaskForEdit()
   },
 }
 </script>

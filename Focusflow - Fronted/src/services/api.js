@@ -89,12 +89,12 @@ api.interceptors.response.use(
           }
         } catch {
           clearStoredAuth();
-          window.location.href = "/login";
+          globalThis.location.href = "/login";
         }
       }
     }
 
-    return Promise.reject(error);
+    throw error;
   }
 );
 
@@ -115,7 +115,11 @@ export async function register(email, password, nombre, rememberMe = true) {
 export async function login(email, password, rememberMe = true) {
   const data = (await api.post("/Auth/login", { email, password })).data;
 
+  
+
   persistAuth(data, rememberMe);
+
+ 
 
   return data;
 }
@@ -214,4 +218,143 @@ export async function getUserPlans() {
 
 export async function updatePlan(idPlan, planData) {
   return (await api.put(`/PlanesPersonalizados/${idPlan}`, planData)).data;
+}
+
+// ========== Gestión de Tareas Local ==========
+const TASKS_STORAGE_KEY = "focusflow_tasks";
+
+export function getStoredTasks() {
+  try {
+    const tasks = localStorage.getItem(TASKS_STORAGE_KEY);
+    return tasks ? JSON.parse(tasks) : [];
+  } catch (error) {
+    console.error("Error al obtener tareas del almacenamiento local:", error);
+    return [];
+  }
+}
+
+export function saveTaskToStorage(task) {
+  try {
+    const tasks = getStoredTasks();
+    const newTask = {
+      id: Date.now(), // ID único basado en timestamp
+      icon: task.icono || "📝",
+      title: task.titulo,
+      time: task.recordatorio ? new Date(task.recordatorio).toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" }) : "Sin hora",
+      priority: task.prioridad,
+      effort: task.nivel_esfuerzo,
+      status: "todo",
+      selected: false,
+      fechaLimite: task.fecha_limite,
+      descripcion: task.descripcion,
+      recordatorio: task.recordatorio,
+    };
+    tasks.push(newTask);
+    localStorage.setItem(TASKS_STORAGE_KEY, JSON.stringify(tasks));
+    return newTask;
+  } catch (error) {
+    console.error("Error al guardar tarea en almacenamiento local:", error);
+    return null;
+  }
+}
+
+export function updateTaskInStorage(taskId, updatedTask) {
+  try {
+    const tasks = getStoredTasks();
+    const taskIndex = tasks.findIndex((t) => t.id === taskId);
+    if (taskIndex === -1) {
+      return null;
+    }
+
+    const currentTask = tasks[taskIndex];
+    const newTask = {
+      ...currentTask,
+      icon: updatedTask.icono || currentTask.icon,
+      title: updatedTask.titulo || currentTask.title,
+      time: updatedTask.recordatorio
+        ? new Date(updatedTask.recordatorio).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })
+        : currentTask.time,
+      priority: updatedTask.prioridad || currentTask.priority,
+      effort: updatedTask.nivel_esfuerzo || currentTask.effort,
+      fechaLimite: updatedTask.fecha_limite || currentTask.fechaLimite,
+      descripcion: updatedTask.descripcion || currentTask.descripcion,
+      recordatorio: updatedTask.recordatorio || currentTask.recordatorio,
+    };
+
+    tasks[taskIndex] = newTask;
+    localStorage.setItem(TASKS_STORAGE_KEY, JSON.stringify(tasks));
+    return newTask;
+  } catch (error) {
+    console.error('Error al actualizar tarea en almacenamiento local:', error);
+    return null;
+  }
+}
+
+export function updateTaskStatus(taskId, newStatus) {
+  try {
+    const tasks = getStoredTasks();
+    const taskIndex = tasks.findIndex(t => t.id === taskId);
+    if (taskIndex !== -1) {
+      tasks[taskIndex].status = newStatus;
+      localStorage.setItem(TASKS_STORAGE_KEY, JSON.stringify(tasks));
+      return true;
+    }
+    return false;
+  } catch (error) {
+    console.error("Error al actualizar estado de tarea:", error);
+    return false;
+  }
+}
+
+export function updateStoredTask(taskId, updatedData) {
+  try {
+    const tasks = getStoredTasks();
+    const taskIndex = tasks.findIndex((t) => t.id === taskId);
+    if (taskIndex === -1) return false;
+
+    const task = tasks[taskIndex];
+    const mergedTask = {
+      ...task,
+      ...updatedData,
+      icon: updatedData.icono || task.icon,
+      title: updatedData.titulo || task.title,
+      time: updatedData.recordatorio
+        ? new Date(updatedData.recordatorio).toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" })
+        : task.time,
+      fechaLimite: updatedData.fecha_limite ?? task.fechaLimite,
+      descripcion: updatedData.descripcion ?? task.descripcion,
+      recordatorio: updatedData.recordatorio ?? task.recordatorio,
+      priority: updatedData.prioridad ?? task.priority,
+      effort: updatedData.nivel_esfuerzo ?? task.effort,
+    };
+
+    tasks[taskIndex] = mergedTask;
+    localStorage.setItem(TASKS_STORAGE_KEY, JSON.stringify(tasks));
+    return true;
+  } catch (error) {
+    console.error("Error al actualizar tarea en almacenamiento local:", error);
+    return false;
+  }
+}
+
+export function getStoredTaskById(taskId) {
+  try {
+    const tasks = getStoredTasks();
+    return tasks.find((task) => task.id === Number(taskId)) || null;
+  } catch (error) {
+    console.error("Error al obtener tarea por id:", error);
+    return null;
+  }
+}
+
+export function deleteStoredTask(taskId) {
+  try {
+    const tasks = getStoredTasks();
+    const filteredTasks = tasks.filter(t => t.id !== taskId);
+    localStorage.setItem(TASKS_STORAGE_KEY, JSON.stringify(filteredTasks));
+    return true;
+  } catch (error) {
+    console.error("Error al eliminar tarea:", error);
+    return false;
+  }
 }
