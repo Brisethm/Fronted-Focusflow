@@ -199,11 +199,11 @@
                   Tareas completadas
                 </p>
                 <p class="text-sm font-medium text-subtle-light dark:text-subtle-dark">
-                  3/4
+                  {{ completedTaskCount }}/{{ totalTaskCount }}
                 </p>
               </div>
               <div class="w-full bg-border-light dark:bg-border-dark rounded-full h-2">
-                <div class="bg-primary h-2 rounded-full" style="width: 75%"></div>
+                <div class="bg-primary h-2 rounded-full" :style="{ width: taskProgressPercent + '%' }"></div>
               </div>
             </div>
           </section>
@@ -241,6 +241,7 @@ const saveTimer = ref(0);
 let saveTimerInterval = null;
 
 // --- GESTIÓN DE TAREAS ---
+const allTasks = ref([]);
 const todayTasks = ref([]);
 const todayLoading = ref(true);
 const todayError = ref(null);
@@ -267,12 +268,12 @@ const getTodayTasks = async () => {
   try {
     todayLoading.value = true;
     todayError.value = null;
-    const allTasks = await getTasks();
+    const tasks = await getTasks();
+    allTasks.value = tasks;
 
-    // Fecha de hoy en formato YYYY-MM-DD según la zona local del usuario
     const todayStr = new Date().toLocaleDateString("en-CA", { timeZone: userTimeZone });
 
-    todayTasks.value = allTasks.filter((task) => {
+    todayTasks.value = tasks.filter((task) => {
       const deadline = getTaskDeadline(task);
       if (!deadline) return false;
       const taskDate = parseUtcDateTime(deadline);
@@ -310,6 +311,16 @@ const formatStatus = (status) => {
   };
   return statusMap[status] || status;
 };
+
+const completedTaskCount = computed(() =>
+  allTasks.value.filter((task) => String(task.estado).toLowerCase() === 'completado').length
+);
+
+const totalTaskCount = computed(() => allTasks.value.length);
+
+const taskProgressPercent = computed(() =>
+  totalTaskCount.value ? Math.round((completedTaskCount.value / totalTaskCount.value) * 100) : 0
+);
 
 const statusClasses = (status) => {
   switch (status) {
