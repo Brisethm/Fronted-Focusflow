@@ -89,12 +89,12 @@ api.interceptors.response.use(
           }
         } catch {
           clearStoredAuth();
-          window.location.href = "/login";
+          globalThis.location.href = "/login";
         }
       }
     }
 
-    return Promise.reject(error);
+    throw error;
   }
 );
 
@@ -115,7 +115,11 @@ export async function register(email, password, nombre, rememberMe = true) {
 export async function login(email, password, rememberMe = true) {
   const data = (await api.post("/Auth/login", { email, password })).data;
 
+  
+
   persistAuth(data, rememberMe);
+
+ 
 
   return data;
 }

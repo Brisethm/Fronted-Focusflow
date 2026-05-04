@@ -2,38 +2,37 @@
   <div class="task-page">
     <section class="task-card task-card--form">
       <div class="card-heading card-heading--center">
-        <h1 class="card-title">Crear tarea</h1>
+        <h1 class="card-title">Crear Tarea</h1>
       </div>
 
       <form @submit.prevent="crearTarea" class="task-form">
-        <div style="display: flex; gap: 1rem; align-items: flex-start; flex-wrap: wrap;">
-          <div class="field-group" style="flex: 2; min-width: 250px; margin-bottom: 0;">
-            <label class="field-label required" for="task-name">Nombre de la tarea</label>
-            <div class="input-icon-row">
-              <div class="emoji-avatar">{{ task.icono || '😊' }}</div>
-              <input id="task-name" v-model="task.nombre" @blur="touchField('nombre')"
-                :class="{ 'input-invalid': errors.nombre }" type="text" placeholder="Ej. Preparar la presentación" />
-            </div>
-            <p v-if="errors.nombre" class="field-error">* {{ errors.nombre }}</p>
+        <div class="field-group">
+          <label class="field-label required" for="task-name">Nombre de la tarea</label>
+          <div class="input-icon-row">
+            <div class="emoji-avatar">{{ task.icono || '😊' }}</div>
+            <input
+              id="task-name"
+              v-model="task.nombre"
+              @blur="touchField('nombre')"
+              :class="{ 'input-invalid': errors.nombre }"
+              type="text"
+              placeholder="Ej. Preparar la presentación"
+            />
           </div>
-
-          <div class="field-group" style="flex: 1; min-width: 150px; margin-bottom: 0;">
-            <label class="field-label required" for="estado">Estado</label>
-            <select id="estado" v-model="task.estado"
-              style="width: 100%; height: 48px; padding: 0 1rem; border: 1px solid #ccc; border-radius: 8px; background-color: white; font-family: inherit; font-size: 1rem; cursor: pointer;">
-              <option value="Por Hacer">Por Hacer</option>
-              <option value="En Progreso">En Progreso</option>
-              <option value="Completado">Completado</option>
-            </select>
-          </div>
+          <p v-if="errors.nombre" class="field-error">* {{ errors.nombre }}</p>
         </div>
-        <div style="margin-bottom: 1.5rem;"></div>
 
         <div class="field-group">
           <div class="field-label">Emoji</div>
           <div class="emoji-picker">
-            <button v-for="emoji in emojiOptions" :key="emoji" type="button" class="emoji-button"
-              :class="{ active: task.icono === emoji }" @click="selectEmoji(emoji)">
+            <button
+              v-for="emoji in emojiOptions"
+              :key="emoji"
+              type="button"
+              class="emoji-button"
+              :class="{ active: task.icono === emoji }"
+              @click="selectEmoji(emoji)"
+            >
               {{ emoji }}
             </button>
           </div>
@@ -42,16 +41,28 @@
         <div class="field-group">
           <div class="field-label required">Prioridad</div>
           <div class="button-group">
-            <button type="button" class="option-button priority-alta" :class="{ active: task.prioridad === 'alta' }"
-              @click="selectPriority('alta')">
+            <button
+              type="button"
+              class="option-button priority-alta"
+              :class="{ active: task.prioridad === 'alta' }"
+              @click="selectPriority('alta')"
+            >
               Alta
             </button>
-            <button type="button" class="option-button priority-media" :class="{ active: task.prioridad === 'media' }"
-              @click="selectPriority('media')">
+            <button
+              type="button"
+              class="option-button priority-media"
+              :class="{ active: task.prioridad === 'media' }"
+              @click="selectPriority('media')"
+            >
               Media
             </button>
-            <button type="button" class="option-button priority-baja" :class="{ active: task.prioridad === 'baja' }"
-              @click="selectPriority('baja')">
+            <button
+              type="button"
+              class="option-button priority-baja"
+              :class="{ active: task.prioridad === 'baja' }"
+              @click="selectPriority('baja')"
+            >
               Baja
             </button>
           </div>
@@ -61,75 +72,159 @@
         <div class="field-group">
           <div class="field-label required">Esfuerzo</div>
           <div class="button-group">
-            <button type="button" class="option-button effort-alto" :class="{ active: task.esfuerzo === 'alto' }"
-              @click="selectEffort('alto')">
+            <button
+              type="button"
+              class="option-button effort-alto"
+              :class="{ active: task.esfuerzo === 'alto' }"
+              @click="selectEffort('alto')"
+            >
               Alto
             </button>
-            <button type="button" class="option-button effort-medio" :class="{ active: task.esfuerzo === 'medio' }"
-              @click="selectEffort('medio')">
+            <button
+              type="button"
+              class="option-button effort-medio"
+              :class="{ active: task.esfuerzo === 'medio' }"
+              @click="selectEffort('medio')"
+            >
               Medio
             </button>
-            <button type="button" class="option-button effort-bajo" :class="{ active: task.esfuerzo === 'bajo' }"
-              @click="selectEffort('bajo')">
+            <button
+              type="button"
+              class="option-button effort-bajo"
+              :class="{ active: task.esfuerzo === 'bajo' }"
+              @click="selectEffort('bajo')"
+            >
               Bajo
             </button>
           </div>
           <p v-if="errors.esfuerzo" class="field-error">* {{ errors.esfuerzo }}</p>
         </div>
 
+        <div class="field-group">
+          <div class="field-label required">Estado</div>
+          <div class="button-group status-group">
+            <button
+              type="button"
+              class="option-button status-button"
+              :class="{ active: task.estado === 'por_hacer' }"
+              @click="selectStatus('por_hacer')"
+            >
+              Por Hacer
+            </button>
+            <button
+              type="button"
+              class="option-button status-button"
+              :class="{ active: task.estado === 'en_progreso' }"
+              @click="selectStatus('en_progreso')"
+            >
+              En Progreso
+            </button>
+            <button
+              type="button"
+              class="option-button status-button"
+              :class="{ active: task.estado === 'completado' }"
+              @click="selectStatus('completado')"
+            >
+              Completado
+            </button>
+          </div>
+          <p v-if="errors.estado" class="field-error">* {{ errors.estado }}</p>
+        </div>
+
         <div class="fields-grid fields-grid--wide">
           <div class="field-group">
             <label class="field-label required" for="fecha-limite">Fecha límite</label>
-            <input id="fecha-limite" type="datetime-local" v-model="task.fechaLimite" @blur="touchField('fechaLimite')"
-              :class="{ 'input-invalid': errors.fechaLimite }" />
+            <input
+              id="fecha-limite"
+              type="date"
+              v-model="task.fechaLimite"
+              @blur="touchField('fechaLimite')"
+              :class="{ 'input-invalid': errors.fechaLimite }"
+            />
             <p v-if="errors.fechaLimite" class="field-error">* {{ errors.fechaLimite }}</p>
           </div>
 
           <div class="field-group">
-            <label class="field-label" for="recordatorio">Recordatorio</label>
-            <input id="recordatorio" type="datetime-local" v-model="task.recordatorio"
-              @blur="touchField('recordatorio')" :class="{ 'input-invalid': errors.recordatorio }" />
+            <label class="field-label required" for="recordatorio">Recordatorio</label>
+            <input
+              id="recordatorio"
+              type="datetime-local"
+              v-model="task.recordatorio"
+              @blur="touchField('recordatorio')"
+              :class="{ 'input-invalid': errors.recordatorio }"
+            />
             <p v-if="errors.recordatorio" class="field-error">* {{ errors.recordatorio }}</p>
           </div>
         </div>
 
         <div class="field-group">
           <label class="field-label" for="descripcion">Descripción</label>
-          <textarea id="descripcion" v-model="task.descripcion" placeholder="Añade más detalles sobre la tarea..."
-            rows="4"></textarea>
+          <textarea
+            id="descripcion"
+            v-model="task.descripcion"
+            placeholder="Añade más detalles sobre la tarea..."
+            rows="4"
+          ></textarea>
         </div>
 
-        <button type="submit" class="button-primary">Añadir Tarea</button>
+        <button type="submit" class="button-primary">{{ editMode ? 'Actualizar Tarea' : 'Añadir Tarea' }}</button>
       </form>
     </section>
+
+    <footer class="sticky bottom-0 bg-background-light dark:bg-background-dark border-t border-border-light dark:border-border-dark">
+      <nav class="flex justify-around py-3">
+        <button type="button" class="flex flex-col items-center gap-1 p-1 text-subtle-light dark:text-subtle-dark" @click="goToDashboard">
+          <span class="material-symbols-outlined text-xl">home</span>
+          <span class="text-[11px] font-medium">Inicio</span>
+        </button>
+        <button type="button" class="flex flex-col items-center gap-1 p-1 text-subtle-light dark:text-subtle-dark" @click="goToTasks">
+          <span class="material-symbols-outlined text-xl">checklist</span>
+          <span class="text-[11px] font-medium">Tareas</span>
+        </button>
+        <button type="button" class="flex flex-col items-center gap-1 p-1 text-subtle-light dark:text-subtle-dark" @click="goToGeneratedPlan">
+          <span class="material-symbols-outlined text-xl">track_changes</span>
+          <span class="text-[11px] font-medium">Enfoque</span>
+        </button>
+        <button type="button" class="flex flex-col items-center gap-1 p-1 text-subtle-light dark:text-subtle-dark" @click="goToBienestar">
+          <span class="material-symbols-outlined text-xl">favorite</span>
+          <span class="text-[11px] font-medium">Bienestar</span>
+        </button>
+        <button type="button" class="flex flex-col items-center gap-1 p-1 text-subtle-light dark:text-subtle-dark" @click="goToFinanzas">
+          <span class="material-symbols-outlined text-xl">attach_money</span>
+          <span class="text-[11px] font-medium">Finanzas</span>
+        </button>
+      </nav>
+      <div class="h-safe-bottom"></div>
+    </footer>
   </div>
 </template>
 
 <script>
-import { createTask, updateTask } from '../services/api'
+import { createTask, saveTaskToStorage, getStoredTaskById, updateStoredTask } from '../services/api'
 import { useToast } from 'vue-toastification'
 
 export default {
   name: 'CreateTask',
   data() {
     return {
-      taskId: null,
-      isEditing: false,
       task: {
         nombre: '',
         icono: '',
         esfuerzo: '',
         prioridad: '',
+        estado: 'por_hacer',
         descripcion: '',
         fechaLimite: '',
         recordatorio: '',
-        estado: 'Por Hacer',
       },
+      isEditing: false,
+      editingTaskId: null,
       emojiOptions: ['😊', '💡', '🔥', '🎯', '🧠', '⭐'],
       errors: {
         nombre: '',
         esfuerzo: '',
         prioridad: '',
+        estado: '',
         fechaLimite: '',
         recordatorio: '',
       },
@@ -137,75 +232,33 @@ export default {
         nombre: false,
         esfuerzo: false,
         prioridad: false,
+        estado: false,
         fechaLimite: false,
         recordatorio: false,
       },
       toast: useToast(),
     }
   },
-  created() {
-    const editingTask = sessionStorage.getItem('editingTask')
-    if (editingTask) {
-      const task = JSON.parse(editingTask)
-
-      this.taskId = task.idTarea || task.id
-      this.isEditing = true
-
-      this.task = {
-        nombre: task.titulo || '',
-        icono: task.icono || '',
-        esfuerzo: task.nivelEsfuerzo ? task.nivelEsfuerzo.toLowerCase() : '',
-        prioridad: task.prioridad ? task.prioridad.toLowerCase() : '',
-        descripcion: task.descripcion || '',
-        estado: task.estado || 'Por Hacer',
-        fechaLimite: task.fechaLimite ? this.formatDateForInput(task.fechaLimite) : '',
-        recordatorio: task.recordatorio ? this.formatDateForInput(task.recordatorio) : '',
-      }
-
-      this.$nextTick(() => {
-        const titleEl = document.querySelector('.card-title')
-        const btnEl = document.querySelector('.button-primary')
-        if (titleEl) titleEl.textContent = 'Editar tarea'
-        if (btnEl) btnEl.textContent = 'Actualizar Tarea'
-      })
-
-      sessionStorage.removeItem('editingTask')
-    }
-  },
   methods: {
-    parseUtcDateTime(dateString) {
-      if (!dateString) return null
-      if (dateString.includes('Z') || dateString.includes('+')) {
-        return new Date(dateString)
+    loadTaskForEdit() {
+      const taskId = this.$route.query.id
+      if (!taskId) return
+
+      const storedTask = getStoredTaskById(taskId)
+      if (!storedTask) return
+
+      this.editingTaskId = storedTask.id
+      this.isEditing = true
+      this.task = {
+        nombre: storedTask.title,
+        icono: storedTask.icon,
+        esfuerzo: storedTask.effort,
+        prioridad: storedTask.priority,
+        estado: storedTask.estado || storedTask.status || 'por_hacer',
+        descripcion: storedTask.descripcion || '',
+        fechaLimite: storedTask.fechaLimite || '',
+        recordatorio: storedTask.recordatorio || '',
       }
-      return new Date(dateString.replace(' ', 'T') + 'Z')
-    },
-    formatDateForInput(dateString) {
-      const date = this.parseUtcDateTime(dateString)
-      if (!date || isNaN(date)) return ''
-
-      const year = date.getFullYear()
-      const month = String(date.getMonth() + 1).padStart(2, '0')
-      const day = String(date.getDate()).padStart(2, '0')
-      const hours = String(date.getHours()).padStart(2, '0')
-      const minutes = String(date.getMinutes()).padStart(2, '0')
-
-      return `${year}-${month}-${day}T${hours}:${minutes}`
-    },
-    toUtcString(value) {
-      if (!value) return ''
-      const [date, time] = value.split('T')
-      if (!date || !time) return ''
-      const dateParts = date.split('-').map(Number)
-      const timeParts = time.split(':').map(Number)
-      return new Date(
-        dateParts[0],
-        dateParts[1] - 1,
-        dateParts[2],
-        timeParts[0],
-        timeParts[1] || 0,
-        timeParts[2] || 0
-      ).toISOString()
     },
     touchField(field) {
       this.touched[field] = true
@@ -222,16 +275,64 @@ export default {
       this.task.esfuerzo = value
       this.touchField('esfuerzo')
     },
+    selectStatus(value) {
+      this.task.estado = value
+      this.touchField('estado')
+    },
+    goToDashboard() {
+      this.$router.push('/dashboard')
+    },
+    goToTasks() {
+      this.$router.push('/tasks')
+    },
+    goToGeneratedPlan() {
+      this.$router.push('/generated-plan')
+    },
+    goToBienestar() {
+      this.$router.push('/dashboard')
+    },
+    goToFinanzas() {
+      this.$router.push('/dashboard')
+    },
+    checkEditMode() {
+      const taskId = this.$route.query.taskId
+      if (!taskId) return
+      const id = Number(taskId)
+      const storedTask = getStoredTasks().find((task) => task.id === id)
+      if (!storedTask) return
+
+      this.editMode = true
+      this.editingTaskId = id
+      this.task = {
+        nombre: storedTask.title || '',
+        icono: storedTask.icon || '',
+        esfuerzo: storedTask.effort || '',
+        prioridad: storedTask.priority || '',
+        estado: storedTask.estado || storedTask.status || 'por_hacer',
+        descripcion: storedTask.descripcion || '',
+        fechaLimite: storedTask.fechaLimite || '',
+        recordatorio: storedTask.recordatorio || '',
+      }
+    },
     validateField(field) {
       const value = this.task[field]
-      if (field !== 'recordatorio' && (!value || value.toString().trim() === '')) {
+
+      if (!value || value.toString().trim() === '') {
         this.errors[field] = 'Este campo es obligatorio'
         return
       }
+
+      if (field === 'nombre') {
+        if (/\d/.test(value)) {
+          this.errors.nombre = 'El nombre no puede contener números'
+          return
+        }
+      }
+
       this.errors[field] = ''
     },
     validateForm() {
-      const fields = ['nombre', 'esfuerzo', 'prioridad', 'fechaLimite']
+      const fields = ['nombre', 'esfuerzo', 'prioridad', 'estado', 'fechaLimite', 'recordatorio']
       fields.forEach((field) => {
         this.touched[field] = true
         this.validateField(field)
@@ -239,46 +340,524 @@ export default {
       return fields.every((field) => !this.errors[field])
     },
     async crearTarea() {
-      if (!this.validateForm()) return
+      if (!this.validateForm()) {
+        return
+      }
 
       try {
-        if (this.isEditing && this.taskId) {
-          const updatePayload = {
-            idTarea: this.taskId,
-            titulo: this.task.nombre,
-            descripcion: this.task.descripcion,
-            prioridad: this.task.prioridad,
-            nivelEsfuerzo: this.task.esfuerzo,
-            estado: this.task.estado,
-            fechaLimite: this.toUtcString(this.task.fechaLimite)
-          }
-          await updateTask(this.taskId, updatePayload)
-          this.toast.success('Tarea actualizada con éxito', { position: 'top-right', timeout: 4000 })
-        } else {
-          const createPayload = {
+        if (this.isEditing && this.editingTaskId) {
+          updateStoredTask(this.editingTaskId, {
             titulo: this.task.nombre,
             prioridad: this.task.prioridad,
             nivel_esfuerzo: this.task.esfuerzo,
             estado: this.task.estado,
-            fecha_limite: this.toUtcString(this.task.fechaLimite),
+            fecha_limite: this.task.fechaLimite,
             descripcion: this.task.descripcion,
             icono: this.task.icono,
-            recordatorio: this.toUtcString(this.task.recordatorio),
-          }
-          await createTask(createPayload)
-          this.toast.success('Tarea generada con éxito', { position: 'top-right', timeout: 2000 })
+            recordatorio: this.task.recordatorio,
+          })
+        } else {
+          const data = await createTask({
+            titulo: this.task.nombre,
+            prioridad: this.task.prioridad,
+            nivel_esfuerzo: this.task.esfuerzo,
+            estado: this.task.estado,
+            fecha_limite: this.task.fechaLimite,
+            descripcion: this.task.descripcion,
+            icono: this.task.icono,
+            recordatorio: this.task.recordatorio,
+          })
+
+          // Guardar la tarea en localStorage para mostrar en el dashboard
+          saveTaskToStorage({
+            titulo: this.task.nombre,
+            prioridad: this.task.prioridad,
+            nivel_esfuerzo: this.task.esfuerzo,
+            estado: this.task.estado,
+            fecha_limite: this.task.fechaLimite,
+            descripcion: this.task.descripcion,
+            icono: this.task.icono,
+            recordatorio: this.task.recordatorio,
+          })
+
+          console.log(data)
         }
 
-        // --- CAMBIO AQUÍ ---
-        // Eliminamos el IF y redirigimos siempre después del éxito
+        this.toast.success(this.isEditing ? 'Tarea editada con éxito' : 'Tarea generada con éxito', {
+          position: 'top-right',
+          timeout: 4000,
+        })
+
         this.$router.push('/tasks')
+
+        this.task = {
+          nombre: '',
+          icono: '',
+          esfuerzo: '',
+          prioridad: '',
+          estado: 'por_hacer',
+          descripcion: '',
+          fechaLimite: '',
+          recordatorio: '',
+        }
+        this.errors = {
+          nombre: '',
+          esfuerzo: '',
+          prioridad: '',
+          estado: '',
+          fechaLimite: '',
+          recordatorio: '',
+        }
+        this.touched = {
+          nombre: false,
+          esfuerzo: false,
+          prioridad: false,
+          estado: false,
+          fechaLimite: false,
+          recordatorio: false,
+        }
       } catch (error) {
         console.error(error)
-        const message = error?.response?.data?.message || error?.message || 'Error al procesar la tarea'
+        const message = error?.response?.data?.message || error?.message || 'Error al crear la tarea'
         alert(message)
       }
     },
   },
+  mounted() {
+    this.loadTaskForEdit()
+  },
 }
 </script>
-<style scoped src="../styles/create-task.css"></style>
+
+<style scoped>
+.task-page {
+  max-width: 540px;
+  margin: 0 auto;
+  padding: 24px 16px 32px;
+  background: #f3f4f6;
+  min-height: 100vh;
+  font-family: Inter, Arial, sans-serif;
+}
+
+.task-page__header {
+  margin-bottom: 18px;
+}
+
+.section-label {
+  display: inline-block;
+  margin-bottom: 8px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #2563eb;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+}
+
+.task-page h1 {
+  margin: 0;
+  font-size: 2rem;
+  line-height: 1.1;
+  color: #111827;
+}
+
+.task-card {
+  background: #ffffff;
+  border-radius: 28px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+  padding: 20px;
+  margin-bottom: 18px;
+}
+
+.task-card--form {
+  padding: 24px 22px 22px;
+}
+
+.card-heading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.card-title {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #111827;
+}
+
+.card-subtitle {
+  margin: 8px 0 0;
+  font-size: 0.95rem;
+  color: #6b7280;
+}
+
+.task-form {
+  display: grid;
+  gap: 20px;
+}
+
+.field-group {
+  display: grid;
+  gap: 10px;
+}
+
+.field-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.field-label.required::after {
+  content: '*';
+  color: #dc2626;
+  font-size: 1rem;
+  margin-left: 4px;
+}
+
+.field-help {
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.input-icon-row {
+  display: grid;
+  grid-template-columns: 72px 1fr;
+  gap: 12px;
+  align-items: center;
+}
+
+.emoji-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 20px;
+  display: grid;
+  place-items: center;
+  background: #eff6ff;
+  font-size: 1.65rem;
+  color: #2563eb;
+  border: 1px solid #d1d5db;
+}
+
+.emoji-picker {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.emoji-button {
+  appearance: none;
+  border: 1px solid #d1d5db;
+  background: #f9fafb;
+  border-radius: 18px;
+  padding: 14px 0;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: transform 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.emoji-button:hover,
+.emoji-button.active {
+  border-color: #2563eb;
+  background: #eff6ff;
+}
+
+.input-invalid {
+  border-color: #dc2626;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  padding: 14px 16px;
+  font-size: 0.95rem;
+  border: 1px solid #d1d5db;
+  border-radius: 18px;
+  background: #f9fafb;
+  color: #111827;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: #60a5fa;
+  box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.15);
+}
+
+textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.field-error {
+  margin: 0;
+  color: #dc2626;
+  font-size: 0.85rem;
+}
+
+.button-group {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.status-group {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.status-group .option-button {
+  padding: 10px 0;
+  font-size: 0.88rem;
+}
+
+.status-button.active {
+  border-color: #2563eb;
+  background: #eff6ff;
+  color: #1e3a8a;
+}
+
+.fields-grid--wide {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.fields-grid--wide .field-group {
+  display: grid;
+  gap: 6px;
+}
+
+.fields-grid--wide label {
+  font-size: 0.92rem;
+}
+
+.fields-grid--wide input {
+  padding: 12px 12px;
+  font-size: 0.9rem;
+  border-radius: 16px;
+}
+
+.option-button {
+  padding: 16px 0;
+  border-radius: 20px;
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  font-weight: 700;
+  color: #1f2937;
+  cursor: pointer;
+  transition: transform 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.option-button:hover {
+  transform: translateY(-1px);
+}
+
+.option-button.active {
+  color: #0f172a;
+  border-width: 2px;
+}
+
+.priority-alta {
+  border-color: #fca5a5;
+}
+
+.priority-alta.active {
+  background: #fee2e2;
+  border-color: #fca5a5;
+  color: #b91c1c;
+}
+
+.priority-media {
+  border-color: #facc15;
+}
+
+.priority-media.active {
+  background: #fef3c7;
+  border-color: #facc15;
+  color: #b45309;
+}
+
+.priority-baja {
+  border-color: #86efac;
+}
+
+.priority-baja.active {
+  background: #dcfce7;
+  border-color: #86efac;
+  color: #047857;
+}
+
+.effort-alto {
+  border-color: #fca5a5;
+}
+
+.effort-alto.active {
+  background: #fee2e2;
+  border-color: #fca5a5;
+  color: #b91c1c;
+}
+
+.effort-medio {
+  border-color: #facc15;
+}
+
+.effort-medio.active {
+  background: #fef3c7;
+  border-color: #facc15;
+  color: #b45309;
+}
+
+.effort-bajo {
+  border-color: #86efac;
+}
+
+.effort-bajo.active {
+  background: #dcfce7;
+  border-color: #86efac;
+  color: #047857;
+}
+
+.fields-grid {
+  display: grid;
+  gap: 16px;
+}
+
+.button-primary {
+  width: 100%;
+  padding: 16px 20px;
+  border: none;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+  color: white;
+  font-weight: 800;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.button-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 24px rgba(59, 130, 246, 0.25);
+}
+
+.task-section {
+  margin-top: 10px;
+}
+
+.section-header {
+  margin-bottom: 10px;
+}
+
+.section-header h2 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #111827;
+}
+
+.task-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.task-top-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.task-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 18px;
+  display: grid;
+  place-items: center;
+  background: #eff6ff;
+  font-size: 1.25rem;
+}
+
+.task-title-group {
+  flex: 1;
+}
+
+.task-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.task-time {
+  margin: 6px 0 0;
+  color: #6b7280;
+  font-size: 0.92rem;
+}
+
+.task-details-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.priority-badge {
+  padding: 6px 12px;
+  border-radius: 9999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #fff;
+  white-space: nowrap;
+}
+
+.priority--high {
+  background: #dc2626;
+}
+
+.priority--medium {
+  background: #f59e0b;
+}
+
+.priority--low {
+  background: #10b981;
+}
+
+.effort-meter {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.effort-segment {
+  width: 10px;
+  height: 10px;
+  border-radius: 9999px;
+  background: #d1d5db;
+}
+
+.effort-segment--active {
+  background: #2563eb;
+}
+
+.effort-label {
+  color: #6b7280;
+  font-size: 0.82rem;
+}
+
+@media (max-width: 520px) {
+  .fields-grid--wide {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
