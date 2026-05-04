@@ -1,56 +1,140 @@
 <template>
-  <section class="generic-view">
-    <h1>Tareas</h1>
-    <div v-if="loading" class="loading">Cargando tareas...</div>
-    <div v-else-if="error" class="error">{{ error }}</div>
-    <div v-else-if="tasks.length === 0" class="empty">No hay tareas disponibles</div>
-    <ul v-else class="task-list">
-      <li 
-        v-for="task in tasks" 
-        :key="task.id" 
-        class="task-item"
-        :class="{ expanded: expandedTaskId === task.id }"
-        @click="toggleTaskActions(task.id)"
-      >
-        <div class="task-header">
-          <h3>{{ task.titulo }}</h3>
-          <span :class="['status', task.estado]">{{ task.estado }}</span>
+  <div class="relative overflow-hidden bg-slate-100 dark:bg-slate-950 font-display min-h-screen">
+    <main class="px-4 pb-24 pt-4">
+      <header class="mb-6 flex items-center justify-between gap-4">
+        <div>
+          <p class="text-sm uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">Tareas</p>
+          <h1 class="text-3xl font-bold text-slate-900 dark:text-slate-100">Tus tareas</h1>
         </div>
-        <p v-if="task.descripcion" class="task-description">{{ task.descripcion }}</p>
-        <div class="task-meta">
-          <span v-if="task.fechaLimite">📅 {{ formatDate(task.fechaLimite) }}</span>
-          <span v-if="task.prioridad">⭐ {{ task.prioridad }}</span>
-          <span v-if="task.nivelEsfuerzo">💪 {{ task.nivelEsfuerzo }}</span>
+        <button
+          type="button"
+          @click="goToCreateTask"
+          class="inline-flex h-12 w-12 items-center justify-center rounded-full bg-sky-600 text-white shadow-lg shadow-sky-500/20 transition hover:bg-sky-500"
+          aria-label="Agregar tarea"
+        >
+          <span class="text-2xl">+</span>
+        </button>
+      </header>
+
+      <!-- Estado de Carga -->
+      <div v-if="loading" class="flex justify-center items-center py-12">
+        <p class="text-lg font-medium text-slate-500 animate-pulse">Cargando tareas...</p>
+      </div>
+
+      <!-- Estado de Error -->
+      <div v-else-if="error" class="rounded-2xl border border-red-200 bg-red-50 p-6 text-center dark:border-red-900/50 dark:bg-red-900/10">
+        <p class="text-red-600 dark:text-red-400 font-medium">{{ error }}</p>
+      </div>
+
+      <!-- Estado Vacío -->
+      <section v-else-if="tasks.length === 0" class="rounded-3xl border border-slate-200 bg-white/80 p-6 text-center shadow-sm dark:border-slate-800 dark:bg-slate-900/90">
+        <p class="text-lg font-semibold text-slate-900 dark:text-slate-100">No hay tareas disponibles</p>
+        <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">Crea una nueva tarea para que aparezca aquí.</p>
+      </section>
+
+      <!-- Lista de Tareas Agrupadas -->
+      <div class="space-y-8" v-else>
+        <div v-for="group in taskGroups" :key="group.title">
+          <div class="mb-4 flex items-center justify-between">
+            <h2 class="text-xl font-semibold text-slate-900 dark:text-slate-100">{{ group.title }}</h2>
+            <span class="text-sm text-slate-500 dark:text-slate-400">{{ group.tasks.length }} tareas</span>
+          </div>
+          
+          <div class="space-y-4">
+            <article
+              v-for="task in group.tasks"
+              :key="task.id"
+              class="rounded-[30px] border border-slate-200 bg-white p-5 shadow-sm transition hover:shadow-md dark:border-slate-800 dark:bg-slate-950"
+            >
+              <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div class="flex items-start gap-4">
+                  <div class="flex h-12 w-12 items-center justify-center rounded-2xl border border-slate-300 bg-slate-100 text-lg text-slate-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200">
+                    <span>{{ task.icono || '📝' }}</span>
+                  </div>
+                  <div class="min-w-0">
+                    <p class="text-base font-semibold text-slate-900 dark:text-slate-100">{{ task.titulo }}</p>
+                    <p class="mt-1 text-sm text-slate-500 dark:text-slate-400" v-if="task.fechaLimite">
+                      📅 {{ formatDate(task.fechaLimite) }}
+                    </p>
+                  </div>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span
+                    class="inline-flex rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em]"
+                    :class="statusPillClass(task.estado)"
+                  >
+                    {{ task.estado }}
+                  </span>
+                </div>
+              </div>
+
+              <p v-if="task.descripcion" class="mt-4 text-sm text-slate-600 dark:text-slate-300">
+                {{ task.descripcion }}
+              </p>
+
+              <div class="mt-4 flex flex-col gap-3 text-sm">
+                <!-- Etiquetas de Prioridad y Esfuerzo -->
+                <div class="flex flex-wrap items-center gap-3 text-sm text-slate-500 dark:text-slate-400">
+                  <span v-if="task.prioridad" class="inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-2 dark:bg-slate-900 capitalize">
+                    <span class="h-2.5 w-2.5 rounded-full" :class="priorityDotClass(task.prioridad)"></span>
+                    Prioridad {{ task.prioridad }}
+                  </span>
+                  <span v-if="task.nivelEsfuerzo" class="inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-2 dark:bg-slate-900 capitalize">
+                    <span class="h-2.5 w-2.5 rounded-full" :class="effortDotClass(task.nivelEsfuerzo)"></span>
+                    Esfuerzo {{ task.nivelEsfuerzo }}
+                  </span>
+                </div>
+                
+                <!-- Acciones (Editar y Eliminar) -->
+                <div class="mt-3 flex gap-2">
+                  <button
+                    type="button"
+                    @click="editTask(task)"
+                    class="rounded-full border border-slate-300 px-4 py-1.5 text-sm font-semibold text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-100 dark:hover:bg-slate-800 transition"
+                  >
+                    ✏️ Editar
+                  </button>
+                  <button
+                    type="button"
+                    @click="confirmDeleteTask(task)"
+                    class="rounded-full border border-red-300 bg-red-50 px-4 py-1.5 text-sm font-semibold text-red-700 hover:bg-red-100 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-200 dark:hover:bg-red-500/20 transition"
+                  >
+                    🗑️ Eliminar
+                  </button>
+                </div>
+              </div>
+            </article>
+          </div>
         </div>
-        
-        <!-- Acciones de la tarea -->
-        <div v-if="expandedTaskId === task.id" class="task-actions" @click.stop>
-          <button class="btn-edit" @click="editTask(task)">✏️ Editar</button>
-          <button class="btn-delete" @click="confirmDeleteTask(task)">🗑️ Eliminar</button>
+      </div>
+    </main>
+
+    <!-- Usamos el FooterNav de tu primer código, o puedes reemplazar esto por el HTML del footer si prefieres -->
+    <FooterNav />
+
+    <!-- Modal de confirmación estilizado con Tailwind -->
+    <div v-if="showDeleteModal" class="fixed inset-0 z-[1000] flex items-center justify-center bg-slate-900/50 backdrop-blur-sm px-4" @click="showDeleteModal = false">
+      <div class="w-full max-w-sm rounded-[24px] bg-white p-6 text-center shadow-xl dark:bg-slate-900" @click.stop>
+        <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30">
+          <span class="text-3xl">⚠️</span>
         </div>
-      </li>
-    </ul>
-    
-    <!-- Botón flotante para crear tarea -->
-    <button class="fab-add" @click="goToCreateTask" title="Crear nueva tarea">+</button>
-  </section>
-  <FooterNav />
-  
-  <!-- Modal de confirmación de eliminación -->
-  <div v-if="showDeleteModal" class="modal-overlay" @click="showDeleteModal = false">
-    <div class="modal-content" @click.stop>
-      <h3>Confirmar eliminación</h3>
-      <p>¿Estás seguro de que deseas eliminar la tarea "{{ taskToDelete?.titulo }}"?</p>
-      <div class="modal-actions">
-        <button class="btn-cancel" @click="showDeleteModal = false">Cancelar</button>
-        <button class="btn-confirm-delete" @click="deleteTask">Eliminar</button>
+        <h3 class="mb-2 text-xl font-bold text-slate-900 dark:text-white">Eliminar tarea</h3>
+        <p class="mb-6 text-sm text-slate-600 dark:text-slate-400">¿Estás seguro de que deseas eliminar la tarea <span class="font-bold">"{{ taskToDelete?.titulo }}"</span>? Esta acción no se puede deshacer.</p>
+        <div class="flex gap-3">
+          <button class="flex-1 rounded-full bg-slate-100 py-3 font-semibold text-slate-700 hover:bg-slate-200 transition dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700" @click="showDeleteModal = false">
+            Cancelar
+          </button>
+          <button class="flex-1 rounded-full bg-red-600 py-3 font-semibold text-white hover:bg-red-700 transition shadow-lg shadow-red-500/30" @click="deleteTask">
+            Eliminar
+          </button>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import FooterNav from '../components/FooterNav.vue'
 import { getTasks, deleteTask as apiDeleteTask } from '../services/api.js'
@@ -60,19 +144,17 @@ const router = useRouter()
 const tasks = ref([])
 const loading = ref(true)
 const error = ref(null)
-const expandedTaskId = ref(null)
 const showDeleteModal = ref(false)
 const taskToDelete = ref(null)
 
-const userTimeZone =
-  Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/Bogota'
+const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/Bogota'
 
+// --- LÓGICA DE FECHAS ---
 const parseUtcDateTime = (dateString) => {
   if (!dateString) return null
   if (dateString.includes('Z') || dateString.includes('+')) {
     return new Date(dateString)
   }
-  // La DB guarda UTC sin Z → se lo agregamos
   return new Date(dateString.replace(' ', 'T') + 'Z')
 }
 
@@ -82,7 +164,6 @@ const formatDate = (dateString) => {
 
   return date.toLocaleString('es-CO', {
     timeZone: userTimeZone,
-    year: 'numeric',
     month: 'short',
     day: 'numeric',
     hour: '2-digit',
@@ -90,67 +171,120 @@ const formatDate = (dateString) => {
   })
 }
 
-// Alternar visibilidad de acciones de tarea
-const toggleTaskActions = (taskId) => {
-  expandedTaskId.value = expandedTaskId.value === taskId ? null : taskId
-}
+// --- COMPUTED PARA AGRUPAR TAREAS ---
+const taskGroups = computed(() => {
+  const now = new Date()
+  
+  // Llevamos "hoy" a la medianoche exacta para comparar solo las fechas (días) sin importar la hora
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+  
+  const tomorrow = new Date(today)
+  tomorrow.setDate(today.getDate() + 1)
 
-// Ir a crear tarea
+  const atrasadas = []
+  const hoy = []
+  const manana = []
+  const proximamente = []
+
+  tasks.value.forEach((task) => {
+    const dueDateRaw = parseUtcDateTime(task.fechaLimite)
+    
+    // Si no tiene fecha, la mandamos a próximamente
+    if (!dueDateRaw || Number.isNaN(dueDateRaw.getTime())) {
+      proximamente.push(task)
+      return
+    }
+
+    // Llevamos la fecha de la tarea a la medianoche para comparar manzanas con manzanas
+    const dueDate = new Date(dueDateRaw.getFullYear(), dueDateRaw.getMonth(), dueDateRaw.getDate())
+
+    if (dueDate < today) {
+      // Opcional: Si no quieres que las completadas salgan como atrasadas, descomenta el if de abajo
+      // if (task.estado.toLowerCase() !== 'completado' && task.estado.toLowerCase() !== 'finalizada') {
+      atrasadas.push(task)
+      // }
+    } else if (dueDate.getTime() === today.getTime()) {
+      hoy.push(task)
+    } else if (dueDate.getTime() === tomorrow.getTime()) {
+      manana.push(task)
+    } else {
+      proximamente.push(task)
+    }
+  })
+
+  const groups = []
+  // Se agregan en el orden en que quieres que aparezcan en pantalla
+  
+  if (hoy.length > 0) groups.push({ title: "Hoy", tasks: hoy })
+  if (manana.length > 0) groups.push({ title: "Mañana", tasks: manana })
+  if (proximamente.length > 0) groups.push({ title: "Próximamente", tasks: proximamente })
+  if (atrasadas.length > 0) groups.push({ title: "Anteriores", tasks: atrasadas })
+
+  return groups
+})
+
+// --- FUNCIONES DE NAVEGACIÓN Y ACCIONES ---
 const goToCreateTask = () => {
   router.push('/create-task')
 }
 
-// Editar tarea - navegar a CreateTask con la tarea seleccionada
 const editTask = (task) => {
-  // Guardar la tarea en sessionStorage para editarla en CreateTaskView
   sessionStorage.setItem('editingTask', JSON.stringify(task))
   router.push('/create-task')
 }
 
-// Confirmar eliminación de tarea
 const confirmDeleteTask = (task) => {
   taskToDelete.value = task
   showDeleteModal.value = true
 }
 
-// Eliminar tarea
 const deleteTask = async () => {
   if (!taskToDelete.value) return
   
   try {
-    // Usamos el ID mapeado
     await apiDeleteTask(taskToDelete.value.id)
-    
-    // Actualizar la lista local filtrando por el ID
     tasks.value = tasks.value.filter(t => t.id !== taskToDelete.value.id)
     showDeleteModal.value = false
     taskToDelete.value = null
-    expandedTaskId.value = null
   } catch (e) {
     console.error('Error al eliminar la tarea:', e)
     error.value = 'Error al eliminar la tarea'
   }
 }
 
+// --- HELPERS PARA CLASES TAILWIND ---
+const statusPillClass = (status) => {
+  const s = status?.toLowerCase() || ''
+  if (s === "por hacer") return "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300"
+  if (s === "en progreso") return "bg-amber-100 text-amber-700 dark:bg-amber-500/10 dark:text-amber-300"
+  if (s === "completado" || s === "finalizada") return "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300"
+  return "bg-blue-100 text-blue-700 dark:bg-blue-500/10 dark:text-blue-300"
+}
+
+const priorityDotClass = (priority) => {
+  const p = priority?.toLowerCase() || ''
+  if (p === "alta") return "bg-red-500"
+  if (p === "media") return "bg-amber-500"
+  return "bg-emerald-500"
+}
+
+const effortDotClass = (effort) => {
+  const e = effort?.toLowerCase() || ''
+  if (e === "alto") return "bg-red-500"
+  if (e === "medio") return "bg-amber-500"
+  return "bg-emerald-500"
+}
+
+// --- CARGA INICIAL ---
 onMounted(async () => {
   try {
     loading.value = true
     const data = await getTasks()
-
-    console.log('Zona horaria del navegador:', userTimeZone)
-    console.log('Tareas crudas:', JSON.stringify(data, null, 2))
     
-    // 👇 SOLUCIÓN: Mapeamos los datos agregando la propiedad 'id' basada en 'idTarea'
-    tasks.value = data.map(task => {
-      // Opcional: dejamos un log útil de la fecha correcta
-      const parsed = parseUtcDateTime(task.fechaLimite)
-      console.log(`Tarea: "${task.titulo}" | Formateado: ${formatDate(task.fechaLimite)}`)
-      
-      return {
-        ...task,
-        id: task.idTarea // Creamos la propiedad id que Vue y tus funciones esperan
-      }
-    })
+    tasks.value = data.map(task => ({
+      ...task,
+      id: task.idTarea 
+    }))
 
   } catch (e) {
     error.value = 'Error al cargar las tareas'
@@ -162,170 +296,6 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.task-list {
-  list-style: none;
-  padding: 0;
-}
-.task-item {
-  background: var(--card-bg, #fff);
-  border: 1px solid var(--border-color, #ddd);
-  border-radius: 8px;
-  padding: 16px;
-  margin-bottom: 12px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-.task-item:hover {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-.task-item.expanded {
-  border-color: #4a90d9;
-  background: #f8faff;
-}
-.task-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
-}
-.task-header h3 {
-  margin: 0;
-  font-size: 1.1rem;
-}
-.status {
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 0.8rem;
-  text-transform: capitalize;
-}
-.status.pending { background: #fff3cd; color: #856404; }
-.status.in-progress { background: #cce5ff; color: #004085; }
-.status.completed { background: #d4edda; color: #155724; }
-.task-description {
-  color: #666;
-  margin: 8px 0;
-}
-.task-meta {
-  display: flex;
-  gap: 16px;
-  font-size: 0.9rem;
-  color: #888;
-}
-
-/* Acciones de tarea */
-.task-actions {
-  display: flex;
-  gap: 12px;
-  margin-top: 12px;
-  padding-top: 12px;
-  border-top: 1px solid #eee;
-}
-.task-actions button {
-  flex: 1;
-  padding: 10px;
-  border: none;
-  border-radius: 6px;
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-.btn-edit {
-  background: #4a90d9;
-  color: white;
-}
-.btn-edit:hover {
-  background: #357abd;
-}
-.btn-delete {
-  background: #dc3545;
-  color: white;
-}
-.btn-delete:hover {
-  background: #c82333;
-}
-
-/* Botón flotante */
-.fab-add {
-  position: fixed;
-  bottom: 80px;
-  right: 20px;
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  background: #4a90d9;
-  color: white;
-  font-size: 32px;
-  border: none;
-  cursor: pointer;
-  box-shadow: 0 4px 12px rgba(74, 144, 217, 0.4);
-  transition: transform 0.2s, box-shadow 0.2s;
-  z-index: 100;
-}
-.fab-add:hover {
-  transform: scale(1.1);
-  box-shadow: 0 6px 16px rgba(74, 144, 217, 0.5);
-}
-
-/* Modal de confirmación */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-.modal-content {
-  background: white;
-  padding: 24px;
-  border-radius: 12px;
-  max-width: 90%;
-  width: 320px;
-  text-align: center;
-}
-.modal-content h3 {
-  margin: 0 0 12px;
-  color: #333;
-}
-.modal-content p {
-  color: #666;
-  margin-bottom: 20px;
-}
-.modal-actions {
-  display: flex;
-  gap: 12px;
-}
-.modal-actions button {
-  flex: 1;
-  padding: 10px;
-  border: none;
-  border-radius: 6px;
-  font-size: 0.9rem;
-  cursor: pointer;
-}
-.btn-cancel {
-  background: #e0e0e0;
-  color: #333;
-}
-.btn-cancel:hover {
-  background: #d0d0d0;
-}
-.btn-confirm-delete {
-  background: #dc3545;
-  color: white;
-}
-.btn-confirm-delete:hover {
-  background: #c82333;
-}
-
-.loading, .error, .empty {
-  text-align: center;
-  padding: 20px;
-  color: #666;
-}
-.error { color: #dc3545; }
+/* Puedes dejar tu estilo CSS aquí si tienes algo adicional, 
+   pero la mayoría del estilo ya está en las clases de Tailwind */
 </style>

@@ -48,7 +48,6 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
 
 const props = defineProps({

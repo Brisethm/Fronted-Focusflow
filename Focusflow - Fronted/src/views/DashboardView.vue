@@ -29,8 +29,7 @@
               <div>
                 <h2 class="dashboard-section-title">¿Cómo te sientes hoy?</h2>
                 <p class="text-sm text-slate-600 dark:text-slate-300 mt-1">
-                  Registra tu energía y tu estado emocional con estilo y
-                  claridad.
+                  Registra tu energía y tu estado emocional con estilo y claridad.
                 </p>
               </div>
               <span class="px-3 py-1 rounded-full text-xs font-semibold" :class="saveStatusClass">
@@ -164,10 +163,7 @@
                 class="flex items-center gap-4 p-3 rounded-lg bg-background-light dark:bg-background-dark shadow-sm">
                 <div
                   class="flex items-center justify-center rounded-full size-10 bg-primary/10 dark:bg-primary/20 text-primary">
-                  <svg class="icon" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
-                    <path
-                      d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Z" />
-                  </svg>
+                  <span class="text-xl">{{ task.icono || '📝' }}</span>
                 </div>
                 <div class="flex-1">
                   <div class="flex items-center justify-between">
@@ -189,9 +185,10 @@
             </div>
           </section>
 
+          <!-- Sección de Progreso Modificada -->
           <section>
             <h2 class="text-xl font-bold text-content-light dark:text-content-dark mb-4">
-              Progreso
+              Progreso Diario
             </h2>
             <div class="p-4 rounded-lg bg-background-light dark:bg-background-dark shadow-sm">
               <div class="flex justify-between items-center mb-2">
@@ -199,11 +196,11 @@
                   Tareas completadas
                 </p>
                 <p class="text-sm font-medium text-subtle-light dark:text-subtle-dark">
-                  3/4
+                  {{ completedTodayTaskCount }}/{{ totalTodayTaskCount }}
                 </p>
               </div>
               <div class="w-full bg-border-light dark:bg-border-dark rounded-full h-2">
-                <div class="bg-primary h-2 rounded-full" style="width: 75%"></div>
+                <div class="bg-primary h-2 rounded-full transition-all duration-500 ease-in-out" :style="{ width: taskProgressPercent + '%' }"></div>
               </div>
             </div>
           </section>
@@ -241,6 +238,7 @@ const saveTimer = ref(0);
 let saveTimerInterval = null;
 
 // --- GESTIÓN DE TAREAS ---
+const allTasks = ref([]);
 const todayTasks = ref([]);
 const todayLoading = ref(true);
 const todayError = ref(null);
@@ -267,12 +265,12 @@ const getTodayTasks = async () => {
   try {
     todayLoading.value = true;
     todayError.value = null;
-    const allTasks = await getTasks();
+    const tasks = await getTasks();
+    allTasks.value = tasks;
 
-    // Fecha de hoy en formato YYYY-MM-DD según la zona local del usuario
     const todayStr = new Date().toLocaleDateString("en-CA", { timeZone: userTimeZone });
 
-    todayTasks.value = allTasks.filter((task) => {
+    todayTasks.value = tasks.filter((task) => {
       const deadline = getTaskDeadline(task);
       if (!deadline) return false;
       const taskDate = parseUtcDateTime(deadline);
@@ -289,7 +287,7 @@ const getTodayTasks = async () => {
   }
 };
 
-// --- FORMATEO DE INTERFAZ (LO QUE FALTABA) ---
+// --- FORMATEO DE INTERFAZ ---
 
 const formatDateTime = (dateString) => {
   if (!dateString) return "";
@@ -310,6 +308,20 @@ const formatStatus = (status) => {
   };
   return statusMap[status] || status;
 };
+
+// --- LÓGICA DE PROGRESO DIARIO MODIFICADA ---
+
+// Calculamos completadas basándonos SÓLO en las tareas de hoy
+const completedTodayTaskCount = computed(() =>
+  todayTasks.value.filter((task) => String(task.estado).toLowerCase() === 'completado').length
+);
+
+// El total son solo las tareas de hoy
+const totalTodayTaskCount = computed(() => todayTasks.value.length);
+
+const taskProgressPercent = computed(() =>
+  totalTodayTaskCount.value ? Math.round((completedTodayTaskCount.value / totalTodayTaskCount.value) * 100) : 0
+);
 
 const statusClasses = (status) => {
   switch (status) {
