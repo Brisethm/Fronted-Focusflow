@@ -111,6 +111,16 @@ export async function register(email, password, nombre, rememberMe = true) {
 
   return data;
 }
+export async function registerStaff(email, password, nombre, rol) {
+  return (
+    await api.post("/Auth/register-staff", {
+      email,
+      password,
+      nombre,
+      rol
+    })
+  ).data;
+}
 
 export async function login(email, password, rememberMe = true) {
   const data = (await api.post("/Auth/login", { email, password })).data;
@@ -129,7 +139,7 @@ export async function updatePassword(newPassword) {
 }
 
 export async function getProfile() {
-  return (await api.get("/Auth/profile")).data;
+  return (await api.get("/PerfilUsuario")).data;
 }
 
 export async function createEmotionalRecord({
