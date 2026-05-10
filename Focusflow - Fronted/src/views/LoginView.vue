@@ -214,6 +214,8 @@ export default {
 
                 if (profile.rol === 'admin') {
                     this.$router.push("/admin-panel");
+                } else if (profile.rol === 'support') {
+                    this.$router.push("/support-dashboard");
                 } else {
                     this.$router.push("/dashboard");
                 }

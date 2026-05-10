@@ -11,6 +11,9 @@ const routes = [
   { path: '/admin-panel', name: 'AdminPanel', component: () => import('../views/AdminPanelView.vue'), meta: { requiereAdmin: true }},
   { path: "/login", name: "Login", component: LoginView },
   { path: "/register-staff", name: "RegisterStaff", component: () => import("../views/RegisterStaffView.vue"), meta: { requiereAdmin: true }},
+  { path: "/tickets", name: "Tickets", component: () => import("../views/TicketsView.vue"), meta: { requiereStaff: true } },
+  { path: "/support-dashboard", name: "SupportDashboard", component: () => import("../views/SupportDashboardView.vue"), meta: { requiereSupport: true } },
+  { path: "/support", name: "Support", component: () => import("../views/SupportView.vue") },
   { path: "/profile", name: "Profile", component: () => import("../views/ProfileView.vue") },
   { path: "/terms-and-conditions", name: "Terms", component: () => import("../views/TermsView.vue") },
   { path: "/data-policy", name: "DataPolicy", component: () => import("../views/DataPolicyView.vue") },
@@ -31,24 +34,45 @@ const router = createRouter({
   history: createWebHistory(),
   routes,
 });
+
 router.beforeEach(async (to, from, next) => {
-  // Si la ruta no requiere auth, deja pasar
-  if (!to.meta.requiereAdmin) {
+  if (!to.meta.requiereAdmin && !to.meta.requiereStaff && !to.meta.requiereSupport) {
     return next();
   }
 
   try {
     const profile = await getProfile();
     
-    if (profile && profile.rol === 'admin') {
-      next(); // Es admin, entra
-    } else {
-      console.warn("Access denied: Not an admin");
-      next("/dashboard"); // No es admin, mándalo a la vista normal
+    if (to.meta.requiereAdmin) {
+      if (profile && profile.rol === 'admin') {
+        return next(); 
+      } else {
+        console.warn("Acceso denegado: Se requiere ser Admin");
+        return next("/dashboard"); 
+      }
+    }
+
+    if (to.meta.requiereStaff) {
+      if (profile && (profile.rol === 'admin' || profile.rol === 'support')) {
+        return next(); 
+      } else {
+        console.warn("Acceso denegado: Se requiere ser Staff");
+        return next("/dashboard"); 
+      }
+    }
+
+    if (to.meta.requiereSupport) {
+      if (profile && profile.rol === 'support') {
+        return next(); 
+      } else {
+        console.warn("Acceso denegado: Se requiere ser support");
+        return next("/dashboard"); 
+      }
     }
   } catch (error) {
     console.error("Auth guard error:", error);
-    next("/login"); // Falló la sesión, afuera
+    next("/login");
   }
 });
+
 export default router;

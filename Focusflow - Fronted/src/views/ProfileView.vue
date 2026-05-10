@@ -6,7 +6,7 @@
             <header
                 class="sticky top-0 z-10 flex h-16 items-center border-b border-border-light bg-card-light dark:border-border-dark dark:bg-card-dark/80 backdrop-blur-sm px-4">
                 <button @click="$router.back()"
-                    class="flex size-10 shrink-0 items-center justify-center rounded-full text-text-light-primary dark:text-text-dark-primary">
+                    class="flex size-10 shrink-0 items-center justify-center rounded-full text-text-light-primary dark:text-text-dark-primary hover:bg-primary/10 transition-colors">
                     <span class="material-symbols-outlined text-2xl">arrow_back</span>
                 </button>
                 <h1
@@ -16,7 +16,7 @@
 
             <main class="flex-1 px-4 py-8">
                 <div v-if="loading" class="flex justify-center py-20">
-                    <span class="text-primary animate-pulse text-xl font-bold">Cargando perfil...</span>
+                    <span class="material-symbols-outlined text-primary text-5xl animate-spin">progress_activity</span>
                 </div>
 
                 <div v-else class="mx-auto max-w-lg space-y-8">
@@ -32,11 +32,12 @@
                         <div class="flex flex-col items-center justify-center text-center">
                             <p
                                 class="text-[22px] font-bold tracking-tight text-text-light-primary dark:text-text-dark-primary">
-                                {{ userProfile.nombre }}
+                                {{ userProfile.nombre || 'Usuario FocusFlow' }}
                             </p>
                             <p class="text-base font-normal text-text-light-secondary dark:text-text-dark-secondary">
                                 {{ userProfile.email }}
                             </p>
+                            <!-- Badge de Rol (Solo Staff) -->
                             <span v-if="userProfile.rol === 'admin' || userProfile.rol === 'support'"
                                 class="mt-2 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider shadow-sm"
                                 :class="userProfile.rol === 'admin' ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400' : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'">
@@ -45,73 +46,191 @@
                         </div>
                     </section>
 
-                    <!-- Sección Cuenta -->
+                    <!-- Sección Configuración y Edición -->
                     <section class="space-y-2">
                         <h2 class="text-lg font-bold text-text-light-primary dark:text-text-dark-primary px-2">
-                            Configuración</h2>
+                            Configuración Personal
+                        </h2>
+
+                        <div
+                            class="overflow-hidden rounded-xl border border-border-light bg-card-light shadow-sm dark:border-border-dark dark:bg-card-dark transition-all duration-300">
+
+                            <!-- MODO VISTA: Lista de opciones -->
+                            <div v-if="!isEditingProfile && !isChangingPassword">
+                                <button @click="toggleEditProfile"
+                                    class="w-full flex items-center gap-4 px-4 min-h-[3.75rem] justify-between transition-colors hover:bg-background-light dark:hover:bg-background-dark">
+                                    <div class="flex items-center gap-4">
+                                        <div
+                                            class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                                            <span class="material-symbols-outlined">edit_square</span>
+                                        </div>
+                                        <p
+                                            class="flex-1 text-left truncate text-base font-medium text-text-light-primary dark:text-text-dark-primary">
+                                            Editar Información
+                                        </p>
+                                    </div>
+                                    <div class="shrink-0">
+                                        <span
+                                            class="material-symbols-outlined text-text-light-secondary dark:text-text-dark-secondary">chevron_right</span>
+                                    </div>
+                                </button>
+
+                                <hr class="border-border-light dark:border-border-dark" />
+
+                                <button @click="toggleChangePassword"
+                                    class="w-full flex items-center gap-4 px-4 min-h-[3.75rem] justify-between transition-colors hover:bg-background-light dark:hover:bg-background-dark">
+                                    <div class="flex items-center gap-4">
+                                        <div
+                                            class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                                            <span class="material-symbols-outlined">password</span>
+                                        </div>
+                                        <p
+                                            class="flex-1 text-left truncate text-base font-medium text-text-light-primary dark:text-text-dark-primary">
+                                            Cambiar Contraseña
+                                        </p>
+                                    </div>
+                                    <div class="shrink-0">
+                                        <span
+                                            class="material-symbols-outlined text-text-light-secondary dark:text-text-dark-secondary">chevron_right</span>
+                                    </div>
+                                </button>
+                            </div>
+
+                            <!-- MODO EDICIÓN: Perfil -->
+                            <div v-else-if="isEditingProfile"
+                                class="p-5 space-y-4 bg-background-light/50 dark:bg-background-dark/50">
+                                <div class="space-y-1">
+                                    <label
+                                        class="text-sm font-semibold text-text-light-primary dark:text-text-dark-primary ml-1">Nombre
+                                        Completo</label>
+                                    <input type="text" v-model="editForm.nombre"
+                                        class="w-full px-4 py-2.5 rounded-lg border border-border-light dark:border-border-dark bg-card-light dark:bg-card-dark text-text-light-primary dark:text-text-dark-primary focus:ring-2 focus:ring-primary focus:border-transparent outline-none" />
+                                </div>
+
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div class="space-y-1">
+                                        <label
+                                            class="text-sm font-semibold text-text-light-primary dark:text-text-dark-primary ml-1">Edad</label>
+                                        <input type="number" v-model="editForm.edad" min="10" max="120"
+                                            class="w-full px-4 py-2.5 rounded-lg border border-border-light dark:border-border-dark bg-card-light dark:bg-card-dark text-text-light-primary dark:text-text-dark-primary focus:ring-2 focus:ring-primary focus:border-transparent outline-none" />
+                                    </div>
+                                    <div class="space-y-1">
+                                        <label
+                                            class="text-sm font-semibold text-text-light-primary dark:text-text-dark-primary ml-1">Ocupación</label>
+                                        <input type="text" v-model="editForm.ocupacion" placeholder="Ej. Estudiante"
+                                            class="w-full px-4 py-2.5 rounded-lg border border-border-light dark:border-border-dark bg-card-light dark:bg-card-dark text-text-light-primary dark:text-text-dark-primary focus:ring-2 focus:ring-primary focus:border-transparent outline-none" />
+                                    </div>
+                                </div>
+
+                                <div class="space-y-1">
+                                    <label
+                                        class="text-sm font-semibold text-text-light-primary dark:text-text-dark-primary ml-1">
+                                        Objetivo Principal
+                                    </label>
+                                    <!-- Contenedor relativo para poder poner un ícono de flecha personalizado si quieres, o usar el default -->
+                                    <div class="relative">
+                                        <select v-model="editForm.objetivo_principal"
+                                            class="w-full px-4 py-2.5 appearance-none rounded-lg border border-border-light dark:border-border-dark bg-card-light dark:bg-card-dark text-text-light-primary dark:text-text-dark-primary focus:ring-2 focus:ring-primary focus:border-transparent outline-none cursor-pointer">
+                                            <option value="" disabled>Selecciona tu objetivo principal...</option>
+                                            <option value="reducir_estres">Reducir estrés</option>
+                                            <option value="mejorar_organizacion">Mejorar organización</option>
+                                            <option value="aumentar_productividad">Aumentar productividad</option>
+                                            <option value="equilibrio_vida_trabajo">Equilibrar vida y trabajo</option>
+                                            <option value="mejorar_habitos">Construir mejores hábitos</option>
+                                            <option value="otro">Otro</option>
+                                        </select>
+                                        <span
+                                            class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-text-light-secondary dark:text-text-dark-secondary">
+                                            expand_more
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div class="flex gap-3 pt-2">
+                                    <button @click="toggleEditProfile" :disabled="savingProfile"
+                                        class="flex-1 py-2.5 rounded-lg font-semibold text-text-light-secondary hover:bg-border-light dark:hover:bg-border-dark transition-colors">
+                                        Cancelar
+                                    </button>
+                                    <button @click="saveProfileInfo" :disabled="savingProfile"
+                                        class="flex-1 py-2.5 rounded-lg bg-primary hover:bg-primary/90 text-white font-bold transition-colors flex justify-center items-center gap-2">
+                                        <span v-if="savingProfile"
+                                            class="material-symbols-outlined animate-spin">progress_activity</span>
+                                        {{ savingProfile ? 'Guardando...' : 'Guardar Cambios' }}
+                                    </button>
+                                </div>
+                            </div>
+                            <div v-else-if="isChangingPassword"
+                                class="p-5 space-y-4 bg-background-light/50 dark:bg-background-dark/50">
+                                <div class="space-y-1">
+                                    <label
+                                        class="text-sm font-semibold text-text-light-primary dark:text-text-dark-primary ml-1">Nueva
+                                        Contraseña</label>
+                                    <input type="password" v-model="passwordForm.newPassword"
+                                        placeholder="Mínimo 8 caracteres"
+                                        class="w-full px-4 py-2.5 rounded-lg border border-border-light dark:border-border-dark bg-card-light dark:bg-card-dark text-text-light-primary dark:text-text-dark-primary focus:ring-2 focus:ring-primary focus:border-transparent outline-none" />
+                                </div>
+
+                                <div class="space-y-1">
+                                    <label
+                                        class="text-sm font-semibold text-text-light-primary dark:text-text-dark-primary ml-1">Confirmar
+                                        Contraseña</label>
+                                    <input type="password" v-model="passwordForm.confirmPassword"
+                                        placeholder="Repite la nueva contraseña"
+                                        class="w-full px-4 py-2.5 rounded-lg border border-border-light dark:border-border-dark bg-card-light dark:bg-card-dark text-text-light-primary dark:text-text-dark-primary focus:ring-2 focus:ring-primary focus:border-transparent outline-none" />
+                                </div>
+
+                                <div class="flex gap-3 pt-2">
+                                    <button @click="toggleChangePassword" :disabled="savingPassword"
+                                        class="flex-1 py-2.5 rounded-lg font-semibold text-text-light-secondary hover:bg-border-light dark:hover:bg-border-dark transition-colors">
+                                        Cancelar
+                                    </button>
+                                    <button @click="saveNewPassword" :disabled="savingPassword"
+                                        class="flex-1 py-2.5 rounded-lg bg-primary hover:bg-primary/90 text-white font-bold transition-colors flex justify-center items-center gap-2">
+                                        <span v-if="savingPassword"
+                                            class="material-symbols-outlined animate-spin">progress_activity</span>
+                                        {{ savingPassword ? 'Actualizando...' : 'Actualizar' }}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Soporte y PQRs -->
+                    <section class="space-y-2">
+                        <h2 class="text-lg font-bold text-text-light-primary dark:text-text-dark-primary px-2">
+                            Centro de Ayuda
+                        </h2>
                         <div
                             class="overflow-hidden rounded-xl border border-border-light bg-card-light shadow-sm dark:border-border-dark dark:bg-card-dark">
-
-                            <!-- Botón para disparar el Reset Password que ya tienes -->
-                            <button @click="handleResetPassword"
-                                class="w-full flex items-center gap-4 px-4 min-h-[3.75rem] justify-between transition-colors hover:bg-background-light dark:hover:bg-background-dark">
+                            <button @click="$router.push('/support')"
+                                class="w-full flex items-center gap-4 px-4 py-4 justify-between transition-colors hover:bg-background-light dark:hover:bg-background-dark group">
                                 <div class="flex items-center gap-4">
                                     <div
-                                        class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                                        <span class="material-symbols-outlined">lock</span>
+                                        class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary group-hover:scale-110 transition-transform">
+                                        <span class="material-symbols-outlined">support_agent</span>
                                     </div>
-                                    <p
-                                        class="flex-1 truncate text-base font-medium text-text-light-primary dark:text-text-dark-primary">
-                                        Restablecer Contraseña</p>
+                                    <div class="text-left">
+                                        <p
+                                            class="text-base font-bold text-text-light-primary dark:text-text-dark-primary leading-tight">
+                                            Soporte Técnico y PQRs
+                                        </p>
+                                        <p
+                                            class="text-sm text-text-light-secondary dark:text-text-dark-secondary mt-0.5">
+                                            Reporta un problema o revisa tus tickets
+                                        </p>
+                                    </div>
                                 </div>
                                 <div class="shrink-0">
                                     <span
                                         class="material-symbols-outlined text-text-light-secondary dark:text-text-dark-secondary">chevron_right</span>
                                 </div>
                             </button>
-
-                            <hr class="border-border-light dark:border-border-dark" />
-
-                            <div
-                                class="flex items-center gap-4 px-4 min-h-[3.75rem] justify-between transition-colors hover:bg-background-light dark:hover:bg-background-dark opacity-50">
-                                <div class="flex items-center gap-4">
-                                    <div
-                                        class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                                        <span class="material-symbols-outlined">person</span>
-                                    </div>
-                                    <p
-                                        class="flex-1 truncate text-base font-medium text-text-light-primary dark:text-text-dark-primary">
-                                        Editar Información (Próximamente)</p>
-                                </div>
-                            </div>
-
                         </div>
                     </section>
 
-                    <!-- Soporte (Ideal para tu flujo de PQRs) -->
-                    <section class="space-y-2">
-                        <h2 class="text-lg font-bold text-text-light-primary dark:text-text-dark-primary px-2">Ayuda
-                        </h2>
-                        <div
-                            class="overflow-hidden rounded-xl border border-border-light bg-card-light shadow-sm dark:border-border-dark dark:bg-card-dark">
-                            <button @click="$router.push('/support')"
-                                class="w-full flex items-center gap-4 px-4 min-h-[3.75rem] justify-between transition-colors hover:bg-background-light dark:hover:bg-background-dark">
-                                <div class="flex items-center gap-4">
-                                    <div
-                                        class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                                        <span class="material-symbols-outlined">help_center</span>
-                                    </div>
-                                    <p
-                                        class="flex-1 truncate text-base font-medium text-text-light-primary dark:text-text-dark-primary">
-                                        Reportar PQR</p>
-                                </div>
-                            </button>
-                        </div>
-                    </section>
-
-                    <div class="pt-4">
+                    <div class="pt-2">
                         <button @click="logout"
-                            class="w-full rounded-lg bg-transparent px-4 py-2.5 text-center font-semibold text-red-500 transition-colors hover:bg-red-500/10 dark:text-red-400 dark:hover:bg-red-400/10">
+                            class="w-full rounded-lg bg-transparent px-4 py-2.5 text-center font-bold text-red-500 transition-colors hover:bg-red-500/10 dark:text-red-400 dark:hover:bg-red-400/10">
                             Cerrar Sesión
                         </button>
                     </div>
@@ -122,44 +241,119 @@
 </template>
 
 <script>
-import { getProfile, resetPassword } from "../services/api.js";
+import { getProfile, updateProfile, updatePassword } from "../services/api.js";
 import { useToast } from "vue-toastification";
 
 export default {
-    name: "AccountView",
+    name: "ProfileView",
     data() {
         return {
-            userProfile: {
-                nombre: "",
-                email: "",
-                rol: ""
-            },
+            userProfile: {},
             loading: true,
+
+            isEditingProfile: false,
+            isChangingPassword: false,
+
+            savingProfile: false,
+            savingPassword: false,
+
+            editForm: {
+                nombre: "",
+                edad: null,
+                ocupacion: "",
+                objetivo_principal: ""
+            },
+            passwordForm: {
+                newPassword: "",
+                confirmPassword: ""
+            },
+
             toast: useToast()
         };
     },
     async mounted() {
-        try {
-            const profile = await getProfile();
-            this.userProfile = profile;
-        } catch (error) {
-            this.toast.error("Error al cargar los datos de la cuenta.");
-            console.error(error);
-        } finally {
-            this.loading = false;
-        }
+        await this.loadUserData();
     },
     methods: {
-        async handleResetPassword() {
+        async loadUserData() {
             try {
-                await resetPassword(this.userProfile.email);
-                this.toast.success("Correo de recuperación enviado a " + this.userProfile.email);
+                this.loading = true;
+                const profile = await getProfile();
+                this.userProfile = profile;
+
+                this.editForm = {
+                    nombre: profile.nombre || "",
+                    edad: profile.edad || null,
+                    ocupacion: profile.ocupacion || "",
+                    objetivo_principal: profile.objetivo_principal || ""
+                };
             } catch (error) {
-                this.toast.error("No se pudo enviar el correo de recuperación.");
+                this.toast.error("Error al cargar los datos de la cuenta.");
+                console.error(error);
+            } finally {
+                this.loading = false;
             }
         },
+
+        toggleEditProfile() {
+            if (this.isEditingProfile) {
+                this.editForm = {
+                    nombre: this.userProfile.nombre || "",
+                    edad: this.userProfile.edad || null,
+                    ocupacion: this.userProfile.ocupacion || "",
+                    objetivo_principal: this.userProfile.objetivo_principal || ""
+                };
+            }
+            this.isEditingProfile = !this.isEditingProfile;
+            this.isChangingPassword = false; 
+        },
+        async saveProfileInfo() {
+            this.savingProfile = true;
+            try {
+                console.log(this.editForm)
+                await updateProfile(this.editForm);
+                this.userProfile.nombre = this.editForm.nombre;
+                this.userProfile.edad = this.editForm.edad;
+                this.userProfile.ocupacion = this.editForm.ocupacion;
+                this.userProfile.objetivo_principal = this.editForm.objetivo_principal;
+
+                this.toast.success("¡Perfil actualizado correctamente!");
+                this.isEditingProfile = false;
+            } catch (error) {
+                this.toast.error("Hubo un error al guardar tus cambios.");
+                console.error(error);
+            } finally {
+                this.savingProfile = false;
+            }
+        },
+
+        toggleChangePassword() {
+            this.isChangingPassword = !this.isChangingPassword;
+            this.isEditingProfile = false;
+            this.passwordForm = { newPassword: "", confirmPassword: "" };
+        },
+        async saveNewPassword() {
+            if (this.passwordForm.newPassword.length < 8) {
+                return this.toast.warning("La contraseña debe tener al menos 8 caracteres.");
+            }
+            if (this.passwordForm.newPassword !== this.passwordForm.confirmPassword) {
+                return this.toast.error("Las contraseñas no coinciden.");
+            }
+
+            this.savingPassword = true;
+            try {
+                await updatePassword(this.passwordForm.newPassword);
+                this.toast.success("¡Contraseña actualizada con éxito!");
+                this.toggleChangePassword();
+            } catch (error) {
+                this.toast.error(error.response?.data?.message || "No se pudo actualizar la contraseña.");
+                console.error(error);
+            } finally {
+                this.savingPassword = false;
+            }
+        },
+
         logout() {
-            // Limpiamos el localStorage y mandamos al login
             localStorage.removeItem("token");
             localStorage.removeItem("refreshToken");
             this.$router.push("/login");
@@ -170,7 +364,6 @@ export default {
 </script>
 
 <style scoped>
-/* Tu configuración de Manrope ya está en el index.html, así que aquí no hace falta cargarla */
 .material-symbols-outlined {
     font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
 }

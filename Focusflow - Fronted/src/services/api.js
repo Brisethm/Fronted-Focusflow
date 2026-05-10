@@ -1,7 +1,9 @@
 import axios from "axios";
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:5097/api";
+
 const api = axios.create({
-  baseURL: "http://localhost:5097/api",
+  baseURL: API_BASE_URL,
 });
 
 function getTokenValue(data) {
@@ -14,6 +16,18 @@ function getRefreshTokenValue(data) {
 
 function getStoredToken() {
   return sessionStorage.getItem("token") || localStorage.getItem("token");
+}
+
+export function getAuthToken() {
+  return getStoredToken();
+}
+
+export function getTicketHubUrl() {
+  if (import.meta.env.VITE_TICKET_HUB_URL) {
+    return import.meta.env.VITE_TICKET_HUB_URL;
+  }
+
+  return API_BASE_URL.replace(/\/api\/?$/i, "").replace(/\/$/, "") + "/ticketHub";
 }
 
 function getStoredRefreshToken() {
@@ -136,10 +150,6 @@ export async function resetPassword(email) {
 
 export async function updatePassword(newPassword) {
   return (await api.post("/Auth/update-password", { newPassword })).data;
-}
-
-export async function getProfile() {
-  return (await api.get("/PerfilUsuario")).data;
 }
 
 export async function createEmotionalRecord({
@@ -277,11 +287,67 @@ export async function createTransaccion(transaccionData) {
   return (await api.post("/Transacciones", transaccionData)).data;
 }
 
-// El 'id' viaja en la URL: http://localhost:5097/api/Transacciones/5
 export async function updateTransaccion(id, transaccionData) {
   return (await api.put(`/Transacciones/${id}`, transaccionData)).data;
 }
 
 export async function deleteTransaccion(id) {
   return (await api.delete(`/Transacciones/${id}`)).data;
+}
+// --- ENDPOINTS DE TICKETS (SOPORTE) ---
+
+// Obtener mis tickets (Usuario común)
+export async function getMyTickets() {
+  return (await api.get("/Tickets/my-tickets")).data;
+}
+
+// Crear un nuevo ticket (PQR)
+export async function createTicket({ asunto, descripcion, categoria, prioridad }) {
+  return (await api.post("/Tickets", { asunto, descripcion, categoria, prioridad })).data;
+}
+
+// Obtener todos los tickets (Solo Admin/Support)
+export async function getAllTickets() {
+  return (await api.get("/Tickets/all")).data;
+}
+
+// Obtener la conversación de un ticket específico
+export async function getTicketResponses(ticketId) {
+  return (await api.get(`/Tickets/${ticketId}/responses`)).data;
+}
+
+// Enviar una respuesta en un ticket
+export async function sendTicketResponse(ticketId, mensaje) {
+  return (await api.post(`/Tickets/${ticketId}/responses`, { mensaje })).data;
+}
+
+// Actualizar estado de un ticket (Solo Staff)
+export async function updateTicketStatus(ticketId, newStatus) {
+  // Enviamos el string directamente en el body como espera el backend
+  return (await api.put(`/Tickets/${ticketId}/status`, JSON.stringify(newStatus), {
+    headers: { 'Content-Type': 'application/json' }
+  })).data;
+}
+
+// Cancelar/Cerrar ticket (Usuario)
+export async function cancelTicket(ticketId) {
+  return (await api.delete(`/Tickets/${ticketId}`)).data;
+}
+
+
+// --- ENDPOINTS DE PERFIL USUARIO (EXTENDIDO) ---
+
+// Ya tenías getProfile, pero aquí lo reforzamos si necesitas más datos
+export async function getProfile() {
+  return (await api.get("/PerfilUsuario")).data;
+}
+
+// Actualizar datos del perfil (nombre, edad, ocupación, etc.)
+export async function updateProfile(perfilData) {
+  return (await api.put("/PerfilUsuario", perfilData)).data;
+}
+
+// Eliminar cuenta (¡Cuidado con este!)
+export async function deleteAccount() {
+  return (await api.delete("/PerfilUsuario")).data;
 }
