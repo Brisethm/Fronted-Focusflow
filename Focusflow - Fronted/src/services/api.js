@@ -351,3 +351,40 @@ export async function updateProfile(perfilData) {
 export async function deleteAccount() {
   return (await api.delete("/PerfilUsuario")).data;
 }
+
+// Obtener todos mis recordatorios activos/inactivos
+export async function getRecordatorios() {
+  return (await api.get("/Recordatorios")).data;
+}
+
+// Obtener un recordatorio específico
+export async function getRecordatorioById(id) {
+  return (await api.get(`/Recordatorios/${id}`)).data;
+}
+
+// Crear un nuevo recordatorio (Tarea o Plan de Sueño)
+export async function createRecordatorio({ mensaje, fechaHora, fecha_hora, tipo, activo = true }) {
+  return (
+    await api.post("/Recordatorios", {
+      mensaje,
+      fechaHora: fechaHora ?? fecha_hora,
+      tipo,
+      activo
+    })
+  ).data;
+}
+
+// Actualizar un recordatorio (Ej: marcar como activo = false tras sonar)
+export async function updateRecordatorio(id, recordatorioData) {
+  const { fecha_hora, ...data } = recordatorioData;
+
+  return (await api.put(`/Recordatorios/${id}`, {
+    ...data,
+    ...(data.fechaHora || fecha_hora ? { fechaHora: data.fechaHora ?? fecha_hora } : {})
+  })).data;
+}
+
+// Eliminar un recordatorio
+export async function deleteRecordatorio(id) {
+  return (await api.delete(`/Recordatorios/${id}`)).data;
+}

@@ -9,7 +9,7 @@
           </button>
           <h1 class="card-title">{{ isEditing ? 'Editar Tarea' : 'Crear Tarea' }}</h1>
           <!-- Div vacío para mantener el título centrado (flexbox) -->
-          <div style="width: 40px;"></div> 
+          <div style="width: 40px;"></div>
         </div>
 
         <form @submit.prevent="crearTarea" class="task-form">
@@ -17,14 +17,8 @@
             <label class="field-label required" for="task-name">Nombre de la tarea</label>
             <div class="input-icon-row">
               <div class="emoji-avatar">{{ task.icono || '😊' }}</div>
-              <input
-                id="task-name"
-                v-model="task.nombre"
-                @blur="touchField('nombre')"
-                :class="{ 'input-invalid': errors.nombre }"
-                type="text"
-                placeholder="Ej. Preparar la presentación"
-              />
+              <input id="task-name" v-model="task.nombre" @blur="touchField('nombre')"
+                :class="{ 'input-invalid': errors.nombre }" type="text" placeholder="Ej. Preparar la presentación" />
             </div>
             <p v-if="errors.nombre" class="field-error">* {{ errors.nombre }}</p>
           </div>
@@ -32,14 +26,8 @@
           <div class="field-group">
             <div class="field-label">Emoji</div>
             <div class="emoji-picker">
-              <button
-                v-for="emoji in emojiOptions"
-                :key="emoji"
-                type="button"
-                class="emoji-button"
-                :class="{ active: task.icono === emoji }"
-                @click="selectEmoji(emoji)"
-              >
+              <button v-for="emoji in emojiOptions" :key="emoji" type="button" class="emoji-button"
+                :class="{ active: task.icono === emoji }" @click="selectEmoji(emoji)">
                 {{ emoji }}
               </button>
             </div>
@@ -48,28 +36,16 @@
           <div class="field-group">
             <div class="field-label required">Prioridad</div>
             <div class="button-group">
-              <button
-                type="button"
-                class="option-button priority-alta"
-                :class="{ active: task.prioridad === 'alta' }"
-                @click="selectPriority('alta')"
-              >
+              <button type="button" class="option-button priority-alta" :class="{ active: task.prioridad === 'alta' }"
+                @click="selectPriority('alta')">
                 Alta
               </button>
-              <button
-                type="button"
-                class="option-button priority-media"
-                :class="{ active: task.prioridad === 'media' }"
-                @click="selectPriority('media')"
-              >
+              <button type="button" class="option-button priority-media" :class="{ active: task.prioridad === 'media' }"
+                @click="selectPriority('media')">
                 Media
               </button>
-              <button
-                type="button"
-                class="option-button priority-baja"
-                :class="{ active: task.prioridad === 'baja' }"
-                @click="selectPriority('baja')"
-              >
+              <button type="button" class="option-button priority-baja" :class="{ active: task.prioridad === 'baja' }"
+                @click="selectPriority('baja')">
                 Baja
               </button>
             </div>
@@ -79,28 +55,16 @@
           <div class="field-group">
             <div class="field-label required">Esfuerzo</div>
             <div class="button-group">
-              <button
-                type="button"
-                class="option-button effort-alto"
-                :class="{ active: task.esfuerzo === 'alto' }"
-                @click="selectEffort('alto')"
-              >
+              <button type="button" class="option-button effort-alto" :class="{ active: task.esfuerzo === 'alto' }"
+                @click="selectEffort('alto')">
                 Alto
               </button>
-              <button
-                type="button"
-                class="option-button effort-medio"
-                :class="{ active: task.esfuerzo === 'medio' }"
-                @click="selectEffort('medio')"
-              >
+              <button type="button" class="option-button effort-medio" :class="{ active: task.esfuerzo === 'medio' }"
+                @click="selectEffort('medio')">
                 Medio
               </button>
-              <button
-                type="button"
-                class="option-button effort-bajo"
-                :class="{ active: task.esfuerzo === 'bajo' }"
-                @click="selectEffort('bajo')"
-              >
+              <button type="button" class="option-button effort-bajo" :class="{ active: task.esfuerzo === 'bajo' }"
+                @click="selectEffort('bajo')">
                 Bajo
               </button>
             </div>
@@ -110,28 +74,16 @@
           <div class="field-group">
             <div class="field-label required">Estado</div>
             <div class="button-group status-group">
-              <button
-                type="button"
-                class="option-button status-por-hacer"
-                :class="{ active: task.estado === 'Por Hacer' }"
-                @click="selectStatus('Por Hacer')"
-              >
+              <button type="button" class="option-button status-por-hacer"
+                :class="{ active: task.estado === 'Por Hacer' }" @click="selectStatus('Por Hacer')">
                 Por Hacer
               </button>
-              <button
-                type="button"
-                class="option-button status-en-progreso"
-                :class="{ active: task.estado === 'En Progreso' }"
-                @click="selectStatus('En Progreso')"
-              >
+              <button type="button" class="option-button status-en-progreso"
+                :class="{ active: task.estado === 'En Progreso' }" @click="selectStatus('En Progreso')">
                 En Progreso
               </button>
-              <button
-                type="button"
-                class="option-button status-completado"
-                :class="{ active: task.estado === 'Completado' }"
-                @click="selectStatus('Completado')"
-              >
+              <button type="button" class="option-button status-completado"
+                :class="{ active: task.estado === 'Completado' }" @click="selectStatus('Completado')">
                 Completado
               </button>
             </div>
@@ -140,37 +92,23 @@
           <div class="fields-grid fields-grid--wide">
             <div class="field-group">
               <label class="field-label required" for="fecha-limite">Fecha límite</label>
-              <input
-                id="fecha-limite"
-                type="datetime-local"
-                v-model="task.fechaLimite"
-                @blur="touchField('fechaLimite')"
-                :class="{ 'input-invalid': errors.fechaLimite }"
-              />
+              <input id="fecha-limite" type="datetime-local" v-model="task.fechaLimite"
+                @blur="touchField('fechaLimite')" :class="{ 'input-invalid': errors.fechaLimite }" />
               <p v-if="errors.fechaLimite" class="field-error">* {{ errors.fechaLimite }}</p>
             </div>
 
             <div class="field-group">
               <label class="field-label" for="recordatorio">Recordatorio</label>
-              <input
-                id="recordatorio"
-                type="datetime-local"
-                v-model="task.recordatorio"
-                @blur="touchField('recordatorio')"
-                :class="{ 'input-invalid': errors.recordatorio }"
-              />
+              <input id="recordatorio" type="datetime-local" v-model="task.recordatorio"
+                @blur="touchField('recordatorio')" :class="{ 'input-invalid': errors.recordatorio }" />
               <p v-if="errors.recordatorio" class="field-error">* {{ errors.recordatorio }}</p>
             </div>
           </div>
 
           <div class="field-group">
             <label class="field-label" for="descripcion">Descripción</label>
-            <textarea
-              id="descripcion"
-              v-model="task.descripcion"
-              placeholder="Añade más detalles sobre la tarea..."
-              rows="4"
-            ></textarea>
+            <textarea id="descripcion" v-model="task.descripcion" placeholder="Añade más detalles sobre la tarea..."
+              rows="4"></textarea>
           </div>
 
           <button type="submit" class="button-primary">{{ isEditing ? 'Actualizar Tarea' : 'Añadir Tarea' }}</button>
@@ -181,7 +119,8 @@
 </template>
 
 <script>
-import { createTask, updateTask } from '../services/api'
+import { createTask, updateTask, getRecordatorios, createRecordatorio, updateRecordatorio } from '../services/api'
+import { scheduleNotification } from '../utils/notifier'
 import { useToast } from 'vue-toastification'
 
 export default {
@@ -189,6 +128,9 @@ export default {
   data() {
     return {
       taskId: null,
+      recordatorioId: null,
+      existingRecordatorio: null,
+      originalTaskTitle: '',
       isEditing: false,
       task: {
         nombre: '',
@@ -218,13 +160,14 @@ export default {
       toast: useToast(),
     }
   },
-  created() {
+  async created() {
     const editingTask = sessionStorage.getItem('editingTask')
     if (editingTask) {
       const task = JSON.parse(editingTask)
 
       this.taskId = task.idTarea || task.id
       this.isEditing = true
+      this.originalTaskTitle = task.titulo || ''
 
       this.task = {
         nombre: task.titulo || '',
@@ -238,9 +181,45 @@ export default {
       }
 
       sessionStorage.removeItem('editingTask')
+      await this.loadRecordatorioForEditing(task)
     }
   },
   methods: {
+    getRecordatorioId(recordatorio) {
+      return recordatorio?.idRecordatorio ?? recordatorio?.id_recordatorio ?? recordatorio?.id ?? null
+    },
+    getRecordatorioFecha(recordatorio) {
+      return recordatorio?.fechaHora ?? recordatorio?.fecha_hora ?? ''
+    },
+    normalizeTipo(value) {
+      return value ? value.toString().toLowerCase() : ''
+    },
+    async loadRecordatorioForEditing(task) {
+      try {
+        const recordatorios = await getRecordatorios()
+        const taskReminder = recordatorios.find((recordatorio) => {
+          const sameType = this.normalizeTipo(recordatorio.tipo) === 'tarea'
+          const sameMessage = recordatorio.mensaje === this.originalTaskTitle
+          const sameDate = this.getRecordatorioFecha(recordatorio) === task.recordatorio
+          const taskRecordatorioId = this.getRecordatorioId(task.recordatorio)
+          const sameId = taskRecordatorioId && this.getRecordatorioId(recordatorio) === taskRecordatorioId
+
+          return sameType && (sameId || sameMessage || sameDate)
+        })
+
+        if (!taskReminder) return
+
+        this.existingRecordatorio = taskReminder
+        this.recordatorioId = this.getRecordatorioId(taskReminder)
+
+        const fechaHora = this.getRecordatorioFecha(taskReminder)
+        if (fechaHora) {
+          this.task.recordatorio = this.formatDateForInput(fechaHora)
+        }
+      } catch (error) {
+        console.error('Error al cargar el recordatorio de la tarea:', error)
+      }
+    },
     parseUtcDateTime(dateString) {
       if (!dateString) return null
       if (dateString.includes('Z') || dateString.includes('+')) {
@@ -309,6 +288,57 @@ export default {
       })
       return fields.every((field) => !this.errors[field])
     },
+    buildRecordatorioPayload(fechaHora, activo = true) {
+      return {
+        mensaje: this.task.nombre,
+        fechaHora,
+        tipo: 'tarea',
+        activo
+      }
+    },
+    scheduleRecordatorio(recordatorio) {
+      scheduleNotification(recordatorio, async (id) => {
+        if (id) {
+          await updateRecordatorio(id, { ...recordatorio, activo: false })
+        }
+      })
+    },
+    async saveRecordatorio() {
+      if (!this.task.recordatorio) {
+        if (this.recordatorioId && this.existingRecordatorio) {
+          await updateRecordatorio(this.recordatorioId, {
+            ...this.existingRecordatorio,
+            activo: false
+          })
+        }
+        return
+      }
+
+      const reminderDate = this.toUtcString(this.task.recordatorio)
+      const recordatorioPayload = this.buildRecordatorioPayload(reminderDate)
+
+      if (this.recordatorioId) {
+        const updatedRecordatorio = await updateRecordatorio(this.recordatorioId, {
+          ...this.existingRecordatorio,
+          ...recordatorioPayload
+        })
+
+        this.scheduleRecordatorio({
+          ...recordatorioPayload,
+          ...updatedRecordatorio,
+          fechaHora: reminderDate
+        })
+        return
+      }
+
+      const nuevoRec = await createRecordatorio(recordatorioPayload)
+
+      this.scheduleRecordatorio({
+        ...recordatorioPayload,
+        ...nuevoRec,
+        fechaHora: reminderDate
+      })
+    },
     async crearTarea() {
       if (!this.validateForm()) return
 
@@ -321,10 +351,12 @@ export default {
             prioridad: this.task.prioridad,
             nivelEsfuerzo: this.task.esfuerzo,
             estado: this.task.estado,
-            fechaLimite: this.toUtcString(this.task.fechaLimite)
+            fechaLimite: this.toUtcString(this.task.fechaLimite),
+            recordatorio: this.task.recordatorio ? this.toUtcString(this.task.recordatorio) : null
           }
           await updateTask(this.taskId, updatePayload)
-          this.toast.success('Tarea actualizada con éxito', { position: 'top-right', timeout: 4000 })
+          await this.saveRecordatorio()
+          this.toast.success('Tarea actualizada con éxito')
         } else {
           const createPayload = {
             titulo: this.task.nombre,
@@ -334,17 +366,17 @@ export default {
             fecha_limite: this.toUtcString(this.task.fechaLimite),
             descripcion: this.task.descripcion,
             icono: this.task.icono,
-            recordatorio: this.toUtcString(this.task.recordatorio),
+            recordatorio: this.task.recordatorio ? this.toUtcString(this.task.recordatorio) : null,
           }
           await createTask(createPayload)
-          this.toast.success('Tarea generada con éxito', { position: 'top-right', timeout: 2000 })
+          this.toast.success('Tarea generada con éxito')
+          await this.saveRecordatorio()
         }
 
         this.$router.push('/tasks')
       } catch (error) {
         console.error(error)
-        const message = error?.response?.data?.message || error?.message || 'Error al procesar la tarea'
-        alert(message)
+        this.toast.error('Error al procesar la tarea')
       }
     },
     // Nueva función para el botón de retroceso
@@ -359,7 +391,8 @@ export default {
 /* Contenedor principal para fondo en PC */
 .task-page-container {
   min-height: 100vh;
-  background-color: #f3f4f6; /* Fondo base para móvil */
+  background-color: #f3f4f6;
+  /* Fondo base para móvil */
   display: flex;
   justify-content: center;
   align-items: flex-start;
@@ -372,22 +405,25 @@ export default {
     padding: 40px 20px;
     /* Fondo opcional para PC: un degradado suave o color sólido */
     background: linear-gradient(135deg, #e0e7ff 0%, #f3f4f6 100%);
-    align-items: center; /* Centrar verticalmente en PC */
+    align-items: center;
+    /* Centrar verticalmente en PC */
   }
-  
+
   .task-card {
     /* Efecto "glass" sutil para resaltar la tarjeta */
     background: rgba(255, 255, 255, 0.95) !important;
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.5);
-    box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08), 0 1px 3px rgba(0,0,0,0.05) !important;
+    box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05) !important;
   }
 }
 
 .task-page {
   width: 100%;
-  max-width: 600px; /* Un poco más ancho para respirar mejor en PC */
-  padding: 0; /* Quitamos padding aquí, se lo damos al contenedor y la tarjeta */
+  max-width: 600px;
+  /* Un poco más ancho para respirar mejor en PC */
+  padding: 0;
+  /* Quitamos padding aquí, se lo damos al contenedor y la tarjeta */
 }
 
 /* Ajustes para la tarjeta en móvil */
@@ -395,8 +431,10 @@ export default {
   .task-page {
     padding: 16px;
   }
+
   .task-card {
-    border-radius: 20px; /* Bordes un poco menos pronunciados en móvil */
+    border-radius: 20px;
+    /* Bordes un poco menos pronunciados en móvil */
   }
 }
 
@@ -405,7 +443,8 @@ export default {
   border-radius: 28px;
   box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
   padding: 24px 22px;
-  margin-bottom: 0; /* Quitamos el margen inferior porque ya no hay footer */
+  margin-bottom: 0;
+  /* Quitamos el margen inferior porque ya no hay footer */
   width: 100%;
   box-sizing: border-box;
 }
@@ -414,7 +453,8 @@ export default {
 .card-heading {
   display: flex;
   align-items: center;
-  justify-content: space-between; /* Distribuye el espacio entre botón, título y espacio vacío */
+  justify-content: space-between;
+  /* Distribuye el espacio entre botón, título y espacio vacío */
   margin-bottom: 24px;
 }
 
@@ -439,7 +479,8 @@ export default {
 
 .card-title {
   margin: 0;
-  font-size: 1.5rem; /* Un poco más pequeño para acomodar el botón */
+  font-size: 1.5rem;
+  /* Un poco más pequeño para acomodar el botón */
   font-weight: 800;
   color: #111827;
   text-align: center;
@@ -577,34 +618,97 @@ textarea {
 }
 
 /* Colores de Prioridad */
-.priority-alta { border-color: #fca5a5; }
-.priority-alta.active { background: #fee2e2; border-color: #fca5a5; color: #b91c1c; }
+.priority-alta {
+  border-color: #fca5a5;
+}
 
-.priority-media { border-color: #facc15; }
-.priority-media.active { background: #fef3c7; border-color: #facc15; color: #b45309; }
+.priority-alta.active {
+  background: #fee2e2;
+  border-color: #fca5a5;
+  color: #b91c1c;
+}
 
-.priority-baja { border-color: #86efac; }
-.priority-baja.active { background: #dcfce7; border-color: #86efac; color: #047857; }
+.priority-media {
+  border-color: #facc15;
+}
+
+.priority-media.active {
+  background: #fef3c7;
+  border-color: #facc15;
+  color: #b45309;
+}
+
+.priority-baja {
+  border-color: #86efac;
+}
+
+.priority-baja.active {
+  background: #dcfce7;
+  border-color: #86efac;
+  color: #047857;
+}
 
 /* Colores de Esfuerzo */
-.effort-alto { border-color: #fca5a5; }
-.effort-alto.active { background: #fee2e2; border-color: #fca5a5; color: #b91c1c; }
+.effort-alto {
+  border-color: #fca5a5;
+}
 
-.effort-medio { border-color: #facc15; }
-.effort-medio.active { background: #fef3c7; border-color: #facc15; color: #b45309; }
+.effort-alto.active {
+  background: #fee2e2;
+  border-color: #fca5a5;
+  color: #b91c1c;
+}
 
-.effort-bajo { border-color: #86efac; }
-.effort-bajo.active { background: #dcfce7; border-color: #86efac; color: #047857; }
+.effort-medio {
+  border-color: #facc15;
+}
+
+.effort-medio.active {
+  background: #fef3c7;
+  border-color: #facc15;
+  color: #b45309;
+}
+
+.effort-bajo {
+  border-color: #86efac;
+}
+
+.effort-bajo.active {
+  background: #dcfce7;
+  border-color: #86efac;
+  color: #047857;
+}
 
 /* Colores de Estado */
-.status-por-hacer { border-color: #93c5fd; }
-.status-por-hacer.active { background: #eff6ff; border-color: #60a5fa; color: #1d4ed8; }
+.status-por-hacer {
+  border-color: #93c5fd;
+}
 
-.status-en-progreso { border-color: #fde047; }
-.status-en-progreso.active { background: #fef9c3; border-color: #facc15; color: #a16207; }
+.status-por-hacer.active {
+  background: #eff6ff;
+  border-color: #60a5fa;
+  color: #1d4ed8;
+}
 
-.status-completado { border-color: #86efac; }
-.status-completado.active { background: #dcfce7; border-color: #4ade80; color: #15803d; }
+.status-en-progreso {
+  border-color: #fde047;
+}
+
+.status-en-progreso.active {
+  background: #fef9c3;
+  border-color: #facc15;
+  color: #a16207;
+}
+
+.status-completado {
+  border-color: #86efac;
+}
+
+.status-completado.active {
+  background: #dcfce7;
+  border-color: #4ade80;
+  color: #15803d;
+}
 
 /* Grilla para las fechas */
 .fields-grid--wide {

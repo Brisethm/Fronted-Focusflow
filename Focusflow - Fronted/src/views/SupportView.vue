@@ -1,7 +1,5 @@
 <template>
   <div class="bg-background-light dark:bg-background-dark font-display min-h-screen flex flex-col relative">
-
-    <!-- Header -->
     <header class="sticky top-0 z-10 flex h-16 items-center border-b border-border-light bg-card-light dark:border-border-dark dark:bg-card-dark/95 px-4">
       <button @click="$router.back()" class="flex size-10 shrink-0 items-center justify-center rounded-full text-text-light-primary dark:text-text-dark-primary hover:bg-primary/10 transition-colors">
         <span class="material-symbols-outlined text-2xl">arrow_back</span>
@@ -12,8 +10,6 @@
     </header>
 
     <main class="flex-1 px-4 py-8 max-w-3xl mx-auto w-full space-y-6">
-
-      <!-- Encabezado y Botón de Acción -->
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <div class="flex items-center gap-2">
@@ -30,8 +26,6 @@
           Nuevo Ticket
         </button>
       </div>
-
-      <!-- FORMULARIO DE NUEVO TICKET -->
       <div v-if="showForm" class="bg-card-light dark:bg-card-dark border border-border-light dark:border-border-dark rounded-xl shadow-lg p-6 animate-fade-in">
         <div class="flex justify-between items-center mb-4">
           <h3 class="text-lg font-bold text-text-light-primary dark:text-text-dark-primary flex items-center gap-2">
