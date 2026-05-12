@@ -1,37 +1,30 @@
 ﻿<template>
   <div class="transactions-page">
     <header class="screen-header">
-      <button
-        type="button"
-        class="back-button"
-        @click="volver"
-        aria-label="Volver"
-      >
-        <svg
-          viewBox="0 0 256 256"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="currentColor"
-        >
-          <path
-            d="M224,128a8,8,0,0,1-8,8H59.31l58.35,58.34a8,8,0,0,1-11.32,11.32l-72-72a8,8,0,0,1,0-11.32l72-72a8,8,0,0,1,11.32,11.32L59.31,120H216A8,8,0,0,1,224,128Z"
-          />
-        </svg>
-      </button>
       <h1>Finanzas</h1>
     </header>
 
     <main class="page-body">
       <section class="section summary-section">
         <h2>Resumen</h2>
+        
+        <!-- NUEVO: Tarjeta de Balance Total -->
+        <article class="balance-card">
+          <p class="summary-label text-slate">Balance Total</p>
+          <p :class="['balance-value', balanceTotal < 0 ? 'text-negative' : '']">
+            {{ formatCurrency(balanceTotal) }}
+          </p>
+        </article>
+
         <div class="summary-grid">
           <article class="summary-card ingreso-card">
             <p class="summary-label">Ingresos</p>
-            <p class="summary-value">{{ formatCurrency(netIngresos) }}</p>
+            <p class="summary-value">{{ formatCurrency(totales.ingresos) }}</p>
           </article>
 
           <article class="summary-card gasto-card">
             <p class="summary-label">Gastos</p>
-            <p class="summary-value">{{ formatCurrency(totalGastos) }}</p>
+            <p class="summary-value">{{ formatCurrency(totales.gastos) }}</p>
           </article>
         </div>
       </section>
@@ -127,7 +120,7 @@
       @click="mostrarFormularioNueva"
     >
       <span class="button-icon">+</span>
-      Agregar Transacción 💰
+      Agregar Transacción
     </button>
 
     <FooterNav />
@@ -295,50 +288,34 @@ const transacciones = ref([]);
 const cargando = ref(false);
 const showForm = ref(false);
 const guardando = ref(false);
+
 const monto = ref("");
 const tipo = ref("Ingreso");
 const categoria = ref("");
 const descripcion = ref("");
-const fecha = ref(obtenerFechaActual());
 const isEditing = ref(false);
 const editingId = ref(null);
 
-const userTimeZone =
-  Intl.DateTimeFormat().resolvedOptions().timeZone || "America/Bogota";
-
-const parseUtcDateTime = (dateString) => {
-  if (!dateString) return null;
-  const normalized = dateString.includes("T")
-    ? dateString
-    : dateString.replace(" ", "T");
-  const hasTimeZone = /(?:Z|[+-]\d{2}:?\d{2})$/i.test(normalized);
-  const date = new Date(hasTimeZone ? normalized : `${normalized}Z`);
-  return Number.isNaN(date.getTime()) ? null : date;
+const obtenerFechaActual = () => {
+  const tzOffset = new Date().getTimezoneOffset() * 60000;
+  return new Date(Date.now() - tzOffset).toISOString().slice(0, 16);
 };
+const fecha = ref(obtenerFechaActual());
 
-const formatearFecha = (fechaIso) => {
-  const date = parseUtcDateTime(fechaIso);
-  if (!date) return "";
-  return date.toLocaleString("es-CO", {
-    timeZone: userTimeZone,
-    dateStyle: "short",
-    timeStyle: "short",
-  });
-};
+const totales = computed(() => {
+  return transacciones.value.reduce(
+    (acc, t) => {
+      const valor = Number(t.monto) || 0;
+      if (t.tipo === "Ingreso") acc.ingresos += valor;
+      else if (t.tipo === "Gasto") acc.gastos += valor;
+      return acc;
+    },
+    { ingresos: 0, gastos: 0 }
+  );
+});
 
-const totalIngresos = computed(() =>
-  transacciones.value
-    .filter((t) => t.tipo === "Ingreso")
-    .reduce((sum, t) => sum + Number(t.monto), 0),
-);
-
-const totalGastos = computed(() =>
-  transacciones.value
-    .filter((t) => t.tipo === "Gasto")
-    .reduce((sum, t) => sum + Number(t.monto), 0),
-);
-
-const netIngresos = computed(() => totalIngresos.value - totalGastos.value);
+// NUEVO: Propiedad calculada para el balance total
+const balanceTotal = computed(() => totales.value.ingresos - totales.value.gastos);
 
 const formatCurrency = (value) => {
   const amount = Number(value) || 0;
@@ -349,29 +326,9 @@ const formatCurrency = (value) => {
   return amount < 0 ? `-$${absolute}` : `$${absolute}`;
 };
 
-const displayMonto = computed(() => {
-  const value = Number(monto.value);
-  if (Number.isNaN(value) || monto.value === "") return "$0";
-  const formatted = value.toLocaleString("es-CO", {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  });
-  return `${tipo.value === "Ingreso" ? "" : "-"}$${formatted}`;
-});
-
 const setTipo = (newTipo) => {
   tipo.value = newTipo;
 };
-
-function obtenerFechaActual() {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, "0");
-  const day = String(now.getDate()).padStart(2, "0");
-  const hours = String(now.getHours()).padStart(2, "0");
-  const minutes = String(now.getMinutes()).padStart(2, "0");
-  return `${year}-${month}-${day}T${hours}:${minutes}`;
-}
 
 const cargarTransacciones = async () => {
   cargando.value = true;
@@ -385,10 +342,19 @@ const cargarTransacciones = async () => {
   }
 };
 
-const mostrarFormularioNueva = () => {
-  resetFormulario();
+const resetFormulario = () => {
+  monto.value = "";
+  tipo.value = "Ingreso";
+  categoria.value = "";
+  descripcion.value = "";
+  fecha.value = obtenerFechaActual();
+  guardando.value = false;
   isEditing.value = false;
   editingId.value = null;
+};
+
+const mostrarFormularioNueva = () => {
+  resetFormulario();
   showForm.value = true;
 };
 
@@ -402,6 +368,7 @@ const editarTransaccion = async (idTransaccion) => {
     fecha.value = transaccion.fecha
       ? new Date(transaccion.fecha).toISOString().slice(0, 16)
       : obtenerFechaActual();
+    
     isEditing.value = true;
     editingId.value = idTransaccion;
     showForm.value = true;
@@ -413,16 +380,7 @@ const editarTransaccion = async (idTransaccion) => {
 
 const cerrarFormulario = () => {
   showForm.value = false;
-  resetFormulario();
-};
-
-const resetFormulario = () => {
-  monto.value = "";
-  tipo.value = "Ingreso";
-  categoria.value = "";
-  descripcion.value = "";
-  fecha.value = obtenerFechaActual();
-  guardando.value = false;
+  setTimeout(resetFormulario, 200);
 };
 
 const guardarTransaccion = async () => {
@@ -464,8 +422,8 @@ const guardarTransaccion = async () => {
 };
 
 const borrarTransaccion = async (idTransaccion) => {
-  if (!confirm("¿Estás seguro de que deseas eliminar esta transacción?"))
-    return;
+  if (!confirm("¿Estás seguro de que deseas eliminar esta transacción?")) return;
+  
   try {
     await deleteTransaccion(idTransaccion);
     await cargarTransacciones();
@@ -473,10 +431,6 @@ const borrarTransaccion = async (idTransaccion) => {
     console.error("Error al eliminar:", error);
     alert("No se pudo eliminar la transacción.");
   }
-};
-
-const volver = () => {
-  router.back();
 };
 
 onMounted(() => {
@@ -490,10 +444,7 @@ onMounted(() => {
   padding-bottom: 180px;
   background: #f6f7f8;
   color: #0f172a;
-  font-family:
-    Manrope,
-    Noto Sans,
-    sans-serif;
+  font-family: Manrope, Noto Sans, sans-serif;
 }
 
 .screen-header {
@@ -505,24 +456,6 @@ onMounted(() => {
   gap: 12px;
   padding: 20px 18px 10px;
   background: #f6f7f8;
-}
-
-.back-button {
-  width: 44px;
-  height: 44px;
-  border: none;
-  border-radius: 16px;
-  background: #ffffff;
-  display: grid;
-  place-items: center;
-  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.08);
-  cursor: pointer;
-}
-
-.back-button svg {
-  width: 20px;
-  height: 20px;
-  color: #0f172a;
 }
 
 .screen-header h1 {
@@ -545,16 +478,51 @@ onMounted(() => {
 }
 
 .section h2 {
-  margin: 0 0 10px;
-  font-size: 1.55rem;
-  font-weight: 800;
+  margin: 0 0 12px;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #334155;
+  letter-spacing: -0.01em;
+}
+
+/* NUEVO: Estilos para la tarjeta de Balance Total */
+.balance-card {
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 24px 20px;
+  margin-bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.04);
+}
+
+.balance-card .summary-label {
+  margin: 0 0 4px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.balance-value {
+  margin: 0;
+  font-size: 2.4rem;
+  font-weight: 900;
+  color: #0f172a;
+  letter-spacing: -0.02em;
+}
+
+.balance-value.text-negative {
+  color: #dc2626;
 }
 
 .summary-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
-  margin-top: 10px;
 }
 
 .summary-card {
@@ -568,13 +536,8 @@ onMounted(() => {
   box-shadow: 0 10px 18px rgba(15, 23, 42, 0.06);
 }
 
-.ingreso-card {
-  background: #eff8ff;
-}
-
-.gasto-card {
-  background: #fff1f2;
-}
+.ingreso-card { background: #eff8ff; }
+.gasto-card { background: #fff1f2; }
 
 .summary-label {
   margin: 0;
@@ -582,13 +545,8 @@ onMounted(() => {
   font-weight: 700;
 }
 
-.ingreso-card .summary-label {
-  color: #0ea5e9;
-}
-
-.gasto-card .summary-label {
-  color: #dc2626;
-}
+.ingreso-card .summary-label { color: #0ea5e9; }
+.gasto-card .summary-label { color: #dc2626; }
 
 .summary-value {
   margin: 0;
@@ -597,11 +555,10 @@ onMounted(() => {
 }
 
 .transactions-section {
-  margin-top: 18px;
+  margin-top: 24px;
 }
 
 .transactions-list {
-  margin-top: 10px;
   display: grid;
   gap: 10px;
 }
@@ -616,9 +573,7 @@ onMounted(() => {
   box-shadow: 0 8px 20px rgba(15, 23, 42, 0.05);
 }
 
-.transaction-icon-wrapper {
-  flex-shrink: 0;
-}
+.transaction-icon-wrapper { flex-shrink: 0; }
 
 .transaction-icon {
   width: 42px;
@@ -628,13 +583,8 @@ onMounted(() => {
   place-items: center;
 }
 
-.transaction-icon.ingreso {
-  background: #dbeafe;
-}
-
-.transaction-icon.gasto {
-  background: #fee2e2;
-}
+.transaction-icon.ingreso { background: #dbeafe; }
+.transaction-icon.gasto { background: #fee2e2; }
 
 .transaction-icon.ingreso svg {
   width: 20px;
@@ -649,9 +599,7 @@ onMounted(() => {
   transform: rotate(180deg);
 }
 
-.transaction-info {
-  flex: 1;
-}
+.transaction-info { flex: 1; }
 
 .transaction-title {
   margin: 0 0 4px;
@@ -665,9 +613,7 @@ onMounted(() => {
   color: #5b7a9f;
 }
 
-.subtitle-gasto {
-  color: #dc2626;
-}
+.subtitle-gasto { color: #dc2626; }
 
 .transaction-note {
   margin: 6px 0 0;
@@ -714,18 +660,14 @@ onMounted(() => {
   border-color: #fecaca;
 }
 
-.amount-positive {
-  color: #16a34a;
-}
+.amount-positive { color: #16a34a; }
+.amount-negative { color: #dc2626; }
 
-.amount-negative {
-  color: #dc2626;
-}
-
-.empty-state,
-.loading {
+.empty-state, .loading {
   color: #475569;
   font-size: 0.98rem;
+  text-align: center;
+  padding: 20px;
 }
 
 .add-transaction-button {
@@ -754,9 +696,7 @@ onMounted(() => {
   filter: brightness(1.05);
 }
 
-.button-icon {
-  font-size: 1.4rem;
-}
+.button-icon { font-size: 1.4rem; }
 
 .transaction-form-modal {
   position: fixed;

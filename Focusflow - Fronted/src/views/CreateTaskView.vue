@@ -3,12 +3,10 @@
     <div class="task-page">
       <section class="task-card task-card--form">
         <div class="card-heading">
-          <!-- Botón de Atrás agregado aquí -->
           <button @click="goBack" class="back-button" aria-label="Volver a tareas">
             <span class="material-symbols-outlined">arrow_back</span>
           </button>
           <h1 class="card-title">{{ isEditing ? 'Editar Tarea' : 'Crear Tarea' }}</h1>
-          <!-- Div vacío para mantener el título centrado (flexbox) -->
           <div style="width: 40px;"></div>
         </div>
 
@@ -20,9 +18,7 @@
               <input id="task-name" v-model="task.nombre" @blur="touchField('nombre')"
                 :class="{ 'input-invalid': errors.nombre }" type="text" placeholder="Ej. Preparar la presentación" />
             </div>
-            <p v-if="errors.nombre" class="field-error">
-              * {{ errors.nombre }}
-            </p>
+            <p v-if="errors.nombre" class="field-error">* {{ errors.nombre }}</p>
           </div>
 
           <div class="field-group">
@@ -121,14 +117,12 @@
 </template>
 
 <script>
-import { createTask, updateTask, getRecordatorios, createRecordatorio, updateRecordatorio } from '../services/api'
-import { scheduleNotification } from '../utils/notifier'
+import { createTask, updateTask, getRecordatorios, createRecordatorio, updateRecordatorio } from '../services/api.js'
+import { scheduleNotification } from '../utils/notifier.js'
 import { useToast } from 'vue-toastification'
-import { createTask, updateTask } from "../services/api";
-import { useToast } from "vue-toastification";
 
 export default {
-  name: "CreateTask",
+  name: 'CreateTask',
   data() {
     return {
       taskId: null,
@@ -137,22 +131,22 @@ export default {
       originalTaskTitle: '',
       isEditing: false,
       task: {
-        nombre: "",
-        icono: "",
-        esfuerzo: "",
-        prioridad: "",
-        descripcion: "",
-        fechaLimite: "",
-        recordatorio: "",
-        estado: "Por Hacer",
+        nombre: '',
+        icono: '',
+        esfuerzo: '',
+        prioridad: '',
+        descripcion: '',
+        fechaLimite: '',
+        recordatorio: '',
+        estado: 'Por Hacer',
       },
-      emojiOptions: ["😊", "💡", "🔥", "🎯", "🧠", "⭐"],
+      emojiOptions: ['😊', '💡', '🔥', '🎯', '🧠', '⭐'],
       errors: {
-        nombre: "",
-        esfuerzo: "",
-        prioridad: "",
-        fechaLimite: "",
-        recordatorio: "",
+        nombre: '',
+        esfuerzo: '',
+        prioridad: '',
+        fechaLimite: '',
+        recordatorio: '',
       },
       touched: {
         nombre: false,
@@ -162,20 +156,16 @@ export default {
         recordatorio: false,
       },
       toast: useToast(),
-    };
+    }
   },
   async created() {
     const editingTask = sessionStorage.getItem('editingTask')
-  created() {
-    const editingTask = sessionStorage.getItem("editingTask");
     if (editingTask) {
-      const task = JSON.parse(editingTask);
+      const task = JSON.parse(editingTask)
 
       this.taskId = task.idTarea || task.id
       this.isEditing = true
       this.originalTaskTitle = task.titulo || ''
-      this.taskId = task.idTarea || task.id;
-      this.isEditing = true;
 
       this.task = {
         nombre: task.titulo || '',
@@ -190,7 +180,6 @@ export default {
 
       sessionStorage.removeItem('editingTask')
       await this.loadRecordatorioForEditing(task)
-      sessionStorage.removeItem("editingTask");
     }
   },
   methods: {
@@ -230,49 +219,49 @@ export default {
       }
     },
     parseUtcDateTime(dateString) {
-      if (!dateString) return null;
-      if (dateString.includes("Z") || dateString.includes("+")) {
-        return new Date(dateString);
+      if (!dateString) return null
+      if (dateString.includes('Z') || dateString.includes('+')) {
+        return new Date(dateString)
       }
-      return new Date(dateString.replace(" ", "T") + "Z");
+      return new Date(dateString.replace(' ', 'T') + 'Z')
     },
     formatDateForInput(dateString) {
-      const date = this.parseUtcDateTime(dateString);
-      if (!date || isNaN(date)) return "";
+      const date = this.parseUtcDateTime(dateString)
+      if (!date || isNaN(date)) return ''
 
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, "0");
-      const day = String(date.getDate()).padStart(2, "0");
-      const hours = String(date.getHours()).padStart(2, "0");
-      const minutes = String(date.getMinutes()).padStart(2, "0");
+      const year = date.getFullYear()
+      const month = String(date.getMonth() + 1).padStart(2, '0')
+      const day = String(date.getDate()).padStart(2, '0')
+      const hours = String(date.getHours()).padStart(2, '0')
+      const minutes = String(date.getMinutes()).padStart(2, '0')
 
-      return `${year}-${month}-${day}T${hours}:${minutes}`;
+      return `${year}-${month}-${day}T${hours}:${minutes}`
     },
     toUtcString(value) {
-      if (!value) return "";
-      const [date, time] = value.split("T");
-      if (!date || !time) return "";
-      const dateParts = date.split("-").map(Number);
-      const timeParts = time.split(":").map(Number);
+      if (!value) return ''
+      const [date, time] = value.split('T')
+      if (!date || !time) return ''
+      const dateParts = date.split('-').map(Number)
+      const timeParts = time.split(':').map(Number)
       return new Date(
         dateParts[0],
         dateParts[1] - 1,
         dateParts[2],
         timeParts[0],
         timeParts[1] || 0,
-        timeParts[2] || 0,
-      ).toISOString();
+        timeParts[2] || 0
+      ).toISOString()
     },
     touchField(field) {
-      this.touched[field] = true;
-      this.validateField(field);
+      this.touched[field] = true
+      this.validateField(field)
     },
     selectEmoji(emoji) {
-      this.task.icono = emoji;
+      this.task.icono = emoji
     },
     selectPriority(value) {
-      this.task.prioridad = value;
-      this.touchField("prioridad");
+      this.task.prioridad = value
+      this.touchField('prioridad')
     },
     selectEffort(value) {
       this.task.esfuerzo = value
@@ -282,23 +271,20 @@ export default {
       this.task.estado = value
     },
     validateField(field) {
-      const value = this.task[field];
-      if (
-        field !== "recordatorio" &&
-        (!value || value.toString().trim() === "")
-      ) {
-        this.errors[field] = "Este campo es obligatorio";
-        return;
+      const value = this.task[field]
+      if (field !== 'recordatorio' && (!value || value.toString().trim() === '')) {
+        this.errors[field] = 'Este campo es obligatorio'
+        return
       }
-      this.errors[field] = "";
+      this.errors[field] = ''
     },
     validateForm() {
-      const fields = ["nombre", "esfuerzo", "prioridad", "fechaLimite"];
+      const fields = ['nombre', 'esfuerzo', 'prioridad', 'fechaLimite']
       fields.forEach((field) => {
-        this.touched[field] = true;
-        this.validateField(field);
-      });
-      return fields.every((field) => !this.errors[field]);
+        this.touched[field] = true
+        this.validateField(field)
+      })
+      return fields.every((field) => !this.errors[field])
     },
     buildRecordatorioPayload(fechaHora, activo = true) {
       return {
@@ -352,7 +338,7 @@ export default {
       })
     },
     async crearTarea() {
-      if (!this.validateForm()) return;
+      if (!this.validateForm()) return
 
       try {
         if (this.isEditing && this.taskId) {
@@ -368,14 +354,7 @@ export default {
           }
           await updateTask(this.taskId, updatePayload)
           await this.saveRecordatorio()
-          this.toast.success('Tarea actualizada con éxito')
-            fechaLimite: this.toUtcString(this.task.fechaLimite),
-          };
-          await updateTask(this.taskId, updatePayload);
-          this.toast.success("Tarea actualizada con éxito", {
-            position: "top-right",
-            timeout: 4000,
-          });
+          this.toast.success('Tarea actualizada con éxito', { position: 'top-right', timeout: 4000 })
         } else {
           const createPayload = {
             titulo: this.task.nombre,
@@ -388,35 +367,22 @@ export default {
             recordatorio: this.task.recordatorio ? this.toUtcString(this.task.recordatorio) : null,
           }
           await createTask(createPayload)
-          this.toast.success('Tarea generada con éxito')
           await this.saveRecordatorio()
-            recordatorio: this.toUtcString(this.task.recordatorio),
-          };
-          await createTask(createPayload);
-          this.toast.success("Tarea generada con éxito", {
-            position: "top-right",
-            timeout: 2000,
-          });
+          this.toast.success('Tarea generada con éxito', { position: 'top-right', timeout: 2000 })
         }
 
         this.$router.push('/tasks')
       } catch (error) {
         console.error(error)
-        this.toast.error('Error al procesar la tarea')
-        console.error(error);
-        const message =
-          error?.response?.data?.message ||
-          error?.message ||
-          "Error al procesar la tarea";
-        alert(message);
+        const message = error?.response?.data?.message || error?.message || 'Error al procesar la tarea'
+        this.toast.error(message)
       }
     },
-    // Nueva función para el botón de retroceso
     goBack() {
       this.$router.push('/tasks')
     }
   },
-};
+}
 </script>
 
 <style scoped>
@@ -424,7 +390,6 @@ export default {
 .task-page-container {
   min-height: 100vh;
   background-color: #f3f4f6;
-  /* Fondo base para móvil */
   display: flex;
   justify-content: center;
   align-items: flex-start;
@@ -435,14 +400,11 @@ export default {
 @media (min-width: 768px) {
   .task-page-container {
     padding: 40px 20px;
-    /* Fondo opcional para PC: un degradado suave o color sólido */
     background: linear-gradient(135deg, #e0e7ff 0%, #f3f4f6 100%);
     align-items: center;
-    /* Centrar verticalmente en PC */
   }
 
   .task-card {
-    /* Efecto "glass" sutil para resaltar la tarjeta */
     background: rgba(255, 255, 255, 0.95) !important;
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.5);
@@ -453,9 +415,7 @@ export default {
 .task-page {
   width: 100%;
   max-width: 600px;
-  /* Un poco más ancho para respirar mejor en PC */
   padding: 0;
-  /* Quitamos padding aquí, se lo damos al contenedor y la tarjeta */
 }
 
 /* Ajustes para la tarjeta en móvil */
@@ -466,7 +426,6 @@ export default {
 
   .task-card {
     border-radius: 20px;
-    /* Bordes un poco menos pronunciados en móvil */
   }
 }
 
@@ -476,17 +435,15 @@ export default {
   box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
   padding: 24px 22px;
   margin-bottom: 0;
-  /* Quitamos el margen inferior porque ya no hay footer */
   width: 100%;
   box-sizing: border-box;
 }
 
-/* Nuevo estilo para la cabecera con botón de atrás */
+/* Cabecera con botón de atrás */
 .card-heading {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  /* Distribuye el espacio entre botón, título y espacio vacío */
   margin-bottom: 24px;
 }
 
@@ -512,7 +469,6 @@ export default {
 .card-title {
   margin: 0;
   font-size: 1.5rem;
-  /* Un poco más pequeño para acomodar el botón */
   font-weight: 800;
   color: #111827;
   text-align: center;

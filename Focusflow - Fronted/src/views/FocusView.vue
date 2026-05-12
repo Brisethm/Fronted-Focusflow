@@ -1,15 +1,13 @@
 <template>
   <div class="focus-root">
     <!-- Header -->
-    <header class="header">
-      <button class="icon-btn">
-        <svg width="22" height="22" fill="currentColor" viewBox="0 0 256 256">
-          <path
-            d="M224,128a8,8,0,0,1-8,8H40a8,8,0,0,1,0-16H216A8,8,0,0,1,224,128ZM40,72H216a8,8,0,0,0,0-16H40a8,8,0,0,0,0,16ZM216,184H40a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16Z" />
-        </svg>
-      </button>
-      <h1 class="header-title">Sesión de Enfoque</h1>
-    </header>
+   <header class="header">
+  <!-- El botón sigue ahí físicamente pero no se ve ni se puede clickear -->
+  <button class="invisible pointer-events-none">
+    <svg width="22" height="22">...</svg>
+  </button>
+  <h1 class="header-title">Sesión de Enfoque</h1>
+</header>
 
     <!-- Mode Selector -->
     <div class="mode-bar-wrap">

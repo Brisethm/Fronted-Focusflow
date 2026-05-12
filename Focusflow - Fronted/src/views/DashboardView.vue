@@ -9,14 +9,23 @@
     <div class="relative flex flex-col min-h-screen justify-between">
       <main class="flex-grow">
         <header class="flex items-center justify-between p-4 bg-transparent">
-          <button @click="$router.push('/profile')"
-            class="text-slate-700 dark:text-slate-200 hover:opacity-80 transition-opacity" type="button"
-            aria-label="Abrir perfil">
-            <svg class="w-8 h-8" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
-              <path fill="currentColor"
-                d="M224,128a8,8,0,0,1-8,8H40a8,8,0,0,1,0-16H216A8,8,0,0,1,224,128ZM40,72H216a8,8,0,0,0,0-16H40a8,8,0,0,0,0,16ZM216,184H40a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16Z" />
+          <router-link
+            to="/profile"
+            class="text-slate-700 dark:text-slate-200 inline-block"
+            aria-label="Ir al perfil"
+          >
+            <!-- Aquí pones el icono que elegimos o el contenido del botón -->
+             <svg
+              class="icon"
+              viewBox="0 0 256 256"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M224,128a8,8,0,0,1-8,8H40a8,8,0,0,1,0-16H216A8,8,0,0,1,224,128ZM40,72H216a8,8,0,0,0,0-16H40a8,8,0,0,0,0,16ZM216,184H40a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16Z"
+              />
             </svg>
-          </button>
+          </router-link>
+
           <h1 class="dashboard-heading-perpetua text-3xl md:text-4xl">
             Resumen
           </h1>
@@ -45,7 +54,8 @@
               <div>
                 <h2 class="dashboard-section-title">¿Cómo te sientes hoy?</h2>
                 <p class="text-sm text-slate-600 dark:text-slate-300 mt-1">
-                  Registra tu energía y tu estado emocional con estilo y claridad.
+                  Registra tu energía y tu estado emocional con estilo y
+                  claridad.
                 </p>
               </div>
               <span
@@ -139,7 +149,7 @@
                   >
                     <span class="text-2xl emoji-bounce">{{
                       option.emoji
-                      }}</span>
+                    }}</span>
                     <span class="text-xs font-medium">{{ option.label }}</span>
                   </button>
                 </div>
@@ -175,7 +185,7 @@
                   >
                   <span class="text-slate-900 dark:text-slate-100">{{
                     selectedMoodLabel
-                    }}</span>
+                  }}</span>
                 </p>
                 <p class="text-sm text-slate-600 dark:text-slate-400">
                   <span class="font-semibold text-slate-900 dark:text-slate-100"
@@ -194,7 +204,7 @@
                   >
                   <span class="text-slate-900 dark:text-slate-100">{{
                     optionalNote
-                    }}</span>
+                  }}</span>
                 </p>
                 <p
                   v-if="lastSavedAt"
@@ -252,15 +262,22 @@
                 <div
                   class="flex items-center justify-center rounded-full size-10 bg-primary/10 dark:bg-primary/20 text-primary"
                 >
-                  <svg
-                    class="icon"
-                    viewBox="0 0 256 256"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Z"
-                    />
-                  </svg>
+                  <span class="text-blue-500">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-6 w-6"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      stroke-width="2"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
+                      />
+                    </svg>
+                  </span>
                 </div>
                 <div class="flex-1">
                   <div class="flex items-center justify-between">
@@ -291,7 +308,7 @@
             <h2
               class="text-xl font-bold text-content-light dark:text-content-dark mb-4"
             >
-              Progreso
+              Progreso Diario
             </h2>
             <div
               class="p-4 rounded-lg bg-background-light dark:bg-background-dark shadow-sm"
@@ -305,12 +322,16 @@
                 <p
                   class="text-sm font-medium text-subtle-light dark:text-subtle-dark"
                 >
-                  3/4
+                  {{ completedTodayTaskCount }}/{{ totalTodayTaskCount }}
                 </p>
               </div>
-              <div class="w-full bg-border-light dark:bg-border-dark rounded-full h-2">
-                <div class="bg-primary h-2 rounded-full transition-all duration-500 ease-in-out"
-                  :style="{ width: taskProgressPercent + '%' }"></div>
+              <div
+                class="w-full bg-border-light dark:bg-border-dark rounded-full h-2"
+              >
+                <div
+                  class="bg-primary h-2 rounded-full transition-all duration-500 ease-in-out"
+                  :style="{ width: taskProgressPercent + '%' }"
+                ></div>
               </div>
             </div>
           </section>
@@ -381,7 +402,6 @@ const getTodayTasks = async () => {
     const tasks = await getTasks();
     allTasks.value = tasks;
 
-    // Fecha de hoy en formato YYYY-MM-DD según la zona local del usuario
     const todayStr = new Date().toLocaleDateString("en-CA", {
       timeZone: userTimeZone,
     });
@@ -392,7 +412,9 @@ const getTodayTasks = async () => {
       const taskDate = parseUtcDateTime(deadline);
       if (!taskDate) return false;
 
-      const taskLocalStr = taskDate.toLocaleDateString("en-CA", { timeZone: userTimeZone });
+      const taskLocalStr = taskDate.toLocaleDateString("en-CA", {
+        timeZone: userTimeZone,
+      });
       return taskLocalStr === todayStr;
     });
   } catch (e) {
@@ -428,15 +450,22 @@ const formatStatus = (status) => {
 // --- LÓGICA DE PROGRESO DIARIO MODIFICADA ---
 
 // Calculamos completadas basándonos SÓLO en las tareas de hoy
-const completedTodayTaskCount = computed(() =>
-  todayTasks.value.filter((task) => String(task.estado).toLowerCase() === 'completado').length
+const completedTodayTaskCount = computed(
+  () =>
+    todayTasks.value.filter(
+      (task) => String(task.estado).toLowerCase() === "completado",
+    ).length,
 );
 
 // El total son solo las tareas de hoy
 const totalTodayTaskCount = computed(() => todayTasks.value.length);
 
 const taskProgressPercent = computed(() =>
-  totalTodayTaskCount.value ? Math.round((completedTodayTaskCount.value / totalTodayTaskCount.value) * 100) : 0
+  totalTodayTaskCount.value
+    ? Math.round(
+        (completedTodayTaskCount.value / totalTodayTaskCount.value) * 100,
+      )
+    : 0,
 );
 
 const statusClasses = (status) => {
