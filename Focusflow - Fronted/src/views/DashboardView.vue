@@ -9,19 +9,12 @@
     <div class="relative flex flex-col min-h-screen justify-between">
       <main class="flex-grow">
         <header class="flex items-center justify-between p-4 bg-transparent">
-          <button
-            class="text-slate-700 dark:text-slate-200"
-            type="button"
-            aria-label="Abrir menú"
-          >
-            <svg
-              class="icon"
-              viewBox="0 0 256 256"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M224,128a8,8,0,0,1-8,8H40a8,8,0,0,1,0-16H216A8,8,0,0,1,224,128ZM40,72H216a8,8,0,0,0,0-16H40a8,8,0,0,0,0,16ZM216,184H40a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16Z"
-              />
+          <button @click="$router.push('/profile')"
+            class="text-slate-700 dark:text-slate-200 hover:opacity-80 transition-opacity" type="button"
+            aria-label="Abrir perfil">
+            <svg class="w-8 h-8" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+              <path fill="currentColor"
+                d="M224,128a8,8,0,0,1-8,8H40a8,8,0,0,1,0-16H216A8,8,0,0,1,224,128ZM40,72H216a8,8,0,0,0,0-16H40a8,8,0,0,0,0,16ZM216,184H40a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16Z" />
             </svg>
           </button>
           <h1 class="dashboard-heading-perpetua text-3xl md:text-4xl">
@@ -146,7 +139,7 @@
                   >
                     <span class="text-2xl emoji-bounce">{{
                       option.emoji
-                    }}</span>
+                      }}</span>
                     <span class="text-xs font-medium">{{ option.label }}</span>
                   </button>
                 </div>
@@ -182,7 +175,7 @@
                   >
                   <span class="text-slate-900 dark:text-slate-100">{{
                     selectedMoodLabel
-                  }}</span>
+                    }}</span>
                 </p>
                 <p class="text-sm text-slate-600 dark:text-slate-400">
                   <span class="font-semibold text-slate-900 dark:text-slate-100"
@@ -201,7 +194,7 @@
                   >
                   <span class="text-slate-900 dark:text-slate-100">{{
                     optionalNote
-                  }}</span>
+                    }}</span>
                 </p>
                 <p
                   v-if="lastSavedAt"
@@ -315,13 +308,9 @@
                   3/4
                 </p>
               </div>
-              <div
-                class="w-full bg-border-light dark:bg-border-dark rounded-full h-2"
-              >
-                <div
-                  class="bg-primary h-2 rounded-full"
-                  style="width: 75%"
-                ></div>
+              <div class="w-full bg-border-light dark:bg-border-dark rounded-full h-2">
+                <div class="bg-primary h-2 rounded-full transition-all duration-500 ease-in-out"
+                  :style="{ width: taskProgressPercent + '%' }"></div>
               </div>
             </div>
           </section>
@@ -403,9 +392,7 @@ const getTodayTasks = async () => {
       const taskDate = parseUtcDateTime(deadline);
       if (!taskDate) return false;
 
-      const taskLocalStr = taskDate.toLocaleDateString("en-CA", {
-        timeZone: userTimeZone,
-      });
+      const taskLocalStr = taskDate.toLocaleDateString("en-CA", { timeZone: userTimeZone });
       return taskLocalStr === todayStr;
     });
   } catch (e) {

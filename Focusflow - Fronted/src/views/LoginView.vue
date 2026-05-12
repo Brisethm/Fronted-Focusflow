@@ -141,7 +141,7 @@
 
 <script>
 import loginIllustration from "../assets/login-illustration.svg";
-import { login } from "../services/api";
+import { login, getProfile } from "../services/api";
 import { useToast } from "vue-toastification";
 
 export default {
@@ -202,25 +202,30 @@ export default {
 
         async handleSubmit() {
             this.submitted = true;
-
             const isValid = this.validateForm();
             if (!isValid) return;
 
             this.loading = true;
 
             try {
-                const response = await login(this.form.email, this.form.password, this.form.rememberMe);
-                this.loading = false;
-                alert("Login exitoso: " + JSON.stringify(response));
-                this.$router.push("/dashboard");
-            } catch (error) {
-                this.loading = false;
-                console.error(error);
-                this.toast.error("Usuario y/o contraseña incorrectos", { timeout: 3000 });
-            }
+                await login(this.form.email, this.form.password, this.form.rememberMe);
 
+                const profile = await getProfile();
+
+                if (profile.rol === 'admin') {
+                    this.$router.push("/admin-panel");
+                } else if (profile.rol === 'support') {
+                    this.$router.push("/support-dashboard");
+                } else {
+                    this.$router.push("/dashboard");
+                }
+
+            } catch (error) {
+                this.toast.error(error.response?.data?.message || "Error al iniciar sesión. Verifica tus credenciales.");
+            } finally {
+                this.loading = false;
+            }
         }
     }
 };
-
 </script>
