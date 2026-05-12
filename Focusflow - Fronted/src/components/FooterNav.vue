@@ -64,8 +64,13 @@ const route = useRoute();
 
 // ✅ Deriva el tab activo desde la ruta, sin depender de estado interno
 const currentRouteTab = computed(() => {
-  const match = navItems.find((item) => item.href === route.path);
-  return match?.id ?? "inicio";
+  const matches = navItems
+    .filter((item) => item.href === route.path || route.path.startsWith(item.href + '/'))
+    .sort((a, b) => b.href.length - a.href.length);
+  if (matches.length > 0) return matches[0].id;
+
+  const fallback = navItems.find((item) => route.path === item.href || route.path.startsWith(item.href));
+  return fallback?.id ?? 'inicio';
 });
 
 const currentTab = computed(() => props.activeTab ?? currentRouteTab.value);

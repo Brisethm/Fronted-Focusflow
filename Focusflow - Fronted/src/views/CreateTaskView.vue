@@ -26,7 +26,9 @@
                 placeholder="Ej. Preparar la presentación"
               />
             </div>
-            <p v-if="errors.nombre" class="field-error">* {{ errors.nombre }}</p>
+            <p v-if="errors.nombre" class="field-error">
+              * {{ errors.nombre }}
+            </p>
           </div>
 
           <div class="field-group">
@@ -181,32 +183,32 @@
 </template>
 
 <script>
-import { createTask, updateTask } from '../services/api'
-import { useToast } from 'vue-toastification'
+import { createTask, updateTask } from "../services/api";
+import { useToast } from "vue-toastification";
 
 export default {
-  name: 'CreateTask',
+  name: "CreateTask",
   data() {
     return {
       taskId: null,
       isEditing: false,
       task: {
-        nombre: '',
-        icono: '',
-        esfuerzo: '',
-        prioridad: '',
-        descripcion: '',
-        fechaLimite: '',
-        recordatorio: '',
-        estado: 'Por Hacer',
+        nombre: "",
+        icono: "",
+        esfuerzo: "",
+        prioridad: "",
+        descripcion: "",
+        fechaLimite: "",
+        recordatorio: "",
+        estado: "Por Hacer",
       },
-      emojiOptions: ['😊', '💡', '🔥', '🎯', '🧠', '⭐'],
+      emojiOptions: ["😊", "💡", "🔥", "🎯", "🧠", "⭐"],
       errors: {
-        nombre: '',
-        esfuerzo: '',
-        prioridad: '',
-        fechaLimite: '',
-        recordatorio: '',
+        nombre: "",
+        esfuerzo: "",
+        prioridad: "",
+        fechaLimite: "",
+        recordatorio: "",
       },
       touched: {
         nombre: false,
@@ -216,15 +218,15 @@ export default {
         recordatorio: false,
       },
       toast: useToast(),
-    }
+    };
   },
   created() {
-    const editingTask = sessionStorage.getItem('editingTask')
+    const editingTask = sessionStorage.getItem("editingTask");
     if (editingTask) {
-      const task = JSON.parse(editingTask)
+      const task = JSON.parse(editingTask);
 
-      this.taskId = task.idTarea || task.id
-      this.isEditing = true
+      this.taskId = task.idTarea || task.id;
+      this.isEditing = true;
 
       this.task = {
         nombre: task.titulo || '',
@@ -237,54 +239,54 @@ export default {
         recordatorio: task.recordatorio ? this.formatDateForInput(task.recordatorio) : '',
       }
 
-      sessionStorage.removeItem('editingTask')
+      sessionStorage.removeItem("editingTask");
     }
   },
   methods: {
     parseUtcDateTime(dateString) {
-      if (!dateString) return null
-      if (dateString.includes('Z') || dateString.includes('+')) {
-        return new Date(dateString)
+      if (!dateString) return null;
+      if (dateString.includes("Z") || dateString.includes("+")) {
+        return new Date(dateString);
       }
-      return new Date(dateString.replace(' ', 'T') + 'Z')
+      return new Date(dateString.replace(" ", "T") + "Z");
     },
     formatDateForInput(dateString) {
-      const date = this.parseUtcDateTime(dateString)
-      if (!date || isNaN(date)) return ''
+      const date = this.parseUtcDateTime(dateString);
+      if (!date || isNaN(date)) return "";
 
-      const year = date.getFullYear()
-      const month = String(date.getMonth() + 1).padStart(2, '0')
-      const day = String(date.getDate()).padStart(2, '0')
-      const hours = String(date.getHours()).padStart(2, '0')
-      const minutes = String(date.getMinutes()).padStart(2, '0')
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      const hours = String(date.getHours()).padStart(2, "0");
+      const minutes = String(date.getMinutes()).padStart(2, "0");
 
-      return `${year}-${month}-${day}T${hours}:${minutes}`
+      return `${year}-${month}-${day}T${hours}:${minutes}`;
     },
     toUtcString(value) {
-      if (!value) return ''
-      const [date, time] = value.split('T')
-      if (!date || !time) return ''
-      const dateParts = date.split('-').map(Number)
-      const timeParts = time.split(':').map(Number)
+      if (!value) return "";
+      const [date, time] = value.split("T");
+      if (!date || !time) return "";
+      const dateParts = date.split("-").map(Number);
+      const timeParts = time.split(":").map(Number);
       return new Date(
         dateParts[0],
         dateParts[1] - 1,
         dateParts[2],
         timeParts[0],
         timeParts[1] || 0,
-        timeParts[2] || 0
-      ).toISOString()
+        timeParts[2] || 0,
+      ).toISOString();
     },
     touchField(field) {
-      this.touched[field] = true
-      this.validateField(field)
+      this.touched[field] = true;
+      this.validateField(field);
     },
     selectEmoji(emoji) {
-      this.task.icono = emoji
+      this.task.icono = emoji;
     },
     selectPriority(value) {
-      this.task.prioridad = value
-      this.touchField('prioridad')
+      this.task.prioridad = value;
+      this.touchField("prioridad");
     },
     selectEffort(value) {
       this.task.esfuerzo = value
@@ -294,23 +296,26 @@ export default {
       this.task.estado = value
     },
     validateField(field) {
-      const value = this.task[field]
-      if (field !== 'recordatorio' && (!value || value.toString().trim() === '')) {
-        this.errors[field] = 'Este campo es obligatorio'
-        return
+      const value = this.task[field];
+      if (
+        field !== "recordatorio" &&
+        (!value || value.toString().trim() === "")
+      ) {
+        this.errors[field] = "Este campo es obligatorio";
+        return;
       }
-      this.errors[field] = ''
+      this.errors[field] = "";
     },
     validateForm() {
-      const fields = ['nombre', 'esfuerzo', 'prioridad', 'fechaLimite']
+      const fields = ["nombre", "esfuerzo", "prioridad", "fechaLimite"];
       fields.forEach((field) => {
-        this.touched[field] = true
-        this.validateField(field)
-      })
-      return fields.every((field) => !this.errors[field])
+        this.touched[field] = true;
+        this.validateField(field);
+      });
+      return fields.every((field) => !this.errors[field]);
     },
     async crearTarea() {
-      if (!this.validateForm()) return
+      if (!this.validateForm()) return;
 
       try {
         if (this.isEditing && this.taskId) {
@@ -321,10 +326,13 @@ export default {
             prioridad: this.task.prioridad,
             nivelEsfuerzo: this.task.esfuerzo,
             estado: this.task.estado,
-            fechaLimite: this.toUtcString(this.task.fechaLimite)
-          }
-          await updateTask(this.taskId, updatePayload)
-          this.toast.success('Tarea actualizada con éxito', { position: 'top-right', timeout: 4000 })
+            fechaLimite: this.toUtcString(this.task.fechaLimite),
+          };
+          await updateTask(this.taskId, updatePayload);
+          this.toast.success("Tarea actualizada con éxito", {
+            position: "top-right",
+            timeout: 4000,
+          });
         } else {
           const createPayload = {
             titulo: this.task.nombre,
@@ -335,16 +343,22 @@ export default {
             descripcion: this.task.descripcion,
             icono: this.task.icono,
             recordatorio: this.toUtcString(this.task.recordatorio),
-          }
-          await createTask(createPayload)
-          this.toast.success('Tarea generada con éxito', { position: 'top-right', timeout: 2000 })
+          };
+          await createTask(createPayload);
+          this.toast.success("Tarea generada con éxito", {
+            position: "top-right",
+            timeout: 2000,
+          });
         }
 
         this.$router.push('/tasks')
       } catch (error) {
-        console.error(error)
-        const message = error?.response?.data?.message || error?.message || 'Error al procesar la tarea'
-        alert(message)
+        console.error(error);
+        const message =
+          error?.response?.data?.message ||
+          error?.message ||
+          "Error al procesar la tarea";
+        alert(message);
       }
     },
     // Nueva función para el botón de retroceso
@@ -352,7 +366,7 @@ export default {
       this.$router.push('/tasks')
     }
   },
-}
+};
 </script>
 
 <style scoped>
