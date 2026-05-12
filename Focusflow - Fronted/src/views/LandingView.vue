@@ -1,208 +1,456 @@
 <template>
-  <div class="bg-background-light dark:bg-background-dark font-display min-h-screen flex flex-col justify-between">
+  <div class="landing-container bg-slate-50 font-display min-h-screen flex flex-col relative overflow-hidden">
 
-    <!-- CONTENIDO PRINCIPAL -->
-    <div class="flex flex-col md:flex-row items-center justify-between px-6 md:px-16 py-10">
+    <!-- Glow -->
+    <div class="ambient-glow glow-blue"></div>
+    <div class="ambient-glow glow-purple"></div>
 
-      <div class="max-w-xl text-center md:text-left animate-fade-in">
+    <!-- HERO -->
+    <main class="flex-grow flex items-center relative z-10">
+      <div class="container mx-auto px-6 md:px-12 lg:px-16 py-12 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
 
-        <!-- LOGO / BRAND -->
-        <div class="flex items-center justify-center md:justify-start gap-2 mb-4">
-          <div class="w-9 h-9 rounded-full bg-primary flex items-center justify-center text-white font-bold">
-            F
+        <!-- Left -->
+        <section class="hero-content text-center lg:text-left">
+
+          <!-- Title -->
+          <h1
+            class="text-5xl md:text-6xl lg:text-7xl font-extrabold text-slate-800 leading-[1.05] mb-5 tracking-normal">
+
+            Organiza tu vida y
+
+            <br class="hidden lg:block" />
+
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#13a4ec] to-blue-400">
+              enfócate
+            </span>
+
+            en un solo lugar.
+          </h1>
+
+          <!-- Description -->
+          <p class="text-slate-600 text-lg md:text-xl mb-6 max-w-xl mx-auto lg:mx-0 leading-relaxed">
+
+            Tu santuario digital diseñado para cultivar la calma y maximizar tu
+            productividad consciente.
+          </p>
+
+          <!-- Rotating text -->
+          <div class="h-8 mb-8 overflow-hidden">
+
+            <Transition name="fade" mode="out-in">
+              <div :key="currentIndex" class="text-[#13a4ec] font-medium text-lg">
+
+                {{ features[currentIndex] }}
+              </div>
+            </Transition>
+
           </div>
-          <span class="text-primary font-semibold">FocusFlow</span>
-        </div>
 
-        <!-- TITULO -->
-        <h1 class="text-4xl md:text-6xl font-extrabold text-gray-800 dark:text-white leading-tight mb-4">
-          Bienvenido a <span class="text-primary italic">FocusFlow</span>
-        </h1>
+          <!-- CTA -->
+          <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
 
-        <!-- SUBTITULO -->
-        <p class="text-gray-600 dark:text-gray-300 text-lg md:text-xl mb-8 max-w-md">
-          Tu santuario digital diseñado para cultivar la calma y maximizar tu productividad consciente.
-        </p>
+            <!-- Login -->
+            <button @click="goLogin"
+              class="group px-8 py-3.5 rounded-2xl bg-[#13a4ec] text-white font-semibold shadow-lg shadow-[#13a4ec]/30 hover:-translate-y-1 hover:shadow-[#13a4ec]/50 transition-all duration-300 flex items-center justify-center gap-2">
 
-        <!-- BOTONES (ESTILO MODERNO TIPO CARD) -->
-        <div class="flex flex-col md:flex-row gap-4 items-center md:items-start">
+              Iniciar Sesión
 
-          <button @click="goToLogin"
-            class="w-full md:w-auto px-8 py-3 rounded-full bg-primary text-white font-semibold shadow-lg hover:scale-105 transition flex items-center justify-center gap-2">
-            <span>Iniciar Sesión</span>
-          </button>
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                class="group-hover:translate-x-1 transition-transform duration-300">
 
-          <button @click="goToRegister"
-            class="w-full md:w-auto px-8 py-3 rounded-full bg-white dark:bg-gray-800 text-primary border border-primary font-semibold hover:scale-105 transition flex items-center justify-center gap-2">
-            <span>Registrarse</span>
-          </button>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
 
-        </div>
+                <polyline points="12 5 19 12 12 19"></polyline>
 
+              </svg>
+            </button>
+
+            <!-- Register -->
+            <button @click="goRegister"
+              class="px-8 py-3.5 rounded-2xl bg-white text-[#13a4ec] border border-blue-100 font-semibold hover:border-[#13a4ec] hover:bg-blue-50 transition-all duration-300 shadow-sm">
+
+              Registrarse
+            </button>
+
+          </div>
+        </section>
+
+        <!-- Right -->
+        <section class="hero-visual flex justify-center items-center relative mt-10 lg:mt-0">
+
+          <!-- Background -->
+          <div class="absolute inset-0 flex justify-center items-center">
+
+            <div
+              class="w-[90%] h-[90%] rounded-[4rem] bg-gradient-to-tr from-[#13a4ec]/15 via-blue-300/15 to-purple-300/15 blur-2xl">
+            </div>
+
+          </div>
+
+          <!-- Image -->
+          <div class="relative z-10 p-4 md:p-8 w-[520px] lg:w-[680px] flex items-center justify-center">
+
+            <img src="/hero.svg" alt="FocusFlow" width="680" height="680" loading="eager" decoding="async"
+              class="floating-illustration select-none pointer-events-none w-full h-auto" />
+          </div>
+
+        </section>
       </div>
+    </main>
 
-      <!-- CARRUSEL DE MEDITACIÓN -->
-      <div class="w-full md:w-1/2 mt-10 md:mt-0 flex justify-center animate-slide-in">
+    <!-- FOOTER -->
+    <footer
+      class="bg-white border-t border-blue-50 text-slate-600 pt-12 pb-6 relative z-10 shadow-[0_-4px_30px_rgba(0,0,0,0.02)]">
 
-        <div class="relative w-full max-w-md overflow-hidden rounded-2xl shadow-lg">
+      <div class="container mx-auto px-6 md:px-12 lg:px-16 grid grid-cols-1 md:grid-cols-3 gap-10">
 
-          <!-- TRACK -->
-          <div ref="carousel" class="flex overflow-x-auto snap-x snap-mandatory scroll-smooth hide-scrollbar">
-
-            <!-- Slide 1 -->
-            <div class="min-w-full snap-center relative">
-              <img class="w-full h-[420px] object-cover"
-                src="https://images.unsplash.com/photo-1506126613408-eca07ce68773" />
-              <div class="absolute bottom-0 w-full bg-black/40 p-4 text-white">
-                <p class="font-bold">Respira profundo</p>
-              </div>
-            </div>
-
-            <!-- Slide 2 -->
-            <div class="min-w-full snap-center relative">
-              <img class="w-full h-[420px] object-cover"
-                src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438" />
-              <div class="absolute bottom-0 w-full bg-black/40 p-4 text-white">
-                <p class="font-bold">Calma interior</p>
-              </div>
-            </div>
-
-            <!-- Slide 3 -->
-            <div class="min-w-full snap-center relative">
-              <img class="w-full h-[420px] object-cover"
-                src="https://images.unsplash.com/photo-1528715471579-d1bcf0ba5e83" />
-              <div class="absolute bottom-0 w-full bg-black/40 p-4 text-white">
-                <p class="font-bold">Conexión profunda</p>
-              </div>
-            </div>
-
-          </div>
-
-          <!-- DOTS -->
-          <div class="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2">
-            <span class="w-2.5 h-2.5 bg-white/70 rounded-full"></span>
-            <span class="w-2.5 h-2.5 bg-white/40 rounded-full"></span>
-            <span class="w-2.5 h-2.5 bg-white/40 rounded-full"></span>
-          </div>
-
-        </div>
-      </div>
-
-    </div>
-
-    <footer class="bg-gray-900 text-gray-300 pt-10 pb-6 mt-10">
-
-      <div class="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-8">
-
-        <!-- BRAND -->
+        <!-- Brand -->
         <div>
+
           <div class="flex items-center gap-2 mb-4">
-            <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white font-bold">
-              F
+
+            <div class="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center overflow-hidden">
+
+              <img src="/icon.svg" alt="FocusFlow Icon"
+                class="w-6 h-6 object-contain select-none pointer-events-none" />
             </div>
-            <span class="text-white font-semibold text-lg">FocusFlow</span>
+
+            <span class="text-slate-800 font-bold text-lg">
+              FocusFlow
+            </span>
           </div>
 
-          <p class="text-sm text-gray-400">
-            Encuentra tu equilibrio entre productividad y bienestar.
+          <p class="text-sm text-slate-500 leading-relaxed max-w-xs">
+
+            Encuentra tu equilibrio perfecto entre productividad, descanso y
+            bienestar personal.
           </p>
         </div>
 
-        <!-- LINKS -->
-        <div class="flex flex-col gap-2">
-          <span class="text-white font-semibold mb-2">Enlaces</span>
+        <!-- Links -->
+        <div class="flex flex-col gap-3">
 
-          <span @click="goToTerms" class="cursor-pointer hover:text-white transition">
+          <span class="text-slate-800 font-bold mb-1">
+            Legal y Ayuda
+          </span>
+
+          <button @click="goTerms" class="footer-link">
+
             Términos y condiciones
-          </span>
+          </button>
 
-          <span @click="goToPolicy" class="cursor-pointer hover:text-white transition">
+          <button @click="goPrivacy" class="footer-link">
+
             Política de privacidad
-          </span>
+          </button>
 
-          <span class="cursor-pointer hover:text-white transition">
-            Soporte
-          </span>
+          <button @click="handleSupport" class="footer-link">
+
+            Soporte técnico
+          </button>
         </div>
 
-        <!-- CONTACTO -->
+        <!-- Community -->
         <div>
-          <span class="text-white font-semibold mb-2 block">Contacto</span>
 
-          <div class="flex gap-4 mt-3">
+          <span class="text-slate-800 font-bold mb-3 block">
+            Comunidad
+          </span>
 
-            <!-- ICONOS (decorativos) -->
-            <div
-              class="w-9 h-9 bg-gray-800 hover:bg-primary transition rounded-full flex items-center justify-center cursor-pointer">
+          <div class="flex gap-3 mt-2">
+
+            <button aria-label="Correo" class="social-btn">
               📧
-            </div>
+            </button>
 
-            <div
-              class="w-9 h-9 bg-gray-800 hover:bg-primary transition rounded-full flex items-center justify-center cursor-pointer">
+            <button aria-label="WhatsApp" class="social-btn">
               📱
-            </div>
+            </button>
 
-            <div
-              class="w-9 h-9 bg-gray-800 hover:bg-primary transition rounded-full flex items-center justify-center cursor-pointer">
+            <button aria-label="Sitio web" class="social-btn">
               🌐
-            </div>
+            </button>
 
           </div>
         </div>
-
       </div>
 
-      <!-- DIVISOR -->
-      <div class="border-t border-gray-700 mt-8 pt-4 text-center text-sm text-gray-500">
-        © 2026 FocusFlow — Todos los derechos reservados
-      </div>
+      <!-- Bottom -->
+      <div class="border-t border-slate-100 mt-10 pt-6 text-center text-sm text-slate-400">
 
+        © 2026 FocusFlow — Todos los derechos reservados.
+      </div>
     </footer>
-
   </div>
 </template>
 
-<script>
-import illustration from "../assets/login-illustration.svg";
-import "../styles/Landing.css";
+<script setup>
+import { ref, onMounted, onUnmounted } from 'vue'
+import { useRouter } from 'vue-router'
 
-export default {
-  name: "LandingView",
-  data() {
-    return {
-      illustration,
-      currentIndex: 0,
-      features: [
-        "📌 Gestiona tus tareas fácilmente",
-        "⏱️ Controla tu tiempo",
-        "🎯 Cumple tus objetivos",
-      ],
-    };
-  },
-  mounted() {
-    setInterval(() => {
-      this.currentIndex =
-        (this.currentIndex + 1) % this.features.length;
-    }, 2500);
-  },
-  methods: {
-    goToLogin() {
-      this.$router.push("/login");
-    },
-    goToRegister() {
-      this.$router.push("/register");
-    },
-    goToForgot() {
-      this.$router.push("/forgot-password");
-    },
-    goToTerms() {
-      this.$router.push("/terms-and-conditions");
-    },
-    goToPolicy() {
-      this.$router.push("/data-policy");
-    },
-  },
-};
+const router = useRouter()
+
+const isLoggedIn = ref(false)
+
+const features = [
+  '📌 Gestiona tus tareas fácilmente',
+  '⏱️ Controla tu tiempo con calma',
+  '🎯 Cumple tus objetivos sin estrés'
+]
+
+const currentIndex = ref(0)
+
+let interval
+
+// Navigation
+const goLogin = () => router.push('/login')
+
+const goRegister = () => router.push('/register')
+
+const goTerms = () => router.push('/terms-and-conditions')
+
+const goPrivacy = () => router.push('/privacy-policy')
+
+// Support
+const handleSupport = () => {
+  router.push(isLoggedIn.value ? '/support' : '/login')
+}
+
+// Rotate text
+onMounted(() => {
+  interval = window.setInterval(() => {
+    currentIndex.value =
+      (currentIndex.value + 1) % features.length
+  }, 2500)
+})
+
+onUnmounted(() => {
+  clearInterval(interval)
+})
 </script>
 
-<style src="../styles/Landing.css"></style>
+<style scoped>
+/* =========================================
+   Global improvements
+========================================= */
+:global(html) {
+  font-size: 17px;
+}
+
+:global(body) {
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Firefox Linux fixes */
+@-moz-document url-prefix() {
+  :global(html) {
+    font-size: 18px;
+  }
+
+  .floating-illustration {
+    transform: scale(1.08);
+  }
+
+  .ambient-glow {
+    animation: none;
+    opacity: 0.35;
+  }
+}
+
+/* =========================================
+   Layout
+========================================= */
+.landing-container {
+  min-height: 100dvh;
+}
+
+/* =========================================
+   Glow
+========================================= */
+.ambient-glow {
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  border-radius: 9999px;
+  filter: blur(60px);
+  opacity: 0.45;
+  pointer-events: none;
+  z-index: 0;
+
+  transform: translateZ(0);
+  backface-visibility: hidden;
+
+  animation: pulse-glow 8s ease-in-out infinite alternate;
+}
+
+.glow-blue {
+  top: -10%;
+  left: -5%;
+  background: rgba(19, 164, 236, 0.25);
+}
+
+.glow-purple {
+  bottom: 10%;
+  right: -10%;
+  background: rgba(168, 85, 247, 0.12);
+}
+
+/* =========================================
+   Hero
+========================================= */
+.hero-content,
+.hero-visual,
+.floating-illustration,
+.ambient-glow {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+.hero-content {
+  animation: fade-up 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.hero-visual {
+  animation: fade-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-delay: 0.05s;
+  opacity: 0;
+}
+
+.floating-illustration {
+  animation: float 4s ease-in-out infinite;
+  transform-origin: center;
+}
+
+img {
+  image-rendering: auto;
+}
+
+/* =========================================
+   Footer
+========================================= */
+.footer-link {
+  text-align: left;
+  font-size: 0.875rem;
+  width: fit-content;
+  transition: color 0.3s ease;
+}
+
+.footer-link:hover {
+  color: #13a4ec;
+}
+
+.social-btn {
+  width: 2.5rem;
+  height: 2.5rem;
+  background: rgb(239 246 255);
+  color: #13a4ec;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.social-btn:hover {
+  background: #13a4ec;
+  color: white;
+}
+
+/* =========================================
+   Text transition
+========================================= */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+/* =========================================
+   Keyframes
+========================================= */
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-8px);
+  }
+
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes pulse-glow {
+  from {
+    transform: scale(1);
+    opacity: 0.35;
+  }
+
+  to {
+    transform: scale(1.08);
+    opacity: 0.55;
+  }
+}
+
+/* =========================================
+   Responsive
+========================================= */
+@media (max-width: 1024px) {
+
+  .ambient-glow {
+    width: 300px;
+    height: 300px;
+  }
+
+  .hero-content h1 {
+    font-size: 4rem;
+  }
+}
+
+@media (max-width: 640px) {
+
+  .ambient-glow {
+    width: 220px;
+    height: 220px;
+    filter: blur(40px);
+  }
+
+  .hero-content h1 {
+    font-size: 3rem;
+  }
+}
+</style>
