@@ -194,6 +194,33 @@
                             </div>
                         </div>
                     </section>
+                    <div class="w-full flex items-center gap-4 px-4 min-h-[3.75rem] justify-between transition-colors">
+                        <div class="flex items-center gap-4">
+                            <div
+                                class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                                <span class="material-symbols-outlined">
+                                    {{ notificationsEnabled ? 'notifications_active' : 'notifications_off' }}
+                                </span>
+                            </div>
+                            <div>
+                                <p class="text-base font-medium text-text-light-primary dark:text-text-dark-primary">
+                                    Notificaciones
+                                </p>
+                                <p class="text-xs text-text-light-secondary dark:text-text-dark-secondary">
+                                    {{ notificationsEnabled ? 'Activadas en este navegador' : 'Desactivadas' }}
+                                </p>
+                            </div>
+                        </div>
+                        <!-- Toggle Switch -->
+                        <button @click="toggleNotifications"
+                            class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none"
+                            :class="notificationsEnabled ? 'bg-primary' : 'bg-gray-300 dark:bg-gray-600'">
+                            <span
+                                class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
+                                :class="notificationsEnabled ? 'translate-x-5' : 'translate-x-0'">
+                            </span>
+                        </button>
+                    </div>
 
                     <!-- Soporte y PQRs -->
                     <section class="space-y-2">
@@ -267,12 +294,13 @@ export default {
                 newPassword: "",
                 confirmPassword: ""
             },
-
+            notificationsEnabled: false,
             toast: useToast()
         };
     },
     async mounted() {
         await this.loadUserData();
+        this.notificationsEnabled = Notification.permission === 'granted';
     },
     methods: {
         async loadUserData() {
@@ -294,6 +322,23 @@ export default {
                 this.loading = false;
             }
         },
+        async toggleNotifications() {
+            // Si ya están activadas, avisamos que se quitan desde el navegador
+            if (this.notificationsEnabled) {
+                this.toast.info("Para desactivar las notificaciones por completo, debes hacerlo desde la configuración de tu navegador.");
+                return;
+            }
+
+            // Si están desactivadas o en default, pedimos permiso
+            const permission = await Notification.requestPermission();
+            if (permission === 'granted') {
+                this.notificationsEnabled = true;
+                this.toast.success("¡Notificaciones activadas!");
+            } else {
+                this.notificationsEnabled = false;
+                this.toast.warning("No se pudieron activar las notificaciones. Revisa los permisos del sitio.");
+            }
+        },
 
         toggleEditProfile() {
             if (this.isEditingProfile) {
@@ -305,7 +350,7 @@ export default {
                 };
             }
             this.isEditingProfile = !this.isEditingProfile;
-            this.isChangingPassword = false; 
+            this.isChangingPassword = false;
         },
         async saveProfileInfo() {
             this.savingProfile = true;
