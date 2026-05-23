@@ -36,6 +36,24 @@ const router = createRouter({
   routes,
 });
 
+function normalizeRole(role) {
+  return String(role || "")
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+}
+
+function isAdminRole(role) {
+  return ["admin", "administrador", "administrator", "globaladmin"].includes(
+    normalizeRole(role),
+  );
+}
+
+function isSupportRole(role) {
+  return normalizeRole(role) === "support";
+}
+
 router.beforeEach(async (to, from, next) => {
   if (!to.meta.requiereAdmin && !to.meta.requiereStaff && !to.meta.requiereSupport) {
     return next();
@@ -45,7 +63,7 @@ router.beforeEach(async (to, from, next) => {
     const profile = await getProfile();
     
     if (to.meta.requiereAdmin) {
-      if (profile && profile.rol === 'admin') {
+      if (profile && isAdminRole(profile.rol)) {
         return next(); 
       } else {
         console.warn("Acceso denegado: Se requiere ser Admin");
@@ -54,7 +72,7 @@ router.beforeEach(async (to, from, next) => {
     }
 
     if (to.meta.requiereStaff) {
-      if (profile && (profile.rol === 'admin' || profile.rol === 'support')) {
+      if (profile && (isAdminRole(profile.rol) || isSupportRole(profile.rol))) {
         return next(); 
       } else {
         console.warn("Acceso denegado: Se requiere ser Staff");
@@ -63,7 +81,7 @@ router.beforeEach(async (to, from, next) => {
     }
 
     if (to.meta.requiereSupport) {
-      if (profile && profile.rol === 'support') {
+      if (profile && isSupportRole(profile.rol)) {
         return next(); 
       } else {
         console.warn("Acceso denegado: Se requiere ser support");

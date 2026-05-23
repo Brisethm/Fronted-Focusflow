@@ -65,8 +65,7 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .dashboard-heading-perpetua {
-  font-family: "Segoe UI", "Inter", "Manrope", sans-serif;
-  font-weight: 900;
+  font-family: "Monroe Regular", "Segoe UI", "Inter", "Manrope", sans-serif;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: #111827;

@@ -1,136 +1,356 @@
 <template>
-  <div class="bg-background-light dark:bg-background-dark font-display min-h-screen flex flex-col">
-    <!-- Header -->
-    <header class="sticky top-0 z-10 flex h-16 items-center border-b border-border-light bg-card-light dark:border-border-dark dark:bg-card-dark/80 backdrop-blur-sm px-4">
-      <button @click="$router.back()" class="flex size-10 shrink-0 items-center justify-center rounded-full text-text-light-primary dark:text-text-dark-primary hover:bg-primary/10 transition-colors">
-        <span class="material-symbols-outlined text-2xl">arrow_back</span>
-      </button>
-      <h1 class="flex-1 text-center text-lg font-bold tracking-tight text-text-light-primary dark:text-text-dark-primary pr-10">Registrar Staff</h1>
-    </header>
-
-    <main class="flex-1 flex items-center justify-center px-4 py-12">
-      <div class="w-full max-w-md">
-        <!-- Card Principal -->
-        <div class="bg-card-light dark:bg-card-dark border border-border-light dark:border-border-dark rounded-xl shadow-xl p-8 space-y-6">
-          
-          <div class="text-center space-y-2">
-            <div class="inline-flex items-center justify-center size-16 rounded-full bg-primary/10 text-primary mb-2">
-              <span class="material-symbols-outlined text-4xl">person_add</span>
+  <div
+    class="min-h-screen bg-[#f5f1eb] font-display flex items-center justify-center py-10 px-4 text-slate-900"
+  >
+    <div class="w-full max-w-lg">
+      <div class="mb-8 px-2 sm:px-0">
+        <button
+          @click="$router.back()"
+          class="inline-flex items-center gap-2 text-sm font-semibold text-[#7f5a31] hover:text-slate-900 transition-colors"
+        >
+          <span class="material-symbols-outlined">arrow_back</span>
+          {{ t("common.back") }}
+        </button>
+        <h1 class="mt-4 text-3xl font-extrabold text-slate-900">
+          {{ t("registerStaff.title") }}
+        </h1>
+      </div>
+      <div
+        class="relative overflow-hidden rounded-[32px] bg-white shadow-[0_25px_90px_rgba(15,23,42,0.08)] border border-slate-200"
+      >
+        <div
+          class="relative overflow-hidden bg-[#f5ebe2] px-8 pt-10 pb-8 sm:px-12 sm:pt-12"
+        >
+          <div
+            class="absolute left-[-10%] top-6 h-36 w-36 rounded-full bg-[#e7d4bb] opacity-80 blur-3xl"
+          ></div>
+          <div
+            class="absolute right-[-6%] top-20 h-36 w-36 rounded-full bg-[#fff4e7] opacity-80 blur-3xl"
+          ></div>
+          <div
+            class="absolute inset-x-0 top-6 flex justify-center pointer-events-none"
+          >
+            <div class="relative h-14 w-48">
+              <span
+                class="material-symbols-outlined absolute left-0 top-1 text-[#e7d4bb] text-xl"
+                >star</span
+              >
+              <span
+                class="material-symbols-outlined absolute left-12 top-3 text-[#e7d4bb] text-2xl"
+                >star</span
+              >
+              <span
+                class="material-symbols-outlined absolute right-0 top-1 text-[#e7d4bb] text-lg"
+                >star</span
+              >
+              <span
+                class="material-symbols-outlined absolute right-8 top-5 text-[#e7d4bb] text-xl"
+                >star</span
+              >
             </div>
-            <h2 class="text-2xl font-extrabold text-text-light-primary dark:text-text-dark-primary">Nuevo Miembro</h2>
-            <p class="text-sm text-text-light-secondary dark:text-text-dark-secondary">Crea una cuenta para soporte o administración.</p>
+          </div>
+          <div
+            class="relative z-10 mx-auto mb-6 flex h-28 w-28 items-center justify-center rounded-full border-8 border-white bg-slate-100 text-[#7f5a31] shadow-[0_16px_45px_rgba(15,23,42,0.12)] overflow-hidden"
+          >
+            <template v-if="userAdd">
+              <img
+                :src="userAdd"
+                alt="Agregar usuario"
+                class="h-full w-full object-cover"
+              />
+            </template>
+            <template v-else>
+              <!-- Fallback SVG si la imagen no está disponible -->
+              <svg
+                viewBox="0 0 120 120"
+                class="h-24 w-24"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+              >
+                <circle
+                  cx="60"
+                  cy="60"
+                  r="54"
+                  fill="#fffefc"
+                  stroke="#e7d4bb"
+                  stroke-width="6"
+                />
+                <circle cx="52" cy="48" r="12" fill="#8b5cf6" />
+                <path
+                  d="M36 84c0-14 10-26 28-26s28 12 28 26v2H36v-2z"
+                  fill="#8b5cf6"
+                  opacity="0.95"
+                />
+                <rect
+                  x="82"
+                  y="44"
+                  width="6"
+                  height="20"
+                  rx="1"
+                  fill="#1d4ed8"
+                />
+                <rect
+                  x="72"
+                  y="54"
+                  width="20"
+                  height="6"
+                  rx="1"
+                  fill="#1d4ed8"
+                />
+              </svg>
+            </template>
+          </div>
+          <div class="relative z-10 text-center">
+            <h1 class="text-3xl font-extrabold text-slate-900">
+              {{ t("registerStaff.title") }}
+            </h1>
+            <p class="mt-3 text-sm text-slate-500">
+              {{ t("registerStaff.subtitle") }}
+            </p>
           </div>
 
-          <form @submit.prevent="handleRegisterStaff" class="space-y-5">
-            
-            <!-- Campo Nombre -->
-            <div class="space-y-1.5">
-              <label class="text-sm font-semibold text-text-light-primary dark:text-text-dark-primary ml-1">Nombre Completo</label>
-              <div class="relative">
-                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-text-light-secondary text-xl">badge</span>
-                <input type="text" v-model="form.nombre" required placeholder="Ej. Lina Pérez" 
-                  class="w-full pl-11 pr-4 py-2.5 rounded-lg border border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark text-text-light-primary dark:text-text-dark-primary focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none"/>
+          <div
+            class="relative z-10 mt-8 rounded-[28px] border border-[#e7d4bb] bg-white/45 p-4"
+          >
+            <div class="mx-auto h-1.5 w-20 rounded-full bg-[#7f5a31]"></div>
+          </div>
+        </div>
+
+        <div class="px-6 pb-10 sm:px-10">
+          <form @submit.prevent="handleRegisterStaff" class="space-y-4">
+            <div
+              class="rounded-[26px] border border-slate-200 bg-[#faf6f1] px-4 py-3 shadow-sm flex items-center gap-3"
+            >
+              <div
+                class="grid h-12 w-12 place-items-center rounded-2xl bg-[#dbe9ff] text-[#1d4ed8]"
+              >
+                <span class="material-symbols-outlined">badge</span>
+              </div>
+              <div class="flex-1 min-w-0">
+                <label
+                  class="block text-xs font-semibold uppercase tracking-[0.18em] text-slate-500"
+                  >{{ t("registerStaff.fullName") }}</label
+                >
+                <input
+                  type="text"
+                  v-model="form.nombre"
+                  required
+                  :placeholder="t('registerStaff.fullName')"
+                  class="mt-2 w-full bg-transparent outline-none text-slate-900 placeholder:text-slate-400"
+                />
               </div>
             </div>
 
-            <!-- Campo Email -->
-            <div class="space-y-1.5">
-              <label class="text-sm font-semibold text-text-light-primary dark:text-text-dark-primary ml-1">Correo Electrónico</label>
-              <div class="relative">
-                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-text-light-secondary text-xl">mail</span>
-                <input type="email" v-model="form.email" required placeholder="staff@focusflow.com" 
-                  class="w-full pl-11 pr-4 py-2.5 rounded-lg border border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark text-text-light-primary dark:text-text-dark-primary focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none"/>
+            <div
+              class="rounded-[26px] border border-slate-200 bg-[#faf6f1] px-4 py-3 shadow-sm flex items-center gap-3"
+            >
+              <div
+                class="grid h-12 w-12 place-items-center rounded-2xl bg-[#d7f4e7] text-[#047857]"
+              >
+                <span class="material-symbols-outlined">mail</span>
+              </div>
+              <div class="flex-1 min-w-0">
+                <label
+                  class="block text-xs font-semibold uppercase tracking-[0.18em] text-slate-500"
+                  >{{ t("registerStaff.email") }}</label
+                >
+                <input
+                  type="email"
+                  v-model="form.email"
+                  required
+                  placeholder="staff@focusflow.com"
+                  class="mt-2 w-full bg-transparent outline-none text-slate-900 placeholder:text-slate-400"
+                />
               </div>
             </div>
 
-            <!-- Campo Contraseña -->
-            <div class="space-y-1.5">
-              <label class="text-sm font-semibold text-text-light-primary dark:text-text-dark-primary ml-1">Contraseña Temporal</label>
-              <div class="relative">
-                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-text-light-secondary text-xl">lock</span>
-                <input :type="showPassword ? 'text' : 'password'" v-model="form.password" required placeholder="Mínimo 8 caracteres" 
-                  class="w-full pl-11 pr-12 py-2.5 rounded-lg border border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark text-text-light-primary dark:text-text-dark-primary focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none"/>
-                <button type="button" @click="showPassword = !showPassword" class="absolute right-3 top-1/2 -translate-y-1/2 text-text-light-secondary hover:text-primary transition-colors">
-                  <span class="material-symbols-outlined text-xl">{{ showPassword ? 'visibility_off' : 'visibility' }}</span>
+            <div
+              class="rounded-[26px] border border-slate-200 bg-[#faf6f1] px-4 py-3 shadow-sm flex items-center gap-3"
+            >
+              <div
+                class="grid h-12 w-12 place-items-center rounded-2xl bg-[#e9d7ff] text-[#7c3aed]"
+              >
+                <span class="material-symbols-outlined">lock</span>
+              </div>
+              <div class="flex-1 min-w-0 relative">
+                <label
+                  class="block text-xs font-semibold uppercase tracking-[0.18em] text-slate-500"
+                  >{{ t("registerStaff.tempPassword") }}</label
+                >
+                <input
+                  :type="showPassword ? 'text' : 'password'"
+                  v-model="form.password"
+                  required
+                  :placeholder="t('registerStaff.tempPassword')"
+                  class="mt-2 w-full bg-transparent outline-none text-slate-900 placeholder:text-slate-400 pr-10"
+                />
+                <button
+                  type="button"
+                  @click="showPassword = !showPassword"
+                  class="absolute right-0 top-8 text-slate-400 hover:text-[#7c3aed] transition-colors"
+                >
+                  <span class="material-symbols-outlined">{{
+                    showPassword ? "visibility_off" : "visibility"
+                  }}</span>
                 </button>
               </div>
-              <p v-if="form.password && form.password.length < 8" class="text-xs text-red-500 mt-1 ml-1 flex items-center gap-1">
-                <span class="material-symbols-outlined text-sm">error</span> Mínimo 8 caracteres
-              </p>
             </div>
 
-            <!-- Campo Rol -->
-            <div class="space-y-1.5">
-              <label class="text-sm font-semibold text-text-light-primary dark:text-text-dark-primary ml-1">Rol Asignado</label>
-              <div class="relative">
-                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-text-light-secondary text-xl">manage_accounts</span>
-                <select v-model="form.rol" required 
-                  class="w-full pl-11 pr-4 py-2.5 rounded-lg border border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark text-text-light-primary dark:text-text-dark-primary focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none appearance-none">
-                  <option value="" disabled>Selecciona un rol</option>
-                  <option value="support">Agente de Soporte (PQRs)</option>
-                  <option value="admin">Administrador Global</option>
+            <div
+              class="rounded-[26px] border border-slate-200 bg-[#faf6f1] px-4 py-3 shadow-sm flex items-center gap-3"
+            >
+              <div
+                class="grid h-12 w-12 place-items-center rounded-2xl bg-[#fde7d7] text-[#c2410c]"
+              >
+                <span class="material-symbols-outlined">manage_accounts</span>
+              </div>
+              <div class="flex-1 min-w-0">
+                <label
+                  class="block text-xs font-semibold uppercase tracking-[0.18em] text-slate-500"
+                  >{{ t("registerStaff.selectRole") }}</label
+                >
+                <select
+                  v-model="form.rol"
+                  required
+                  class="mt-2 w-full bg-transparent outline-none text-slate-900 placeholder:text-slate-400 appearance-none pr-8"
+                >
+                  <option value="" disabled>
+                    {{ t("registerStaff.selectRole") }}
+                  </option>
+                  <option value="support">
+                    {{ t("registerStaff.supportRole") }}
+                  </option>
+                  <option value="admin">
+                    {{ t("registerStaff.adminRole") }}
+                  </option>
                 </select>
               </div>
             </div>
 
-            <!-- Botón Submit -->
-            <button type="submit" :disabled="loading || form.password.length < 8" 
-              class="w-full bg-primary hover:bg-primary/90 text-white font-bold py-3 rounded-lg shadow-lg shadow-primary/30 transition-all transform active:scale-95 disabled:opacity-50 disabled:active:scale-100 flex items-center justify-center gap-2">
-              <span v-if="loading" class="animate-spin material-symbols-outlined">progress_activity</span>
+            <button
+              type="submit"
+              :disabled="loading || form.password.length < 8"
+              class="mt-2 w-full rounded-[20px] bg-[#7f5a31] px-5 py-3 text-sm font-bold text-white shadow-[0_18px_40px_rgba(127,90,49,0.22)] transition hover:bg-[#6f4d2a] disabled:cursor-not-allowed disabled:opacity-60 flex items-center justify-center gap-2"
+            >
+              <span
+                v-if="loading"
+                class="animate-spin material-symbols-outlined"
+                >progress_activity</span
+              >
               <span v-else class="material-symbols-outlined">how_to_reg</span>
-              {{ loading ? 'Registrando...' : 'Crear Cuenta de Staff' }}
+              {{
+                loading
+                  ? t("registerStaff.creating")
+                  : t("registerStaff.createAccount")
+              }}
             </button>
-
           </form>
+
+          <div class="mt-6 border-t border-slate-200 pt-6 text-center">
+            <p class="text-sm text-slate-500">
+              {{ t("registerStaff.alreadyHaveAccount") }}
+              <a
+                @click.prevent="$router.push('/login')"
+                href="#"
+                class="font-semibold text-[#7f5a31] hover:text-slate-900"
+                >{{ t("registerStaff.login") }}</a
+              >
+            </p>
+          </div>
         </div>
       </div>
-    </main>
+    </div>
   </div>
 </template>
 
 <script>
 import { registerStaff } from "../services/api.js";
 import { useToast } from "vue-toastification";
+import { t } from "../stores/locale";
 
 export default {
   name: "CreateStaffView",
   data() {
     return {
+      userAdd: null,
       form: {
         nombre: "",
         email: "",
         password: "",
-        rol: ""
+        rol: "",
       },
       showPassword: false,
       loading: false,
-      toast: useToast()
+      toast: useToast(),
     };
   },
+
+  async mounted() {
+    // Prefer a resolved URL to the added SVG asset (works with Vite/npm builds)
+    try {
+      this.userAdd = new URL("../assets/user-add.svg", import.meta.url).href;
+      return;
+    } catch (e) {
+      // fall through to legacy checks
+    }
+
+    // Fallback: probe common paths for svg/png assets
+    try {
+      const r = await fetch("/src/assets/user-add.svg", { method: "HEAD" });
+      if (r.ok) {
+        this.userAdd = "/src/assets/user-add.svg";
+        return;
+      }
+    } catch {}
+
+    try {
+      const r2 = await fetch("/assets/user-add.svg", { method: "HEAD" });
+      if (r2.ok) {
+        this.userAdd = "/assets/user-add.svg";
+        return;
+      }
+    } catch {}
+
+    try {
+      const res = await fetch("/src/assets/user-add.png", { method: "HEAD" });
+      if (res.ok) {
+        this.userAdd = "/src/assets/user-add.png";
+        return;
+      }
+    } catch (e) {}
+
+    try {
+      const res2 = await fetch("/assets/user-add.png", { method: "HEAD" });
+      if (res2.ok) this.userAdd = "/assets/user-add.png";
+    } catch (e) {
+      // leave null -> fallback SVG will render
+    }
+  },
   methods: {
+    t,
     async handleRegisterStaff() {
       this.loading = true;
       try {
         await registerStaff(
-          this.form.email, 
-          this.form.password, 
-          this.form.nombre, 
-          this.form.rol
+          this.form.email,
+          this.form.password,
+          this.form.nombre,
+          this.form.rol,
         );
-        
+
         this.toast.success(`¡Éxito! ${this.form.nombre} ha sido registrado.`);
-        
+
         // Limpiamos el form
         this.form = { nombre: "", email: "", password: "", rol: "" };
-        
       } catch (error) {
-        const errorMsg = error.response?.data?.message || "Error al crear staff";
+        const errorMsg =
+          error.response?.data?.message || "Error al crear staff";
         this.toast.error(errorMsg);
       } finally {
         this.loading = false;
       }
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -144,6 +364,10 @@ select {
 }
 
 .material-symbols-outlined {
-  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  font-variation-settings:
+    "FILL" 0,
+    "wght" 400,
+    "GRAD" 0,
+    "opsz" 24;
 }
 </style>

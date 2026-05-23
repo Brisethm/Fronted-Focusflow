@@ -6,7 +6,7 @@
   >
     <nav
       role="navigation"
-      aria-label="Navegación principal"
+      :aria-label="t('actions.navigation')"
       class="flex justify-around items-center py-2"
     >
       <a
@@ -50,6 +50,7 @@
 <script setup>
 import { computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
+import { t } from "../stores/locale";
 
 const props = defineProps({
   activeTab: {
@@ -62,14 +63,52 @@ const emit = defineEmits(["update:activeTab"]);
 const router = useRouter();
 const route = useRoute();
 
+const navItems = computed(() => [
+  {
+    id: "inicio",
+    label: t("footerNav.home"),
+    href: "/dashboard",
+    iconPath:
+      "M224,115.55V208a16,16,0,0,1-16,16H168a16,16,0,0,1-16-16V168a8,8,0,0,0-8-8H112a8,8,0,0,0-8,8v40a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V115.55a16,16,0,0,1,5.17-11.78l80-75.48.11-.11a16,16,0,0,1,21.53,0,1.14,1.14,0,0,0,.11.11l80,75.48A16,16,0,0,1,224,115.55Z",
+  },
+  {
+    id: "tareas",
+    label: t("footerNav.tasks"),
+    href: "/tasks",
+    iconPath:
+      "M173.66,98.34a8,8,0,0,1,0,11.32l-56,56a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L112,148.69l50.34-50.35A8,8,0,0,1,173.66,98.34ZM224,48V208a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V48A16,16,0,0,1,48,32H208A16,16,0,0,1,224,48ZM208,208V48H48V208H208Z",
+  },
+  {
+    id: "enfoque",
+    label: t("footerNav.focus"),
+    href: "/focus",
+    iconPath:
+      "M221.87,83.16A104.1,104.1,0,1,1,195.67,49l22.67-22.68a8,8,0,0,1,11.32,11.32l-96,96a8,8,0,0,1-11.32-11.32l27.72-27.72a40,40,0,1,0,17.87,31.09,8,8,0,1,1,16-.9,56,56,0,1,1-22.38-41.65L184.3,60.39a87.88,87.88,0,1,0,23.13,29.67,8,8,0,0,1,14.44-6.9Z",
+  },
+  {
+    id: "bienestar",
+    label: t("footerNav.wellness"),
+    href: "/wellness",
+    iconPath:
+      "M178,32c-20.65,0-38.73,8.88-50,23.89C116.73,40.88,98.65,32,78,32A62.07,62.07,0,0,0,16,94c0,70,103.79,126.66,108.21,129a8,8,0,0,0,7.58,0C136.21,220.66,240,164,240,94A62.07,62.07,0,0,0,178,32ZM128,206.8C109.74,196.16,32,147.69,32,94A46.06,46.06,0,0,1,78,48c19.45,0,35.78,10.36,42.6,27a8,8,0,0,0,14.8,0c6.82-16.67,23.15-27,42.6-27a46.06,46.06,0,0,1,46,46C224,147.61,146.24,196.15,128,206.8Z",
+  },
+  {
+    id: "finanzas",
+    label: t("footerNav.transactions"),
+    href: "/transactions",
+    iconPath:
+      "M152,120H136V56h8a32,32,0,0,1,32,32,8,8,0,0,0,16,0,48.05,48.05,0,0,0-48-48h-8V24a8,8,0,0,0-16,0V40h-8a48,48,0,0,0,0,96h8v64H104a32,32,0,0,1-32-32,8,8,0,0,0-16,0,48.05,48.05,0,0,0,48,48h16v16a8,8,0,0,0,16,0V216h16a48,48,0,0,0,0-96Zm-40,0a32,32,0,0,1,0-64h8v64Zm40,80H136V136h16a32,32,0,0,1,0,64Z",
+  },
+]);
+
 // ✅ Deriva el tab activo desde la ruta, sin depender de estado interno
 const currentRouteTab = computed(() => {
-  const matches = navItems
+  const matches = navItems.value
     .filter((item) => item.href === route.path || route.path.startsWith(item.href + '/'))
     .sort((a, b) => b.href.length - a.href.length);
   if (matches.length > 0) return matches[0].id;
 
-  const fallback = navItems.find((item) => route.path === item.href || route.path.startsWith(item.href));
+  const fallback = navItems.value.find((item) => route.path === item.href || route.path.startsWith(item.href));
   return fallback?.id ?? 'inicio';
 });
 
@@ -81,42 +120,4 @@ function handleSelect(id, href) {
   }
   router.push(href);
 }
-
-const navItems = [
-  {
-    id: "inicio",
-    label: "Inicio",
-    href: "/dashboard",
-    iconPath:
-      "M224,115.55V208a16,16,0,0,1-16,16H168a16,16,0,0,1-16-16V168a8,8,0,0,0-8-8H112a8,8,0,0,0-8,8v40a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V115.55a16,16,0,0,1,5.17-11.78l80-75.48.11-.11a16,16,0,0,1,21.53,0,1.14,1.14,0,0,0,.11.11l80,75.48A16,16,0,0,1,224,115.55Z",
-  },
-  {
-    id: "tareas",
-    label: "Tareas",
-    href: "/tasks",
-    iconPath:
-      "M173.66,98.34a8,8,0,0,1,0,11.32l-56,56a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L112,148.69l50.34-50.35A8,8,0,0,1,173.66,98.34ZM224,48V208a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V48A16,16,0,0,1,48,32H208A16,16,0,0,1,224,48ZM208,208V48H48V208H208Z",
-  },
-  {
-    id: "enfoque",
-    label: "Enfoque",
-    href: "/focus",
-    iconPath:
-      "M221.87,83.16A104.1,104.1,0,1,1,195.67,49l22.67-22.68a8,8,0,0,1,11.32,11.32l-96,96a8,8,0,0,1-11.32-11.32l27.72-27.72a40,40,0,1,0,17.87,31.09,8,8,0,1,1,16-.9,56,56,0,1,1-22.38-41.65L184.3,60.39a87.88,87.88,0,1,0,23.13,29.67,8,8,0,0,1,14.44-6.9Z",
-  },
-  {
-    id: "bienestar",
-    label: "Bienestar",
-    href: "/wellness",
-    iconPath:
-      "M178,32c-20.65,0-38.73,8.88-50,23.89C116.73,40.88,98.65,32,78,32A62.07,62.07,0,0,0,16,94c0,70,103.79,126.66,108.21,129a8,8,0,0,0,7.58,0C136.21,220.66,240,164,240,94A62.07,62.07,0,0,0,178,32ZM128,206.8C109.74,196.16,32,147.69,32,94A46.06,46.06,0,0,1,78,48c19.45,0,35.78,10.36,42.6,27a8,8,0,0,0,14.8,0c6.82-16.67,23.15-27,42.6-27a46.06,46.06,0,0,1,46,46C224,147.61,146.24,196.15,128,206.8Z",
-  },
-  {
-    id: "finanzas",
-    label: "Finanzas",
-    href: "/transactions",
-    iconPath:
-      "M152,120H136V56h8a32,32,0,0,1,32,32,8,8,0,0,0,16,0,48.05,48.05,0,0,0-48-48h-8V24a8,8,0,0,0-16,0V40h-8a48,48,0,0,0,0,96h8v64H104a32,32,0,0,1-32-32,8,8,0,0,0-16,0,48.05,48.05,0,0,0,48,48h16v16a8,8,0,0,0,16,0V216h16a48,48,0,0,0,0-96Zm-40,0a32,32,0,0,1,0-64h8v64Zm40,80H136V136h16a32,32,0,0,1,0,64Z",
-  },
-];
 </script>

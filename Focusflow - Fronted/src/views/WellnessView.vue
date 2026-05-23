@@ -8,7 +8,7 @@
         <h1
           class="flex-1 text-center text-lg font-bold text-slate-900 dark:text-white"
         >
-          Bienestar
+          {{ t('wellness.title') }}
         </h1>
       </header>
 
@@ -16,11 +16,10 @@
         <!-- Título y Descripción -->
         <div class="mb-6">
           <h2 class="text-3xl font-extrabold text-slate-900 dark:text-white">
-            Bienestar
+            {{ t('wellness.title') }}
           </h2>
           <p class="mt-2 text-slate-600 dark:text-slate-400">
-            Encuentra tu equilibrio con ejercicios de respiración, pausas
-            activas y meditaciones guiadas.
+            {{ t('wellness.subtitle') }}
           </p>
         </div>
 
@@ -28,7 +27,7 @@
           <!-- Sección de Respiración -->
           <section>
             <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-4">
-              Ejercicios de respiración
+              {{ t('wellness.breathingTitle') }}
             </h3>
             <div class="space-y-4">
               
@@ -41,12 +40,12 @@
                   style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDra2tNFX06RiuzI1ZjxXSB5GqsWzO2-bTg6wu7d_g98sMJ4jg37Uc4bbt2cDimivunb8I91_x3DL3pCdhW6FbjaddZKFf7S_KpOKsTqKy-0g7y-9TgNLOxGX2aV_Lmuj69IHomOoU2wS1YM8hOQ4bSxZTe6MYGJjus2_p2Z5pi-E5PsB3jWevhO3g3b0E8ozH_EilaXns-PSUc6IEipm3xSXoom0mJK1zLGSyrhh9PQtgBuPkYqc5BN6FDJx4YC2vTfXQg6wpQhCUl');"
                 ></div>
                 <div class="flex-1">
-                  <p class="text-sm font-medium text-primary">3 minutos</p>
+                  <p class="text-sm font-medium text-primary">{{ t('wellness.breathingDuration1') }}</p>
                   <p class="text-base font-bold text-slate-800 dark:text-slate-100">
-                    Respiración cuadrada
+                    {{ t('wellness.breathingName1') }}
                   </p>
                   <p class="text-sm text-slate-500 dark:text-slate-400">
-                    Inhala, mantén, exhala, mantén. Repite.
+                    {{ t('wellness.breathingDesc1') }}
                   </p>
                 </div>
                 <button class="text-slate-400 dark:text-slate-500">
@@ -109,7 +108,7 @@
           <!-- Sección de Pausas Activas -->
           <section>
             <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-4">
-              Pausas activas
+              {{ t('wellness.activeBreaksTitle') }}
             </h3>
             <div class="space-y-4">
               <div
@@ -125,7 +124,7 @@
                     Estiramientos de oficina
                   </p>
                   <p class="text-sm text-slate-500 dark:text-slate-400">
-                    Alivia la tensión acumulada.
+                    {{ t('wellness.activeBreaksDesc') }}
                   </p>
                 </div>
                 <button class="text-slate-400 dark:text-slate-500">
@@ -143,7 +142,8 @@
 
 <script setup>
 import { ref } from "vue";
-import FooterNav from '../components/FooterNav.vue'; // Corregido el import (sin llaves si es export default)
+import FooterNav from '../components/FooterNav.vue';
+import { t } from '../stores/locale';
 
 const mostrarVideoCaja = ref(false);
 </script>

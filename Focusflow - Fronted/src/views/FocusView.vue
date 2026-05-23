@@ -6,14 +6,14 @@
   <button class="invisible pointer-events-none">
     <svg width="22" height="22">...</svg>
   </button>
-  <h1 class="header-title">Sesión de Enfoque</h1>
+  <h1 class="header-title">{{ t('focus.title') }}</h1>
 </header>
 
     <!-- Mode Selector -->
     <div class="mode-bar-wrap">
       <div class="mode-bar">
         <button v-for="m in modeKeys" :key="m" class="mode-pill" :class="{ active: mode === m }"
-          :style="mode === m ? { background: MODES[m].color } : {}" @click="switchMode(m)">{{ m }}</button>
+          :style="mode === m ? { background: MODES[m].color } : {}" @click="switchMode(m)">{{ t('focus.mode.' + m.toLowerCase()) }}</button>
       </div>
     </div>
 
@@ -33,14 +33,14 @@
           <template v-if="completed">
             <div class="completed-badge fade-in">
               <span class="done-icon">✅</span>
-              <p class="done-label" :style="{ color: accent }">¡Completado!</p>
+              <p class="done-label" :style="{ color: accent }">{{ t('focus.completed') }}</p>
             </div>
           </template>
           <template v-else>
             <span class="timer-digits">{{ formatTime(secondsLeft) }}</span>
             <span class="timer-sub">
-              <span v-if="running" class="pulse">{{ MODES[mode].label }} activo</span>
-              <span v-else>Sesión de {{ MODES[mode].label }}</span>
+              <span v-if="running" class="pulse">{{ t('focus.activeSession', { mode: t('focus.mode.' + mode.toLowerCase()) }) }}</span>
+              <span v-else>{{ t('focus.sessionType', { mode: t('focus.mode.' + mode.toLowerCase()) }) }}</span>
             </span>
           </template>
         </div>
@@ -60,7 +60,7 @@
             </div>
             <div class="action-text">
               <p class="action-title" style="color: var(--text);">
-                {{ linkedTask ? linkedTask.titulo : 'Vincular tarea' }}
+                {{ linkedTask ? linkedTask.titulo : t('focus.linkTask') }}
               </p>
               <p v-if="linkedTask" class="action-sub">{{ linkedTask.categoria }}</p>
             </div>
@@ -80,9 +80,9 @@
                   d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm48-88a8,8,0,0,1-8,8H128a8,8,0,0,1-8-8V72a8,8,0,0,1,16,0v48h40A8,8,0,0,1,176,128Z" />
               </svg>
             </div>
-            <p class="action-title">Ajustar tiempo</p>
+            <p class="action-title">{{ t('focus.adjustTime') }}</p>
           </div>
-          <span class="action-badge" :style="{ color: accent }">{{ minutes }} min</span>
+          <span class="action-badge" :style="{ color: accent }">{{ minutes }} {{ t('focus.timeLabel') }}</span>
         </button>
       </div>
     </div>
@@ -91,10 +91,10 @@
     <div class="bottom-controls">
       <template v-if="completed">
         <div class="btn-row fade-in">
-          <button class="btn-ghost" @click="handleReset">Nueva sesión</button>
+          <button class="btn-ghost" @click="handleReset">{{ t('focus.resetSession') }}</button>
           <button class="btn-main" :style="{ background: saved ? '#10b981' : accent, opacity: saving ? 0.7 : 1 }"
             :disabled="saving || saved" @click="handleSaveSession">
-            {{ saved ? '✓ Guardado' : saving ? 'Guardando...' : 'Guardar sesión' }}
+            {{ saved ? t('focus.saved') : saving ? t('focus.saving') : t('focus.saveSession') }}
           </button>
         </div>
       </template>
@@ -116,14 +116,14 @@
                 <path
                   d="M200,32H160a16,16,0,0,0-16,16V208a16,16,0,0,0,16,16h40a16,16,0,0,0,16-16V48A16,16,0,0,0,200,32Zm0,176H160V48h40ZM96,32H56A16,16,0,0,0,40,48V208a16,16,0,0,0,16,16H96a16,16,0,0,0,16-16V48A16,16,0,0,0,96,32Zm0,176H56V48H96Z" />
               </svg>
-              Pausar
+              {{ t('focus.pause') }}
             </template>
             <template v-else>
               <svg width="17" height="17" fill="currentColor" viewBox="0 0 256 256">
                 <path
                   d="M232.4,114.49,88.32,26.35a16,16,0,0,0-16.2-.3A15.86,15.86,0,0,0,64,39.87V216.13A15.94,15.94,0,0,0,80,232a16.07,16.07,0,0,0,8.36-2.35L232.4,141.51a15.81,15.81,0,0,0,0-27ZM80,216.13V39.87L232,128Z" />
               </svg>
-              {{ secondsLeft < totalSeconds ? 'Reanudar' : 'Iniciar sesión' }} </template>
+              {{ secondsLeft < totalSeconds ? t('focus.resume') : t('focus.startSession') }} </template>
           </button>
         </div>
       </template>
@@ -135,10 +135,10 @@
       <div v-if="showTaskModal" class="overlay" @click.self="showTaskModal = false">
         <div class="sheet">
           <div class="sheet-handle"></div>
-          <h2 class="sheet-title">Vincular tarea</h2>
-          <input v-model="taskSearch" class="search-input" placeholder="Buscar tarea..." autofocus />
+          <h2 class="sheet-title">{{ t('focus.linkTask') }}</h2>
+          <input v-model="taskSearch" class="search-input" :placeholder="t('focus.searchTaskPlaceholder')" autofocus />
           <div class="task-list">
-            <div v-if="filteredTasks.length === 0" class="task-empty">No hay tareas que coincidan</div>
+            <div v-if="filteredTasks.length === 0" class="task-empty">{{ t('focus.noMatchingTasks') }}</div>
             <button v-for="task in filteredTasks" :key="task.id" class="task-item"
               :class="{ selected: linkedTask?.id === task.id }" @click="selectTask(task)">
               <div class="task-dot"
@@ -155,7 +155,7 @@
             </button>
           </div>
           <button v-if="linkedTask" class="btn-ghost btn-full" style="margin-top: 12px; color: #ef4444;"
-            @click="linkedTask = null; showTaskModal = false">Quitar vínculo</button>
+            @click="linkedTask = null; showTaskModal = false">{{ t('focus.removeLink') }}</button>
         </div>
       </div>
     </Transition>
@@ -165,10 +165,10 @@
       <div v-if="showTimeModal" class="overlay" @click.self="showTimeModal = false">
         <div class="sheet">
           <div class="sheet-handle"></div>
-          <h2 class="sheet-title">Ajustar tiempo</h2>
+          <h2 class="sheet-title">{{ t('focus.adjustTime') }}</h2>
 
           <div class="time-display" :style="{ color: accent }">
-            {{ pendingMinutes }} <span class="time-unit">min</span>
+            {{ pendingMinutes }} <span class="time-unit">{{ t('focus.timeLabel') }}</span>
           </div>
 
           <input type="range" class="range-slider" :style="{ accentColor: accent }" min="5" max="120" step="5"
@@ -194,6 +194,7 @@
 import { ref, computed, onUnmounted } from 'vue'
 import { getTasks, createFocusSession } from "../services/api.js";
 import FooterNav from "../components/FooterNav.vue";
+import { t } from '../stores/locale'
 // ──────────────────────────────────────────────────────────────────────────
 
 const CIRCUMFERENCE = 2 * Math.PI * 54

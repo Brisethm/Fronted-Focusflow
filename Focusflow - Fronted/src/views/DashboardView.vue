@@ -6,6 +6,17 @@
       class="dashboard-bg-icons pointer-events-none"
       aria-hidden="true"
     ></div>
+    <router-link
+      v-if="isAdminUser"
+      to="/admin-panel"
+      class="absolute left-4 top-1 z-20 inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white/85 px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-sm backdrop-blur transition hover:bg-white hover:text-blue-700 dark:border-slate-700 dark:bg-slate-900/85 dark:text-slate-200 dark:hover:text-blue-300"
+      aria-label="Volver al panel administrativo"
+    >
+      <span class="material-symbols-outlined text-base"
+        >admin_panel_settings</span
+      >
+      <span>Panel admin</span>
+    </router-link>
     <div class="relative flex flex-col min-h-screen justify-between">
       <main class="flex-grow">
         <header class="flex items-center justify-between p-4 bg-transparent">
@@ -15,7 +26,7 @@
             aria-label="Ir al perfil"
           >
             <!-- Aquí pones el icono que elegimos o el contenido del botón -->
-             <svg
+            <svg
               class="icon"
               viewBox="0 0 256 256"
               xmlns="http://www.w3.org/2000/svg"
@@ -27,23 +38,44 @@
           </router-link>
 
           <h1 class="dashboard-heading-perpetua text-3xl md:text-4xl">
-            Resumen
+            {{ t("dashboard.title") }}
           </h1>
-          <button
-            class="text-slate-700 dark:text-slate-200"
-            type="button"
-            aria-label="Configuración"
-          >
-            <svg
-              class="icon"
-              viewBox="0 0 256 256"
-              xmlns="http://www.w3.org/2000/svg"
+          <div class="relative">
+            <button
+              @click="languageMenuOpen = !languageMenuOpen"
+              class="text-slate-700 dark:text-slate-200 inline-flex items-center gap-2"
+              type="button"
+              :aria-label="t('actions.changeLanguage')"
             >
-              <path
-                d="M128,80a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160Zm88-29.84q.06-2.16,0-4.32l14.92-18.64a8,8,0,0,0,1.48-7.06,107.21,107.21,0,0,0-10.88-26.25,8,8,0,0,0-6-3.93l-23.72-2.64q-1.48-1.56-3-3L186,40.54a8,8,0,0,0-3.94-6,107.71,107.71,0,0,0-26.25-10.87,8,8,0,0,0-7.06,1.49L130.16,40Q128,40,125.84,40L107.2,25.11a8,8,0,0,0-7.06-1.48A107.6,107.6,0,0,0,73.89,34.51a8,8,0,0,0-3.93,6L67.32,64.27q-1.56,1.49-3,3L40.54,70a8,8,0,0,0-6,3.94,107.71,107.71,0,0,0-10.87,26.25,8,8,0,0,0,1.49,7.06L40,125.84Q40,128,40,130.16L25.11,148.8a8,8,0,0,0-1.48,7.06,107.21,107.21,0,0,0,10.88,26.25,8,8,0,0,0,6,3.93l23.72,2.64q1.49,1.56,3,3L70,215.46a8,8,0,0,0,3.94,6,107.71,107.71,0,0,0,26.25,10.87,8,8,0,0,0,7.06-1.49L125.84,216q2.16.06,4.32,0l18.64,14.92a8,8,0,0,0,7.06,1.48,107.21,107.21,0,0,0,26.25-10.88,8,8,0,0,0,3.93-6l2.64-23.72q1.56-1.48,3-3L215.46,186a8,8,0,0,0,6-3.94,107.71,107.71,0,0,0,10.87-26.25,8,8,0,0,0-1.49-7.06Zm-16.1-6.5a73.93,73.93,0,0,1,0,8.68,8,8,0,0,0,1.74,5.48l14.19,17.73a91.57,91.57,0,0,1-6.23,15L187,173.11a8,8,0,0,0-5.1,2.64,74.11,74.11,0,0,1-6.14,6.14,8,8,0,0,0-2.64,5.1l-2.51,22.58a91.32,91.32,0,0,1-15,6.23l-17.74-14.19a8,8,0,0,0-5-1.75h-.48a73.93,73.93,0,0,1-8.68,0,8,8,0,0,0-5.48,1.74L100.45,215.8a91.57,91.57,0,0,1-15-6.23L82.89,187a8,8,0,0,0-2.64-5.1,74.11,74.11,0,0,1-6.14-6.14,8,8,0,0,0-5.1-2.64L46.43,170.6a91.32,91.32,0,0,1-6.23-15l14.19-17.74a8,8,0,0,0,1.74-5.48,73.93,73.93,0,0,1,0-8.68,8,8,0,0,0-1.74-5.48L40.2,100.45a91.57,91.57,0,0,1,6.23-15L69,82.89a8,8,0,0,0,5.1-2.64,74.11,74.11,0,0,1,6.14-6.14A8,8,0,0,0,82.89,69L85.4,46.43a91.32,91.32,0,0,1,15-6.23l17.74,14.19a8,8,0,0,0,5.48,1.74,73.93,73.93,0,0,1,8.68,0,8,8,0,0,0,5.48-1.74L155.55,40.2a91.57,91.57,0,0,1,15,6.23L173.11,69a8,8,0,0,0,2.64,5.1,74.11,74.11,0,0,1,6.14,6.14,8,8,0,0,0,5.1,2.64l22.58,2.51a91.32,91.32,0,0,1,6.23,15l-14.19,17.74A8,8,0,0,0,199.87,123.66Z"
-              />
-            </svg>
-          </button>
+              <svg
+                class="icon"
+                viewBox="0 0 256 256"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M128,80a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160Zm88-29.84q.06-2.16,0-4.32l14.92-18.64a8,8,0,0,0,1.48-7.06,107.21,107.21,0,0,0-10.88-26.25,8,8,0,0,0-6-3.93l-23.72-2.64q-1.48-1.56-3-3L186,40.54a8,8,0,0,0-3.94-6,107.71,107.71,0,0,0-26.25-10.87,8,8,0,0,0-7.06,1.49L130.16,40Q128,40,125.84,40L107.2,25.11a8,8,0,0,0-7.06-1.48A107.6,107.6,0,0,0,73.89,34.51a8,8,0,0,0-3.93,6L67.32,64.27q-1.56,1.49-3,3L40.54,70a8,8,0,0,0-6,3.94,107.71,107.71,0,0,0-10.87,26.25,8,8,0,0,0,1.49,7.06L40,125.84Q40,128,40,130.16L25.11,148.8a8,8,0,0,0-1.48,7.06,107.21,107.21,0,0,0,10.88,26.25,8,8,0,0,0,6,3.93l23.72,2.64q1.49,1.56,3,3L70,215.46a8,8,0,0,0,3.94,6,107.71,107.71,0,0,0,26.25,10.87,8,8,0,0,0,7.06-1.49L125.84,216q2.16.06,4.32,0l18.64,14.92a8,8,0,0,0,7.06,1.48,107.21,107.21,0,0,0,26.25-10.88,8,8,0,0,0,3.93-6l2.64-23.72q1.56-1.48,3-3L215.46,186a8,8,0,0,0,6-3.94,107.71,107.71,0,0,0,10.87-26.25,8,8,0,0,0-1.49-7.06Zm-16.1-6.5a73.93,73.93,0,0,1,0,8.68,8,8,0,0,0,1.74,5.48l14.19,17.73a91.57,91.57,0,0,1-6.23,15L187,173.11a8,8,0,0,0-5.1,2.64,74.11,74.11,0,0,1-6.14,6.14,8,8,0,0,0-2.64,5.1l-2.51,22.58a91.32,91.32,0,0,1-15,6.23l-17.74-14.19a8,8,0,0,0-5-1.75h-.48a73.93,73.93,0,0,1-8.68,0,8,8,0,0,0-5.48,1.74L100.45,215.8a91.57,91.57,0,0,1-15-6.23L82.89,187a8,8,0,0,0-2.64-5.1,74.11,74.11,0,0,1-6.14-6.14,8,8,0,0,0-5.1-2.64L46.43,170.6a91.32,91.32,0,0,1-6.23-15l14.19-17.74a8,8,0,0,0,1.74-5.48,73.93,73.93,0,0,1,0-8.68,8,8,0,0,0-1.74-5.48L40.2,100.45a91.57,91.57,0,0,1,6.23-15L69,82.89a8,8,0,0,0,5.1-2.64,74.11,74.11,0,0,1,6.14-6.14A8,8,0,0,0,82.89,69L85.4,46.43a91.32,91.32,0,0,1,15-6.23l17.74,14.19a8,8,0,0,0,5.48,1.74,73.93,73.93,0,0,1,8.68,0,8,8,0,0,0,5.48-1.74L155.55,40.2a91.57,91.57,0,0,1,15,6.23L173.11,69a8,8,0,0,0,2.64,5.1,74.11,74.11,0,0,1,6.14,6.14,8,8,0,0,0,5.1,2.64l22.58,2.51a91.32,91.32,0,0,1,6.23,15l-14.19,17.74A8,8,0,0,0,199.87,123.66Z"
+                />
+              </svg>
+              <span class="text-sm">{{ currentLanguageLabel }}</span>
+            </button>
+            <div
+              v-if="languageMenuOpen"
+              class="absolute right-0 z-20 mt-2 w-40 overflow-hidden rounded-2xl bg-white shadow-lg border border-slate-200"
+            >
+              <button
+                @click="selectLanguage('es')"
+                class="block w-full text-left px-4 py-2 text-sm hover:bg-slate-100"
+              >
+                Español
+              </button>
+              <button
+                @click="selectLanguage('en')"
+                class="block w-full text-left px-4 py-2 text-sm hover:bg-slate-100"
+              >
+                English
+              </button>
+            </div>
+          </div>
         </header>
 
         <div class="px-4 pb-8 space-y-6">
@@ -52,17 +84,18 @@
           >
             <div class="flex items-start justify-between gap-4 mb-4">
               <div>
-                <h2 class="dashboard-section-title">¿Cómo te sientes hoy?</h2>
+                <h2 class="dashboard-section-title">
+                  {{ t("dashboard.howDoYouFeel") }}
+                </h2>
                 <p class="text-sm text-slate-600 dark:text-slate-300 mt-1">
-                  Registra tu energía y tu estado emocional con estilo y
-                  claridad.
+                  {{ t("dashboard.energyDescription") }}
                 </p>
               </div>
               <span
                 class="px-3 py-1 rounded-full text-xs font-semibold"
                 :class="saveStatusClass"
               >
-                {{ saveStatus }}
+                {{ saveStatusText }}
               </span>
             </div>
 
@@ -75,12 +108,12 @@
                         class="block dashboard-section-title"
                         for="energy-level"
                       >
-                        Nivel de energía
+                        {{ t("dashboard.energySectionTitle") }}
                       </label>
                       <p
                         class="text-sm text-slate-600 dark:text-slate-300 mt-1"
                       >
-                        Selecciona cómo te sientes en una escala de 1 a 5.
+                        {{ t("dashboard.energyDescription") }}
                       </p>
                     </div>
                   </div>
@@ -110,19 +143,19 @@
                     ><span class="material-symbols-outlined text-amber-500"
                       >battery_alert</span
                     >
-                    Muy bajo</span
+                    {{ t("dashboard.veryLowEnergy") }}</span
                   >
                   <span class="flex items-center gap-1"
                     ><span class="material-symbols-outlined text-cyan-500"
                       >battery_std</span
                     >
-                    Medio</span
+                    {{ t("dashboard.mediumEnergy") }}</span
                   >
                   <span class="flex items-center gap-1"
                     ><span class="material-symbols-outlined text-emerald-500"
                       >battery_full</span
                     >
-                    Muy alto</span
+                    {{ t("dashboard.veryHighEnergy") }}</span
                   >
                 </div>
               </div>
@@ -131,7 +164,7 @@
                 <h3
                   class="block dashboard-section-title text-slate-800 dark:text-slate-100 mb-3"
                 >
-                  Estado de ánimo
+                  {{ t("dashboard.moodTitle") }}
                 </h3>
                 <div class="grid grid-cols-3 sm:grid-cols-6 gap-2 text-center">
                   <button
@@ -160,13 +193,13 @@
                   class="block dashboard-section-title text-purple-700 dark:text-purple-400 mb-3"
                   for="wellbeing-note"
                 >
-                  Nota opcional
+                  {{ t("dashboard.optionalNote") }}
                 </label>
                 <textarea
                   id="wellbeing-note"
                   v-model.trim="optionalNote"
                   class="dashboard-note-box w-full rounded-2xl px-3 py-3 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-500 dark:placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-400"
-                  placeholder="Describe brevemente cómo te sientes o qué influye en tu día."
+                  :placeholder="t('dashboard.optionalPlaceholder')"
                   rows="3"
                 ></textarea>
               </div>
@@ -177,19 +210,21 @@
                 <p
                   class="text-sm dashboard-section-title text-slate-900 dark:text-slate-100"
                 >
-                  Registro actual
+                  {{ t("dashboard.currentRecord") }}
                 </p>
                 <p class="text-sm text-slate-600 dark:text-slate-400 mt-1">
-                  <span class="font-semibold text-slate-900 dark:text-slate-100"
-                    >Emoción:</span
+                  <span
+                    class="font-semibold text-slate-900 dark:text-slate-100"
+                    >{{ t("dashboard.emotionLabel") }}</span
                   >
                   <span class="text-slate-900 dark:text-slate-100">{{
                     selectedMoodLabel
                   }}</span>
                 </p>
                 <p class="text-sm text-slate-600 dark:text-slate-400">
-                  <span class="font-semibold text-slate-900 dark:text-slate-100"
-                    >Energía:</span
+                  <span
+                    class="font-semibold text-slate-900 dark:text-slate-100"
+                    >{{ t("dashboard.energyLabel") }}</span
                   >
                   <span class="text-slate-900 dark:text-slate-100"
                     >{{ energy }}/5</span
@@ -210,7 +245,7 @@
                   v-if="lastSavedAt"
                   class="text-xs text-subtle-light dark:text-subtle-dark mt-2"
                 >
-                  Última actualización: {{ lastSavedAt }}
+                  {{ t("dashboard.lastUpdated") }} {{ lastSavedAt }}
                 </p>
               </div>
 
@@ -222,10 +257,14 @@
                 >
                   <span class="material-symbols-outlined text-base">bolt</span>
                   <span v-if="saveTimer === 0">
-                    {{ isSaving ? "Guardando..." : "Guardar registro" }}
+                    {{
+                      isSaving
+                        ? t("dashboard.savingStatus")
+                        : t("dashboard.saveButton")
+                    }}
                   </span>
                   <span v-else>
-                    Puedes guardar otro registro en {{ saveTimer }}s
+                    {{ t("dashboard.saveTimer", { seconds: saveTimer }) }}
                   </span>
                 </button>
                 <p v-if="errorMessage" class="text-sm text-red-500">
@@ -239,10 +278,10 @@
             <h2
               class="text-xl font-bold text-content-light dark:text-content-dark mb-4"
             >
-              Tareas de hoy
+              {{ t("dashboard.tasksOfToday") }}
             </h2>
             <div v-if="todayLoading" class="text-center py-4 text-slate-500">
-              Cargando tareas...
+              {{ t("dashboard.loadingTasks") }}
             </div>
             <div v-else-if="todayError" class="text-center py-4 text-red-500">
               {{ todayError }}
@@ -251,7 +290,7 @@
               v-else-if="todayTasks.length === 0"
               class="text-center py-4 text-slate-500"
             >
-              No hay tareas para hoy
+              {{ t("dashboard.noTasksToday") }}
             </div>
             <div v-else class="space-y-3">
               <div
@@ -343,29 +382,44 @@
 </template>
 
 <script setup>
-import { computed, onBeforeUnmount, onMounted, ref } from "vue";
+import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import FooterNav from "../components/FooterNav.vue";
-import { createEmotionalRecord, getTasks } from "../services/api";
+import { createEmotionalRecord, getProfile, getTasks } from "../services/api";
+import {
+  locale,
+  localeCode,
+  setLocale,
+  t,
+  availableLanguages,
+} from "../stores/locale";
 import "../styles/dashboard.css";
 
 // --- CONFIGURACIÓN DE MOOD Y ENERGÍA ---
-const moodOptions = [
-  { value: "feliz", label: "Feliz", emoji: "😊" },
-  { value: "calmado", label: "Calmado", emoji: "😌" },
-  { value: "neutro", label: "Neutro", emoji: "😐" },
-  { value: "triste", label: "Triste", emoji: "😟" },
-  { value: "enojado", label: "Enojado", emoji: "😠" },
-  { value: "cansado", label: "Cansado", emoji: "😥" },
-];
+const moodOptions = computed(() => [
+  { value: "feliz", label: t("mood.feliz"), emoji: "😊" },
+  { value: "calmado", label: t("mood.calmado"), emoji: "😌" },
+  { value: "neutro", label: t("mood.neutro"), emoji: "😐" },
+  { value: "triste", label: t("mood.triste"), emoji: "😟" },
+  { value: "enojado", label: t("mood.enojado"), emoji: "😠" },
+  { value: "cansado", label: t("mood.cansado"), emoji: "😥" },
+]);
 
 const energy = ref(3);
 const mood = ref("feliz");
 const optionalNote = ref("");
-const saveStatus = ref("Sin guardar");
+const saveStatus = ref("unsaved");
 const lastSavedAt = ref("");
 const isSaving = ref(false);
 const errorMessage = ref("");
 const saveTimer = ref(0);
+const languageMenuOpen = ref(false);
+const userRole = ref("");
+const currentLanguageLabel = computed(() => {
+  const language = availableLanguages.find(
+    (item) => item.code === locale.value,
+  );
+  return language ? language.label : locale.value;
+});
 let saveTimerInterval = null;
 
 // --- GESTIÓN DE TAREAS ---
@@ -376,6 +430,20 @@ const todayError = ref(null);
 
 const userTimeZone =
   Intl.DateTimeFormat().resolvedOptions().timeZone || "America/Bogota";
+
+const normalizedRole = computed(() =>
+  String(userRole.value || "")
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, ""),
+);
+
+const isAdminUser = computed(() =>
+  ["admin", "administrador", "administrator", "globaladmin"].includes(
+    normalizedRole.value,
+  ),
+);
 
 // Helper para obtener la fecha de la tarea independientemente del formato de la API
 const getTaskDeadline = (task) => task.fecha_limite ?? task.fechaLimite ?? null;
@@ -402,7 +470,7 @@ const getTodayTasks = async () => {
     const tasks = await getTasks();
     allTasks.value = tasks;
 
-    const todayStr = new Date().toLocaleDateString("en-CA", {
+    const todayStr = new Date().toLocaleDateString(localeCode.value, {
       timeZone: userTimeZone,
     });
 
@@ -412,16 +480,25 @@ const getTodayTasks = async () => {
       const taskDate = parseUtcDateTime(deadline);
       if (!taskDate) return false;
 
-      const taskLocalStr = taskDate.toLocaleDateString("en-CA", {
+      const taskLocalStr = taskDate.toLocaleDateString(localeCode.value, {
         timeZone: userTimeZone,
       });
       return taskLocalStr === todayStr;
     });
   } catch (e) {
     console.error("Error cargando tareas:", e);
-    todayError.value = "Error al cargar las tareas";
+    todayError.value = t("dashboard.errorLoadingTasks");
   } finally {
     todayLoading.value = false;
+  }
+};
+
+const loadCurrentUser = async () => {
+  try {
+    const profile = await getProfile();
+    userRole.value = profile?.rol || "";
+  } catch (error) {
+    userRole.value = "";
   }
 };
 
@@ -431,7 +508,7 @@ const formatDateTime = (dateString) => {
   if (!dateString) return "";
   const date = parseUtcDateTime(dateString);
   if (!date) return "";
-  return date.toLocaleString("es-CO", {
+  return date.toLocaleString(localeCode.value, {
     timeZone: userTimeZone,
     dateStyle: "short",
     timeStyle: "short",
@@ -483,15 +560,17 @@ const statusClasses = (status) => {
 
 // --- COMPUTED PARA EL REGISTRO EMOCIONAL ---
 const selectedMoodLabel = computed(
-  () => moodOptions.find((o) => o.value === mood.value)?.label ?? "Sin definir",
+  () =>
+    moodOptions.value.find((o) => o.value === mood.value)?.label ??
+    t("dashboard.unknownMood"),
 );
 const energyLabel = computed(() => {
   const val = Number(energy.value);
-  if (val <= 1) return "Muy bajo";
-  if (val === 2) return "Bajo";
-  if (val === 3) return "Medio";
-  if (val === 4) return "Alto";
-  return "Muy alto";
+  if (val <= 1) return t("dashboard.veryLowEnergy");
+  if (val === 2) return t("dashboard.lowEnergy");
+  if (val === 3) return t("dashboard.mediumEnergy");
+  if (val === 4) return t("dashboard.highEnergy");
+  return t("dashboard.veryHighEnergy");
 });
 
 const energyStatusClass = computed(() => {
@@ -511,18 +590,27 @@ const energyTrackStyle = computed(() => {
 });
 
 const saveStatusClass = computed(() => {
-  if (saveStatus.value === "Guardado")
+  if (saveStatus.value === "saved")
     return "bg-green-100 text-green-700 dark:bg-green-500/10 dark:text-green-300";
-  if (saveStatus.value === "Guardando...")
+  if (saveStatus.value === "saving")
     return "bg-amber-100 text-amber-700 dark:bg-amber-500/10 dark:text-amber-300";
+  if (saveStatus.value === "error")
+    return "bg-red-100 text-red-700 dark:bg-red-500/10 dark:text-red-300";
   return "bg-gray-100 text-gray-600 dark:bg-white/5 dark:text-gray-300";
+});
+
+const saveStatusText = computed(() => {
+  if (saveStatus.value === "saved") return t("dashboard.savedStatus");
+  if (saveStatus.value === "saving") return t("dashboard.savingStatus");
+  if (saveStatus.value === "error") return t("dashboard.saveError");
+  return t("dashboard.unsavedStatus");
 });
 
 // --- ACCIONES ---
 async function saveEmotionalRecord() {
   if (isSaving.value || saveTimer.value > 0) return;
   isSaving.value = true;
-  saveStatus.value = "Guardando...";
+  saveStatus.value = "saving";
   try {
     const fecha = new Date().toISOString();
     await createEmotionalRecord({
@@ -531,22 +619,27 @@ async function saveEmotionalRecord() {
       notaOpcional: optionalNote.value,
       fechaRegistro: fecha,
     });
-    lastSavedAt.value = new Date(fecha).toLocaleString("es-CO", {
+    lastSavedAt.value = new Date(fecha).toLocaleString(localeCode.value, {
       dateStyle: "short",
       timeStyle: "short",
     });
-    saveStatus.value = "Guardado";
+    saveStatus.value = "saved";
     saveTimer.value = 120;
     saveTimerInterval = setInterval(() => {
       saveTimer.value--;
       if (saveTimer.value <= 0) clearInterval(saveTimerInterval);
     }, 1000);
   } catch (error) {
-    saveStatus.value = "Error al guardar";
-    errorMessage.value = "No se pudo guardar el registro.";
+    saveStatus.value = "error";
+    errorMessage.value = t("dashboard.saveError");
   } finally {
     isSaving.value = false;
   }
+}
+
+function selectLanguage(lang) {
+  setLocale(lang);
+  languageMenuOpen.value = false;
 }
 
 const inactiveMoodClass =
@@ -554,7 +647,11 @@ const inactiveMoodClass =
 const activeMoodClass =
   "border-primary bg-primary/10 dark:bg-primary/20 text-primary";
 
-onMounted(getTodayTasks);
+onMounted(() => {
+  getTodayTasks();
+  loadCurrentUser();
+});
+watch(locale, getTodayTasks);
 onBeforeUnmount(() => clearInterval(saveTimerInterval));
 </script>
 <style src="../styles/dashboard.css"></style>

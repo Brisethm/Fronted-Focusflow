@@ -1,16 +1,16 @@
 ﻿<template>
   <div class="transactions-page">
     <header class="screen-header">
-      <h1>Finanzas</h1>
+      <h1>{{ t('transactions.title') }}</h1>
     </header>
 
     <main class="page-body">
       <section class="section summary-section">
-        <h2>Resumen</h2>
+        <h2>{{ t('transactions.summary') }}</h2>
         
         <!-- NUEVO: Tarjeta de Balance Total -->
         <article class="balance-card">
-          <p class="summary-label text-slate">Balance Total</p>
+          <p class="summary-label text-slate">{{ t('transactions.totalBalance') }}</p>
           <p :class="['balance-value', balanceTotal < 0 ? 'text-negative' : '']">
             {{ formatCurrency(balanceTotal) }}
           </p>
@@ -18,23 +18,23 @@
 
         <div class="summary-grid">
           <article class="summary-card ingreso-card">
-            <p class="summary-label">Ingresos</p>
+            <p class="summary-label">{{ t('transactions.incomes') }}</p>
             <p class="summary-value">{{ formatCurrency(totales.ingresos) }}</p>
           </article>
 
           <article class="summary-card gasto-card">
-            <p class="summary-label">Gastos</p>
+            <p class="summary-label">{{ t('transactions.expenses') }}</p>
             <p class="summary-value">{{ formatCurrency(totales.gastos) }}</p>
           </article>
         </div>
       </section>
 
       <section class="section transactions-section">
-        <h2>Transacciones</h2>
+        <h2>{{ t('transactions.title') }}</h2>
 
         <div class="transactions-list">
           <div v-if="cargando" class="empty-state">
-            Cargando transacciones...
+            {{ t('transactions.loading') }}
           </div>
 
           <template v-else-if="transacciones.length">
@@ -93,14 +93,14 @@
                     class="action-button edit-button"
                     @click="editarTransaccion(transaccion.idTransaccion)"
                   >
-                    Editar
+                    {{ t('transactions.editTransaction') }}
                   </button>
                   <button
                     type="button"
                     class="action-button delete-button"
                     @click="borrarTransaccion(transaccion.idTransaccion)"
                   >
-                    Eliminar
+                    {{ t('transactions.deleteTransaction') }}
                   </button>
                 </div>
               </div>
@@ -108,7 +108,7 @@
           </template>
 
           <div v-else class="empty-state">
-            No hay transacciones registradas aún.
+            {{ t('transactions.noTransactions') }}
           </div>
         </div>
       </section>
@@ -120,7 +120,7 @@
       @click="mostrarFormularioNueva"
     >
       <span class="button-icon">+</span>
-      Agregar Transacción
+      {{ t('transactions.addTransaction') }}
     </button>
 
     <FooterNav />
@@ -136,7 +136,7 @@
           ×
         </button>
 
-        <h2>{{ isEditing ? "Editar Transacción" : "Agregar Transacción" }}</h2>
+        <h2>{{ isEditing ? t('transactions.editTransaction') : t('transactions.newTransaction') }}</h2>
 
         <div class="amount-display">
           <span class="currency-symbol">$</span>
@@ -158,14 +158,14 @@
             :class="['toggle-button', tipo === 'Ingreso' ? 'active' : '']"
             @click="setTipo('Ingreso')"
           >
-            Ingreso
+            {{ t('transactions.incomeType') }}
           </button>
           <button
             type="button"
             :class="['toggle-button', tipo === 'Gasto' ? 'active' : '']"
             @click="setTipo('Gasto')"
           >
-            Gasto
+            {{ t('transactions.expenseType') }}
           </button>
         </div>
 
@@ -188,12 +188,12 @@
                     <line x1="7" y1="7" x2="7.01" y2="7"></line>
                   </svg>
                 </div>
-                <span class="label">Título</span>
+                <span class="label">{{ t('transactions.transactionLabel') }}</span>
               </div>
               <input
                 type="text"
                 v-model="categoria"
-                placeholder="Salario"
+                :placeholder="t('transactions.categoryPlaceholder')"
                 class="row-input"
                 required
               />
@@ -223,7 +223,7 @@
                     <line x1="3" y1="10" x2="21" y2="10"></line>
                   </svg>
                 </div>
-                <span class="label">Fecha</span>
+                <span class="label">{{ t('transactions.dateLabel') }}</span>
               </div>
               <input
                 type="datetime-local"
@@ -256,14 +256,14 @@
               <input
                 type="text"
                 v-model="descripcion"
-                placeholder="Añadir una nota (opcional)"
+                :placeholder="t('transactions.notePlaceholder')"
                 class="note-input"
               />
             </div>
           </div>
 
           <button type="submit" class="save-button" :disabled="guardando">
-            {{ guardando ? "Guardando..." : "Guardar Transacción" }}
+            {{ guardando ? t('transactions.saving') : t('transactions.saveButton') }}
           </button>
         </form>
       </div>
@@ -275,6 +275,7 @@
 import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import FooterNav from "../components/FooterNav.vue";
+import { localeCode, t } from '../stores/locale'
 import {
   getTransacciones,
   deleteTransaccion,
@@ -319,7 +320,7 @@ const balanceTotal = computed(() => totales.value.ingresos - totales.value.gasto
 
 const formatCurrency = (value) => {
   const amount = Number(value) || 0;
-  const absolute = Math.abs(amount).toLocaleString("es-CO", {
+  const absolute = Math.abs(amount).toLocaleString(localeCode.value, {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   });
@@ -336,7 +337,7 @@ const cargarTransacciones = async () => {
     transacciones.value = await getTransacciones();
   } catch (error) {
     console.error("Error al cargar las transacciones:", error);
-    alert("Hubo un error al cargar los datos.");
+    alert(t('transactions.loadError'));
   } finally {
     cargando.value = false;
   }
@@ -374,7 +375,7 @@ const editarTransaccion = async (idTransaccion) => {
     showForm.value = true;
   } catch (error) {
     console.error("Error cargando transacción:", error);
-    alert("No se pudo cargar la transacción.");
+    alert(t('transactions.loadError'));
   }
 };
 
@@ -391,7 +392,7 @@ const guardarTransaccion = async () => {
     !categoria.value.trim() ||
     !fecha.value
   ) {
-    alert("Por favor completa todos los campos correctamente.");
+    alert(t('transactions.completeFields'));
     return;
   }
 
@@ -415,21 +416,21 @@ const guardarTransaccion = async () => {
     cerrarFormulario();
   } catch (error) {
     console.error("Error guardando transacción:", error);
-    alert("No se pudo guardar la transacción. Intenta de nuevo.");
+    alert(t('transactions.saveError'));
   } finally {
     guardando.value = false;
   }
 };
 
 const borrarTransaccion = async (idTransaccion) => {
-  if (!confirm("¿Estás seguro de que deseas eliminar esta transacción?")) return;
+  if (!confirm(t('transactions.deleteConfirm'))) return;
   
   try {
     await deleteTransaccion(idTransaccion);
     await cargarTransacciones();
   } catch (error) {
     console.error("Error al eliminar:", error);
-    alert("No se pudo eliminar la transacción.");
+    alert(t('transactions.deleteError'));
   }
 };
 
@@ -765,6 +766,7 @@ onMounted(() => {
   font-weight: 700;
   color: #0f172a;
   letter-spacing: -1px;
+  appearance: textfield;
   -moz-appearance: textfield;
 }
 

@@ -3,14 +3,14 @@
     <main class="px-4 pb-24 pt-4">
       <header class="mb-6 flex items-center justify-between gap-4">
         <div>
-          <p class="text-sm uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">Tareas</p>
-          <h1 class="text-3xl font-bold text-slate-900 dark:text-slate-100">Tus tareas</h1>
+          <p class="text-sm uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">{{ t('tasks.sectionTitle') }}</p>
+          <h1 class="text-3xl font-bold text-slate-900 dark:text-slate-100">{{ t('tasks.title') }}</h1>
         </div>
         <button
           type="button"
           @click="goToCreateTask"
           class="inline-flex h-12 w-12 items-center justify-center rounded-full bg-sky-600 text-white shadow-lg shadow-sky-500/20 transition hover:bg-sky-500"
-          aria-label="Agregar tarea"
+          :aria-label="t('tasks.addTask')"
         >
           <span class="text-2xl">+</span>
         </button>
@@ -18,7 +18,7 @@
 
       <!-- Estado de Carga -->
       <div v-if="loading" class="flex justify-center items-center py-12">
-        <p class="text-lg font-medium text-slate-500 animate-pulse">Cargando tareas...</p>
+        <p class="text-lg font-medium text-slate-500 animate-pulse">{{ t('tasks.loadingTasks') }}</p>
       </div>
 
       <!-- Estado de Error -->
@@ -28,8 +28,8 @@
 
       <!-- Estado Vacío -->
       <section v-else-if="tasks.length === 0" class="rounded-3xl border border-slate-200 bg-white/80 p-6 text-center shadow-sm dark:border-slate-800 dark:bg-slate-900/90">
-        <p class="text-lg font-semibold text-slate-900 dark:text-slate-100">No hay tareas disponibles</p>
-        <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">Crea una nueva tarea para que aparezca aquí.</p>
+        <p class="text-lg font-semibold text-slate-900 dark:text-slate-100">{{ t('tasks.noTasksAvailable') }}</p>
+        <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">{{ t('tasks.noTasksMessage') }}</p>
       </section>
 
       <!-- Lista de Tareas Agrupadas -->
@@ -37,7 +37,7 @@
         <div v-for="group in taskGroups" :key="group.title">
           <div class="mb-4 flex items-center justify-between">
             <h2 class="text-xl font-semibold text-slate-900 dark:text-slate-100">{{ group.title }}</h2>
-            <span class="text-sm text-slate-500 dark:text-slate-400">{{ group.tasks.length }} tareas</span>
+            <span class="text-sm text-slate-500 dark:text-slate-400">{{ group.tasks.length }} {{ t('tasks.taskCountLabel') }}</span>
           </div>
           
           <div class="space-y-4">
@@ -63,7 +63,7 @@
                     class="inline-flex rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em]"
                     :class="statusPillClass(task.estado)"
                   >
-                    {{ task.estado }}
+                    {{ statusLabel(task.estado) }}
                   </span>
                 </div>
               </div>
@@ -77,11 +77,11 @@
                 <div class="flex flex-wrap items-center gap-3 text-sm text-slate-500 dark:text-slate-400">
                   <span v-if="task.prioridad" class="inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-2 dark:bg-slate-900 capitalize">
                     <span class="h-2.5 w-2.5 rounded-full" :class="priorityDotClass(task.prioridad)"></span>
-                    Prioridad {{ task.prioridad }}
+                    {{ t('tasks.priority') }} {{ task.prioridad }}
                   </span>
                   <span v-if="task.nivelEsfuerzo" class="inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-2 dark:bg-slate-900 capitalize">
                     <span class="h-2.5 w-2.5 rounded-full" :class="effortDotClass(task.nivelEsfuerzo)"></span>
-                    Esfuerzo {{ task.nivelEsfuerzo }}
+                    {{ t('tasks.effort') }} {{ task.nivelEsfuerzo }}
                   </span>
                 </div>
                 
@@ -92,14 +92,14 @@
                     @click="editTask(task)"
                     class="rounded-full border border-slate-300 px-4 py-1.5 text-sm font-semibold text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-100 dark:hover:bg-slate-800 transition"
                   >
-                    ✏️ Editar
+                    ✏️ {{ t('tasks.edit') }}
                   </button>
                   <button
                     type="button"
                     @click="confirmDeleteTask(task)"
                     class="rounded-full border border-red-300 bg-red-50 px-4 py-1.5 text-sm font-semibold text-red-700 hover:bg-red-100 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-200 dark:hover:bg-red-500/20 transition"
                   >
-                    🗑️ Eliminar
+                    🗑️ {{ t('tasks.delete') }}
                   </button>
                 </div>
               </div>
@@ -118,14 +118,14 @@
         <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30">
           <span class="text-3xl">⚠️</span>
         </div>
-        <h3 class="mb-2 text-xl font-bold text-slate-900 dark:text-white">Eliminar tarea</h3>
-        <p class="mb-6 text-sm text-slate-600 dark:text-slate-400">¿Estás seguro de que deseas eliminar la tarea <span class="font-bold">"{{ taskToDelete?.titulo }}"</span>? Esta acción no se puede deshacer.</p>
+        <h3 class="mb-2 text-xl font-bold text-slate-900 dark:text-white">{{ t('tasks.deleteModalTitle') }}</h3>
+        <p class="mb-6 text-sm text-slate-600 dark:text-slate-400">{{ t('tasks.deleteModalMessage', { task: taskToDelete?.titulo }) }}</p>
         <div class="flex gap-3">
           <button class="flex-1 rounded-full bg-slate-100 py-3 font-semibold text-slate-700 hover:bg-slate-200 transition dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700" @click="showDeleteModal = false">
-            Cancelar
+            {{ t('tasks.cancel') }}
           </button>
           <button class="flex-1 rounded-full bg-red-600 py-3 font-semibold text-white hover:bg-red-700 transition shadow-lg shadow-red-500/30" @click="deleteTask">
-            Eliminar
+            {{ t('tasks.delete') }}
           </button>
         </div>
       </div>
@@ -138,6 +138,8 @@ import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import FooterNav from '../components/FooterNav.vue'
 import { getTasks, deleteTask as apiDeleteTask } from '../services/api.js'
+import { t, localeCode } from '../stores/locale'
+
 
 const router = useRouter()
 
@@ -162,7 +164,7 @@ const formatDate = (dateString) => {
   const date = parseUtcDateTime(dateString)
   if (!date || isNaN(date)) return dateString
 
-  return date.toLocaleString('es-CO', {
+  return date.toLocaleString(localeCode.value, {
     timeZone: userTimeZone,
     month: 'short',
     day: 'numeric',
@@ -215,13 +217,23 @@ const taskGroups = computed(() => {
   const groups = []
   // Se agregan en el orden en que quieres que aparezcan en pantalla
   
-  if (hoy.length > 0) groups.push({ title: "Hoy", tasks: hoy })
-  if (manana.length > 0) groups.push({ title: "Mañana", tasks: manana })
-  if (proximamente.length > 0) groups.push({ title: "Próximamente", tasks: proximamente })
-  if (atrasadas.length > 0) groups.push({ title: "Anteriores", tasks: atrasadas })
+  if (hoy.length > 0) groups.push({ title: t('tasks.group.today'), tasks: hoy })
+  if (manana.length > 0) groups.push({ title: t('tasks.group.tomorrow'), tasks: manana })
+  if (proximamente.length > 0) groups.push({ title: t('tasks.group.upcoming'), tasks: proximamente })
+  if (atrasadas.length > 0) groups.push({ title: t('tasks.group.past'), tasks: atrasadas })
 
   return groups
 })
+
+const statusLabel = (status) => {
+  const mapping = {
+    'Por Hacer': t('tasks.status.todo'),
+    'En Progreso': t('tasks.status.inProgress'),
+    'Completado': t('tasks.status.completed'),
+    'Finalizada': t('tasks.status.completed'),
+  }
+  return mapping[status] || status
+}
 
 // --- FUNCIONES DE NAVEGACIÓN Y ACCIONES ---
 const goToCreateTask = () => {
@@ -248,7 +260,7 @@ const deleteTask = async () => {
     taskToDelete.value = null
   } catch (e) {
     console.error('Error al eliminar la tarea:', e)
-    error.value = 'Error al eliminar la tarea'
+    error.value = t('tasks.errorDelete')
   }
 }
 
@@ -287,7 +299,7 @@ onMounted(async () => {
     }))
 
   } catch (e) {
-    error.value = 'Error al cargar las tareas'
+    error.value = t('tasks.errorLoading')
     console.error(e)
   } finally {
     loading.value = false

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#c4b5fd"/>
+      <stop offset="100%" stop-color="#8b5cf6"/>
+    </linearGradient>
+  </defs>
+  <!-- circular background -->
+  <circle cx="256" cy="256" r="256" fill="url(#bg)"/>
+
+  <!-- user torso -->
+  <path d="M130 380c0-72 58-130 126-130s126 58 126 130v6H130v-6z" fill="#ddd6fe" opacity="0.95"/>
+
+  <!-- head -->
+  <circle cx="256" cy="196" r="72" fill="#ffd3b8"/>
+
+  <!-- (Removed hair to avoid 'sombrero' appearance) -->
+
+  <!-- plus circle (more contrast) -->
+  <circle cx="380" cy="300" r="60" fill="#a78bfa"/>
+  <!-- clearer plus sign: thicker white strokes -->
+  <path d="M380 266v68M346 300h68" stroke="#ffffff" stroke-width="20" stroke-linecap="round" />
+
+  <!-- subtle long-shadow to match flat style -->
+  <path d="M120 420c40 20 200 60 280 20L420 380c-60 40-260-10-300- - -" fill="none" opacity="0.05"/>
+</svg>
