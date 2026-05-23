@@ -6,17 +6,6 @@
       class="dashboard-bg-icons pointer-events-none"
       aria-hidden="true"
     ></div>
-    <router-link
-      v-if="isAdminUser"
-      to="/admin-panel"
-      class="absolute left-4 top-1 z-20 inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white/85 px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-sm backdrop-blur transition hover:bg-white hover:text-blue-700 dark:border-slate-700 dark:bg-slate-900/85 dark:text-slate-200 dark:hover:text-blue-300"
-      aria-label="Volver al panel administrativo"
-    >
-      <span class="material-symbols-outlined text-base"
-        >admin_panel_settings</span
-      >
-      <span>Panel admin</span>
-    </router-link>
     <div class="relative flex flex-col min-h-screen justify-between">
       <main class="flex-grow">
         <header class="flex items-center justify-between p-4 bg-transparent">
@@ -384,7 +373,7 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import FooterNav from "../components/FooterNav.vue";
-import { createEmotionalRecord, getProfile, getTasks } from "../services/api";
+import { createEmotionalRecord, getTasks } from "../services/api";
 import {
   locale,
   localeCode,
@@ -413,7 +402,6 @@ const isSaving = ref(false);
 const errorMessage = ref("");
 const saveTimer = ref(0);
 const languageMenuOpen = ref(false);
-const userRole = ref("");
 const currentLanguageLabel = computed(() => {
   const language = availableLanguages.find(
     (item) => item.code === locale.value,
@@ -430,20 +418,6 @@ const todayError = ref(null);
 
 const userTimeZone =
   Intl.DateTimeFormat().resolvedOptions().timeZone || "America/Bogota";
-
-const normalizedRole = computed(() =>
-  String(userRole.value || "")
-    .trim()
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, ""),
-);
-
-const isAdminUser = computed(() =>
-  ["admin", "administrador", "administrator", "globaladmin"].includes(
-    normalizedRole.value,
-  ),
-);
 
 // Helper para obtener la fecha de la tarea independientemente del formato de la API
 const getTaskDeadline = (task) => task.fecha_limite ?? task.fechaLimite ?? null;
@@ -490,15 +464,6 @@ const getTodayTasks = async () => {
     todayError.value = t("dashboard.errorLoadingTasks");
   } finally {
     todayLoading.value = false;
-  }
-};
-
-const loadCurrentUser = async () => {
-  try {
-    const profile = await getProfile();
-    userRole.value = profile?.rol || "";
-  } catch (error) {
-    userRole.value = "";
   }
 };
 
@@ -647,10 +612,7 @@ const inactiveMoodClass =
 const activeMoodClass =
   "border-primary bg-primary/10 dark:bg-primary/20 text-primary";
 
-onMounted(() => {
-  getTodayTasks();
-  loadCurrentUser();
-});
+onMounted(getTodayTasks);
 watch(locale, getTodayTasks);
 onBeforeUnmount(() => clearInterval(saveTimerInterval));
 </script>
