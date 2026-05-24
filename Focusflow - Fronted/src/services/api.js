@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:5097/api";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "https://focusflow-backend-yr16.onrender.com";
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -114,7 +114,7 @@ api.interceptors.response.use(
 
 export async function register(email, password, nombre, rememberMe = true) {
   const data = (
-    await api.post("/Auth/register", {
+    await api.post("api/Auth/register", {
       email,
       password,
       nombre,
@@ -127,7 +127,7 @@ export async function register(email, password, nombre, rememberMe = true) {
 }
 export async function registerStaff(email, password, nombre, rol) {
   return (
-    await api.post("/Auth/register-staff", {
+    await api.post("api/Auth/register-staff", {
       email,
       password,
       nombre,
@@ -137,7 +137,7 @@ export async function registerStaff(email, password, nombre, rol) {
 }
 
 export async function login(email, password, rememberMe = true) {
-  const data = (await api.post("/Auth/login", { email, password })).data;
+  const data = (await api.post("api/Auth/login", { email, password })).data;
 
   persistAuth(data, rememberMe);
 
@@ -145,11 +145,11 @@ export async function login(email, password, rememberMe = true) {
 }
 
 export async function resetPassword(email) {
-  return (await api.post("/Auth/reset-password", { email })).data;
+  return (await api.post("api/Auth/reset-password", { email })).data;
 }
 
 export async function updatePassword(newPassword) {
-  return (await api.post("/Auth/update-password", { newPassword })).data;
+  return (await api.post("api/Auth/update-password", { newPassword })).data;
 }
 
 export async function createEmotionalRecord({
@@ -160,7 +160,7 @@ export async function createEmotionalRecord({
 }) {
   return (
     await api.post(
-      "/RegistrosEmocionales",
+      "api/RegistrosEmocionales",
       {
         estadoAnimo,
         nivelEnergia,
@@ -176,7 +176,7 @@ export async function createEmotionalRecord({
 
 export async function submitQuestionnaire(payload) {
   return (
-    await api.post("/Cuestionarios", payload, {
+    await api.post("api/Cuestionarios", payload, {
       timeout: 10000,
     })
   ).data;
@@ -193,7 +193,7 @@ export async function createTask({
   estado = "En progreso",
 }) {
   return (
-    await api.post("/Tareas", {
+    await api.post("api/Tareas", {
       titulo,
       prioridad,
       nivelEsfuerzo: nivel_esfuerzo,
@@ -213,7 +213,7 @@ export async function createPersonalizedPlan({
 }) {
   return (
     await api.post(
-      "/PlanesPersonalizados",
+      "api/PlanesPersonalizados",
       {
         horaDescanso,
         enfoqueDiario,
@@ -227,38 +227,38 @@ export async function createPersonalizedPlan({
   ).data;
 }
 export async function getTasks() {
-  return (await api.get("/Tareas")).data;
+  return (await api.get("api/Tareas")).data;
 }
 export async function getTaskById(id) {
-  return (await api.get(`/Tareas/${id}`)).data;
+  return (await api.get(`api/Tareas/${id}`)).data;
 }
 // Actualizar una tarea existente (PUT)
 export async function updateTask(id, taskData) {
-  return (await api.put(`/Tareas/${id}`, taskData)).data;
+  return (await api.put(`api/Tareas/${id}`, taskData)).data;
 }
 
 // Eliminar una tarea (DELETE)
 export async function deleteTask(id) {
-  return (await api.delete(`/Tareas/${id}`)).data;
+  return (await api.delete(`api/Tareas/${id}`)).data;
 }
 
 export async function getUserPlans() {
-  return (await api.get("/PlanesPersonalizados")).data;
+  return (await api.get("api/PlanesPersonalizados")).data;
 }
 
 export async function updatePlan(idPlan, planData) {
-  return (await api.put(`/PlanesPersonalizados/${idPlan}`, planData)).data;
+  return (await api.put(`api/PlanesPersonalizados/${idPlan}`, planData)).data;
 }
 
 
 export async function getFocusSessions() {
-  return (await api.get("/SesionesEnfoque")).data;
+  return (await api.get("api/SesionesEnfoque")).data;
 }
 
 export async function createFocusSession({ duracionMinutos, tipo, fecha }) {
   return (
     await api.post(
-      "/SesionesEnfoque",
+      "api/SesionesEnfoque",
       {
         duracionMinutos,
         tipo,
@@ -274,64 +274,64 @@ export async function createFocusSession({ duracionMinutos, tipo, fecha }) {
 
 // Obtener todas las transacciones (GET)
 export async function getTransacciones() {
-  return (await api.get("/Transacciones")).data;
+  return (await api.get("api/Transacciones")).data;
 }
 
 // Obtener una transacción específica por su ID (GET por ID)
 export async function getTransaccionById(id) {
-  return (await api.get(`/Transacciones/${id}`)).data;
+  return (await api.get(`api/Transacciones/${id}`)).data;
 }
 
 // Crear una nueva transacción (POST)
 export async function createTransaccion(transaccionData) {
-  return (await api.post("/Transacciones", transaccionData)).data;
+  return (await api.post("api/Transacciones", transaccionData)).data;
 }
 
 export async function updateTransaccion(id, transaccionData) {
-  return (await api.put(`/Transacciones/${id}`, transaccionData)).data;
+  return (await api.put(`api/Transacciones/${id}`, transaccionData)).data;
 }
 
 export async function deleteTransaccion(id) {
-  return (await api.delete(`/Transacciones/${id}`)).data;
+  return (await api.delete(`api/Transacciones/${id}`)).data;
 }
 // --- ENDPOINTS DE TICKETS (SOPORTE) ---
 
 // Obtener mis tickets (Usuario común)
 export async function getMyTickets() {
-  return (await api.get("/Tickets/my-tickets")).data;
+  return (await api.get("api/Tickets/my-tickets")).data;
 }
 
 // Crear un nuevo ticket (PQR)
 export async function createTicket({ asunto, descripcion, categoria, prioridad }) {
-  return (await api.post("/Tickets", { asunto, descripcion, categoria, prioridad })).data;
+  return (await api.post("api/Tickets", { asunto, descripcion, categoria, prioridad })).data;
 }
 
 // Obtener todos los tickets (Solo Admin/Support)
 export async function getAllTickets() {
-  return (await api.get("/Tickets/all")).data;
+  return (await api.get("api/Tickets/all")).data;
 }
 
 // Obtener la conversación de un ticket específico
 export async function getTicketResponses(ticketId) {
-  return (await api.get(`/Tickets/${ticketId}/responses`)).data;
+  return (await api.get(`api/Tickets/${ticketId}/responses`)).data;
 }
 
 // Enviar una respuesta en un ticket
 export async function sendTicketResponse(ticketId, mensaje) {
-  return (await api.post(`/Tickets/${ticketId}/responses`, { mensaje })).data;
+  return (await api.post(`api/Tickets/${ticketId}/responses`, { mensaje })).data;
 }
 
 // Actualizar estado de un ticket (Solo Staff)
 export async function updateTicketStatus(ticketId, newStatus) {
   // Enviamos el string directamente en el body como espera el backend
-  return (await api.put(`/Tickets/${ticketId}/status`, JSON.stringify(newStatus), {
+  return (await api.put(`api/Tickets/${ticketId}/status`, JSON.stringify(newStatus), {
     headers: { 'Content-Type': 'application/json' }
   })).data;
 }
 
 // Cancelar/Cerrar ticket (Usuario)
 export async function cancelTicket(ticketId) {
-  return (await api.delete(`/Tickets/${ticketId}`)).data;
+  return (await api.delete(`api/Tickets/${ticketId}`)).data;
 }
 
 
@@ -339,33 +339,33 @@ export async function cancelTicket(ticketId) {
 
 // Ya tenías getProfile, pero aquí lo reforzamos si necesitas más datos
 export async function getProfile() {
-  return (await api.get("/PerfilUsuario")).data;
+  return (await api.get("api/PerfilUsuario")).data;
 }
 
 // Actualizar datos del perfil (nombre, edad, ocupación, etc.)
 export async function updateProfile(perfilData) {
-  return (await api.put("/PerfilUsuario", perfilData)).data;
+  return (await api.put("api/PerfilUsuario", perfilData)).data;
 }
 
 // Eliminar cuenta (¡Cuidado con este!)
 export async function deleteAccount() {
-  return (await api.delete("/PerfilUsuario")).data;
+  return (await api.delete("api/PerfilUsuario")).data;
 }
 
 // Obtener todos mis recordatorios activos/inactivos
 export async function getRecordatorios() {
-  return (await api.get("/Recordatorios")).data;
+  return (await api.get("api/Recordatorios")).data;
 }
 
 // Obtener un recordatorio específico
 export async function getRecordatorioById(id) {
-  return (await api.get(`/Recordatorios/${id}`)).data;
+  return (await api.get(`api/Recordatorios/${id}`)).data;
 }
 
 // Crear un nuevo recordatorio (Tarea o Plan de Sueño)
 export async function createRecordatorio({ mensaje, fechaHora, fecha_hora, tipo, activo = true }) {
   return (
-    await api.post("/Recordatorios", {
+    await api.post("api/Recordatorios", {
       mensaje,
       fechaHora: fechaHora ?? fecha_hora,
       tipo,
@@ -378,7 +378,7 @@ export async function createRecordatorio({ mensaje, fechaHora, fecha_hora, tipo,
 export async function updateRecordatorio(id, recordatorioData) {
   const { fecha_hora, ...data } = recordatorioData;
 
-  return (await api.put(`/Recordatorios/${id}`, {
+  return (await api.put(`api/Recordatorios/${id}`, {
     ...data,
     ...(data.fechaHora || fecha_hora ? { fechaHora: data.fechaHora ?? fecha_hora } : {})
   })).data;
@@ -386,5 +386,5 @@ export async function updateRecordatorio(id, recordatorioData) {
 
 // Eliminar un recordatorio
 export async function deleteRecordatorio(id) {
-  return (await api.delete(`/Recordatorios/${id}`)).data;
+  return (await api.delete(`api/Recordatorios/${id}`)).data;
 }
