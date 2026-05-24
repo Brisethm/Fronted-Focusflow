@@ -107,9 +107,6 @@
           </p>
         </div>
 
-
-
-
         <div class="mb-6">
           <div class="flex items-start">
             <input id="terms" type="checkbox" v-model="form.terms"
@@ -159,7 +156,7 @@
     </div>
 
     <div class="hidden md:flex w-1/2 items-center justify-center bg-gray-100 dark:bg-gray-900 h-full">
-      <img :src="registerIllustration" alt="Imagen de Freepik" class="max-w-full h-auto" />
+      <img :src="registerIllustration" alt="Tomado de Freepik" class="max-w-full h-auto" />
     </div>
   </div>
 </template>
@@ -210,16 +207,15 @@ export default {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
       if (!email) return "El correo es obligatorio";
-      if (email.includes(" ")) return "El correo no debe contener espacios";
-      if (!email.includes("@")) return "Debe incluir un '@'";
       if (!emailRegex.test(email)) return "Ejemplo válido: usuario@correo.com";
 
       return "";
     },
 
+
     validatePassword() {
       const password = this.form.password;
-      const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,16}$/;
+      const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,20}$/;
 
       if (!password) return "La contraseña es obligatoria";
       if (!regex.test(password)) {
@@ -257,17 +253,35 @@ export default {
       this.loading = true;
 
       try {
-        const response = await register(this.form.email, this.form.password, this.form.name);
+        const response = await register(
+          this.form.email,
+          this.form.password,
+          this.form.name
+        );
         this.loading = false;
+        localStorage.setItem("userName", this.form.name);
+        this.$router.push("/welcome");
         alert("Registro exitoso: " + JSON.stringify(response));
       } catch (error) {
         this.loading = false;
-        alert("Error en el registro: " + error.message);
+        let message = "Error desconocido";
+        if (error.response) {
+          const status = error.response.status;
+          if (status === 409) {
+            message = "El usuario ya existe. Intenta con otro correo electrónico.";
+          } else if (status === 400) {
+            message = "Datos inválidos. Verifica la información e intenta de nuevo.";
+          } else if (status === 500) {
+            message = "Error del servidor. Intenta de nuevo más tarde.";
+          } else {
+            message = error.response.data?.message || error.message || "Error en el registro";
+          }
+        } else {
+          message = error?.message || "Error en el registro";
+        }
+        alert("Error en el registro: " + message);
       }
     }
-
   },
 };
 </script>
-
-<style src="../styles/register.css"></style>

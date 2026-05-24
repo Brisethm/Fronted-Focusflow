@@ -142,4 +142,3 @@ export default {
   }
 };
 </script>
-<style src="../styles/terms.css"></style>

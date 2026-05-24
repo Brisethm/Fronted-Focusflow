@@ -1,0 +1,618 @@
+<template>
+  <div
+    class="relative overflow-hidden bg-slate-100 dark:bg-slate-950 font-display flex-1 p-4 pb-16"
+  >
+    <div
+      class="dashboard-bg-icons pointer-events-none"
+      aria-hidden="true"
+    ></div>
+    <div class="relative flex flex-col min-h-screen justify-between">
+      <main class="flex-grow">
+        <header class="flex items-center justify-between p-4 bg-transparent">
+          <router-link
+            to="/profile"
+            class="text-slate-700 dark:text-slate-200 inline-block"
+            aria-label="Ir al perfil"
+          >
+            <svg
+              class="icon"
+              viewBox="0 0 256 256"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M224,128a8,8,0,0,1-8,8H40a8,8,0,0,1,0-16H216A8,8,0,0,1,224,128ZM40,72H216a8,8,0,0,0,0-16H40a8,8,0,0,0,0,16ZM216,184H40a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16Z"
+              />
+            </svg>
+          </router-link>
+
+          <h1 class="dashboard-heading-perpetua text-3xl md:text-4xl">
+            {{ t("dashboard.title") }}
+          </h1>
+          <div class="relative">
+            <button
+              @click="languageMenuOpen = !languageMenuOpen"
+              class="text-slate-700 dark:text-slate-200 inline-flex items-center gap-2"
+              type="button"
+              :aria-label="t('actions.changeLanguage')"
+            >
+              <svg
+                class="icon"
+                viewBox="0 0 256 256"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M128,80a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160Zm88-29.84q.06-2.16,0-4.32l14.92-18.64a8,8,0,0,0,1.48-7.06,107.21,107.21,0,0,0-10.88-26.25,8,8,0,0,0-6-3.93l-23.72-2.64q-1.48-1.56-3-3L186,40.54a8,8,0,0,0-3.94-6,107.71,107.71,0,0,0-26.25-10.87,8,8,0,0,0-7.06,1.49L130.16,40Q128,40,125.84,40L107.2,25.11a8,8,0,0,0-7.06-1.48A107.6,107.6,0,0,0,73.89,34.51a8,8,0,0,0-3.93,6L67.32,64.27q-1.56,1.49-3,3L40.54,70a8,8,0,0,0-6,3.94,107.71,107.71,0,0,0-10.87,26.25,8,8,0,0,0,1.49,7.06L40,125.84Q40,128,40,130.16L25.11,148.8a8,8,0,0,0-1.48,7.06,107.21,107.21,0,0,0,10.88,26.25,8,8,0,0,0,6,3.93l23.72,2.64q1.49,1.56,3,3L70,215.46a8,8,0,0,0,3.94,6,107.71,107.71,0,0,0,26.25,10.87,8,8,0,0,0,7.06-1.49L125.84,216q2.16.06,4.32,0l18.64,14.92a8,8,0,0,0,7.06,1.48,107.21,107.21,0,0,0,26.25-10.88,8,8,0,0,0,3.93-6l2.64-23.72q1.56-1.48,3-3L215.46,186a8,8,0,0,0,6-3.94,107.71,107.71,0,0,0,10.87-26.25,8,8,0,0,0-1.49-7.06Zm-16.1-6.5a73.93,73.93,0,0,1,0,8.68,8,8,0,0,0,1.74,5.48l14.19,17.73a91.57,91.57,0,0,1-6.23,15L187,173.11a8,8,0,0,0-5.1,2.64,74.11,74.11,0,0,1-6.14,6.14,8,8,0,0,0-2.64,5.1l-2.51,22.58a91.32,91.32,0,0,1-15,6.23l-17.74-14.19a8,8,0,0,0-5-1.75h-.48a73.93,73.93,0,0,1-8.68,0,8,8,0,0,0-5.48,1.74L100.45,215.8a91.57,91.57,0,0,1-15-6.23L82.89,187a8,8,0,0,0-2.64-5.1,74.11,74.11,0,0,1-6.14-6.14,8,8,0,0,0-5.1-2.64L46.43,170.6a91.32,91.32,0,0,1-6.23-15l14.19-17.74a8,8,0,0,0,1.74-5.48,73.93,73.93,0,0,1,0-8.68,8,8,0,0,0-1.74-5.48L40.2,100.45a91.57,91.57,0,0,1,6.23-15L69,82.89a8,8,0,0,0,5.1-2.64,74.11,74.11,0,0,1,6.14-6.14A8,8,0,0,0,82.89,69L85.4,46.43a91.32,91.32,0,0,1,15-6.23l17.74,14.19a8,8,0,0,0,5.48,1.74,73.93,73.93,0,0,1,8.68,0,8,8,0,0,0,5.48-1.74L155.55,40.2a91.57,91.57,0,0,1,15,6.23L173.11,69a8,8,0,0,0,2.64,5.1,74.11,74.11,0,0,1,6.14,6.14,8,8,0,0,0,5.1,2.64l22.58,2.51a91.32,91.32,0,0,1,6.23,15l-14.19,17.74A8,8,0,0,0,199.87,123.66Z"
+                />
+              </svg>
+              <span class="text-sm">{{ currentLanguageLabel }}</span>
+            </button>
+            <div
+              v-if="languageMenuOpen"
+              class="absolute right-0 z-20 mt-2 w-40 overflow-hidden rounded-2xl bg-white shadow-lg border border-slate-200"
+            >
+              <button
+                @click="selectLanguage('es')"
+                class="block w-full text-left px-4 py-2 text-sm hover:bg-slate-100"
+              >
+                Español
+              </button>
+              <button
+                @click="selectLanguage('en')"
+                class="block w-full text-left px-4 py-2 text-sm hover:bg-slate-100"
+              >
+                English
+              </button>
+            </div>
+          </div>
+        </header>
+
+        <div class="px-4 pb-8 space-y-6">
+          <section
+            class="p-4 rounded-lg bg-background-light dark:bg-background-dark shadow-sm"
+          >
+            <div class="flex items-start justify-between gap-4 mb-4">
+              <div>
+                <h2 class="dashboard-section-title">
+                  {{ t("dashboard.howDoYouFeel") }}
+                </h2>
+                <p class="text-sm text-slate-600 dark:text-slate-300 mt-1">
+                  {{ t("dashboard.energyDescription") }}
+                </p>
+              </div>
+              <span
+                class="px-3 py-1 rounded-full text-xs font-semibold"
+                :class="saveStatusClass"
+              >
+                {{ saveStatusText }}
+              </span>
+            </div>
+
+            <form class="space-y-6" @submit.prevent="saveEmotionalRecord">
+              <div>
+                <div class="flex items-center justify-between mb-3 gap-3">
+                  <div class="flex items-center gap-3">
+                    <div>
+                      <label
+                        class="block dashboard-section-title"
+                        for="energy-level"
+                      >
+                        {{ t("dashboard.energySectionTitle") }}
+                      </label>
+                      <p
+                        class="text-sm text-slate-600 dark:text-slate-300 mt-1"
+                      >
+                        {{ t("dashboard.energyDescription") }}
+                      </p>
+                    </div>
+                  </div>
+                  <div
+                    :class="energyStatusClass"
+                    class="rounded-full px-3 py-1 text-xs font-semibold"
+                  >
+                    {{ energy }} • {{ energyLabel }}
+                  </div>
+                </div>
+                <div class="relative">
+                  <input
+                    id="energy-level"
+                    v-model="energy"
+                    class="w-full h-2 rounded-full appearance-none cursor-pointer"
+                    :style="energyTrackStyle"
+                    max="5"
+                    min="1"
+                    name="energy"
+                    type="range"
+                  />
+                </div>
+                <div
+                  class="flex items-center justify-between text-xs mt-3 text-slate-500 dark:text-slate-400"
+                >
+                  <span class="flex items-center gap-1"
+                    ><span class="material-symbols-outlined text-amber-500"
+                      >battery_alert</span
+                    >
+                    {{ t("dashboard.veryLowEnergy") }}</span
+                  >
+                  <span class="flex items-center gap-1"
+                    ><span class="material-symbols-outlined text-cyan-500"
+                      >battery_std</span
+                    >
+                    {{ t("dashboard.mediumEnergy") }}</span
+                  >
+                  <span class="flex items-center gap-1"
+                    ><span class="material-symbols-outlined text-emerald-500"
+                      >battery_full</span
+                    >
+                    {{ t("dashboard.veryHighEnergy") }}</span
+                  >
+                </div>
+              </div>
+
+              <div>
+                <h3
+                  class="block dashboard-section-title text-slate-800 dark:text-slate-100 mb-3"
+                >
+                  {{ t("dashboard.moodTitle") }}
+                </h3>
+                <div class="grid grid-cols-3 sm:grid-cols-6 gap-2 text-center">
+                  <button
+                    v-for="option in moodOptions"
+                    :key="option.value"
+                    :aria-pressed="mood === option.value"
+                    class="flex flex-col items-center gap-1.5 p-2 rounded-lg border transition-colors"
+                    :class="
+                      mood === option.value
+                        ? activeMoodClass
+                        : inactiveMoodClass
+                    "
+                    type="button"
+                    @click="mood = option.value"
+                  >
+                    <span class="text-2xl emoji-bounce">{{
+                      option.emoji
+                    }}</span>
+                    <span class="text-xs font-medium">{{ option.label }}</span>
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label
+                  class="block dashboard-section-title text-purple-700 dark:text-purple-400 mb-3"
+                  for="wellbeing-note"
+                >
+                  {{ t("dashboard.optionalNote") }}
+                </label>
+                <textarea
+                  id="wellbeing-note"
+                  v-model.trim="optionalNote"
+                  class="dashboard-note-box w-full rounded-2xl px-3 py-3 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-500 dark:placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-400"
+                  :placeholder="t('dashboard.optionalPlaceholder')"
+                  rows="3"
+                ></textarea>
+              </div>
+
+              <div
+                class="rounded-2xl border border-slate-200 dark:border-slate-700 p-4 bg-white/80 dark:bg-slate-900/90 shadow-sm"
+              >
+                <p
+                  class="text-sm dashboard-section-title text-slate-900 dark:text-slate-100"
+                >
+                  {{ t("dashboard.currentRecord") }}
+                </p>
+                <p class="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                  <span
+                    class="font-semibold text-slate-900 dark:text-slate-100"
+                    >{{ t("dashboard.emotionLabel") }}</span
+                  >
+                  <span class="text-slate-900 dark:text-slate-100">{{
+                    selectedMoodLabel
+                  }}</span>
+                </p>
+                <p class="text-sm text-slate-600 dark:text-slate-400">
+                  <span
+                    class="font-semibold text-slate-900 dark:text-slate-100"
+                    >{{ t("dashboard.energyLabel") }}</span
+                  >
+                  <span class="text-slate-900 dark:text-slate-100"
+                    >{{ energy }}/5</span
+                  >
+                </p>
+                <p
+                  v-if="optionalNote"
+                  class="text-sm text-slate-600 dark:text-slate-400"
+                >
+                  <span class="font-semibold text-slate-900 dark:text-slate-100"
+                    >Nota:</span
+                  >
+                  <span class="text-slate-900 dark:text-slate-100">{{
+                    optionalNote
+                  }}</span>
+                </p>
+                <p
+                  v-if="lastSavedAt"
+                  class="text-xs text-subtle-light dark:text-subtle-dark mt-2"
+                >
+                  {{ t("dashboard.lastUpdated") }} {{ lastSavedAt }}
+                </p>
+              </div>
+
+              <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
+                <button
+                  class="inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-cyan-500/20 transition hover:from-cyan-400 hover:to-blue-500 disabled:cursor-not-allowed disabled:opacity-60"
+                  :disabled="isSaving || saveTimer > 0"
+                  type="submit"
+                >
+                  <span class="material-symbols-outlined text-base">bolt</span>
+                  <span v-if="saveTimer === 0">
+                    {{
+                      isSaving
+                        ? t("dashboard.savingStatus")
+                        : t("dashboard.saveButton")
+                    }}
+                  </span>
+                  <span v-else>
+                    {{ t("dashboard.saveTimer", { seconds: saveTimer }) }}
+                  </span>
+                </button>
+                <p v-if="errorMessage" class="text-sm text-red-500">
+                  {{ errorMessage }}
+                </p>
+              </div>
+            </form>
+          </section>
+
+          <section>
+            <h2
+              class="text-xl font-bold text-content-light dark:text-content-dark mb-4"
+            >
+              {{ t("dashboard.tasksOfToday") }}
+            </h2>
+            <div v-if="todayLoading" class="text-center py-4 text-slate-500">
+              {{ t("dashboard.loadingTasks") }}
+            </div>
+            <div v-else-if="todayError" class="text-center py-4 text-red-500">
+              {{ todayError }}
+            </div>
+            <div
+              v-else-if="todayTasks.length === 0"
+              class="text-center py-4 text-slate-500"
+            >
+              {{ t("dashboard.noTasksToday") }}
+            </div>
+            <div v-else class="space-y-3">
+              <div
+                v-for="task in todayTasks"
+                :key="task.id_tarea ?? task.id"
+                class="flex items-center gap-4 p-3 rounded-lg bg-background-light dark:bg-background-dark shadow-sm"
+              >
+                <div
+                  class="flex items-center justify-center rounded-full size-10 bg-primary/10 dark:bg-primary/20 text-primary"
+                >
+                  <span class="text-blue-500">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-6 w-6"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      stroke-width="2"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
+                      />
+                    </svg>
+                  </span>
+                </div>
+                <div class="flex-1">
+                  <div class="flex items-center justify-between">
+                    <p
+                      class="font-medium text-content-light dark:text-content-dark"
+                    >
+                      {{ task.titulo }}
+                    </p>
+                    <!-- Badge de Estado -->
+                    <span
+                      :class="statusClasses(task.estado)"
+                      class="text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider"
+                    >
+                      {{ formatStatus(task.estado) }}
+                    </span>
+                  </div>
+
+                  <p class="text-sm text-subtle-light dark:text-subtle-dark">
+                    {{ formatDateTime(getTaskDeadline(task)) }}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Sección de Progreso Modificada -->
+          <section>
+            <h2
+              class="text-xl font-bold text-content-light dark:text-content-dark mb-4"
+            >
+              Progreso Diario
+            </h2>
+            <div
+              class="p-4 rounded-lg bg-background-light dark:bg-background-dark shadow-sm"
+            >
+              <div class="flex justify-between items-center mb-2">
+                <p
+                  class="font-medium text-content-light dark:text-content-dark"
+                >
+                  Tareas completadas
+                </p>
+                <p
+                  class="text-sm font-medium text-subtle-light dark:text-subtle-dark"
+                >
+                  {{ completedTodayTaskCount }}/{{ totalTodayTaskCount }}
+                </p>
+              </div>
+              <div
+                class="w-full bg-border-light dark:bg-border-dark rounded-full h-2"
+              >
+                <div
+                  class="bg-primary h-2 rounded-full transition-all duration-500 ease-in-out"
+                  :style="{ width: taskProgressPercent + '%' }"
+                ></div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+      <FooterNav />
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
+import FooterNav from "../components/FooterNav.vue";
+import { createEmotionalRecord, getTasks } from "../services/api";
+import {
+  locale,
+  localeCode,
+  setLocale,
+  t,
+  availableLanguages,
+} from "../stores/locale";
+import "../styles/dashboard.css";
+
+// --- CONFIGURACIÓN DE MOOD Y ENERGÍA ---
+const moodOptions = computed(() => [
+  { value: "feliz", label: t("mood.feliz"), emoji: "😊" },
+  { value: "calmado", label: t("mood.calmado"), emoji: "😌" },
+  { value: "neutro", label: t("mood.neutro"), emoji: "😐" },
+  { value: "triste", label: t("mood.triste"), emoji: "😟" },
+  { value: "enojado", label: t("mood.enojado"), emoji: "😠" },
+  { value: "cansado", label: t("mood.cansado"), emoji: "😥" },
+]);
+
+const energy = ref(3);
+const mood = ref("feliz");
+const optionalNote = ref("");
+const saveStatus = ref("unsaved");
+const lastSavedAt = ref("");
+const isSaving = ref(false);
+const errorMessage = ref("");
+const saveTimer = ref(0);
+const languageMenuOpen = ref(false);
+const currentLanguageLabel = computed(() => {
+  const language = availableLanguages.find(
+    (item) => item.code === locale.value,
+  );
+  return language ? language.label : locale.value;
+});
+let saveTimerInterval = null;
+
+// --- GESTIÓN DE TAREAS ---
+const allTasks = ref([]);
+const todayTasks = ref([]);
+const todayLoading = ref(true);
+const todayError = ref(null);
+
+const userTimeZone =
+  Intl.DateTimeFormat().resolvedOptions().timeZone || "America/Bogota";
+
+// Helper para obtener la fecha de la tarea independientemente del formato de la API
+const getTaskDeadline = (task) => task.fecha_limite ?? task.fechaLimite ?? null;
+
+// Normaliza fechas UTC para JS
+const parseUtcDateTime = (dateString) => {
+  if (!dateString) return null;
+  try {
+    const normalized = dateString.includes("T")
+      ? dateString
+      : dateString.replace(" ", "T");
+    const hasTimeZone = /(?:Z|[+-]\d{2}:?\d{2})$/i.test(normalized);
+    const date = new Date(hasTimeZone ? normalized : `${normalized}Z`);
+    return Number.isNaN(date.getTime()) ? null : date;
+  } catch (e) {
+    return null;
+  }
+};
+
+const getTodayTasks = async () => {
+  try {
+    todayLoading.value = true;
+    todayError.value = null;
+    const tasks = await getTasks();
+    allTasks.value = tasks;
+
+    const todayStr = new Date().toLocaleDateString(localeCode.value, {
+      timeZone: userTimeZone,
+    });
+
+    todayTasks.value = tasks.filter((task) => {
+      const deadline = getTaskDeadline(task);
+      if (!deadline) return false;
+      const taskDate = parseUtcDateTime(deadline);
+      if (!taskDate) return false;
+
+      const taskLocalStr = taskDate.toLocaleDateString(localeCode.value, {
+        timeZone: userTimeZone,
+      });
+      return taskLocalStr === todayStr;
+    });
+  } catch (e) {
+    console.error("Error cargando tareas:", e);
+    todayError.value = t("dashboard.errorLoadingTasks");
+  } finally {
+    todayLoading.value = false;
+  }
+};
+
+// --- FORMATEO DE INTERFAZ ---
+
+const formatDateTime = (dateString) => {
+  if (!dateString) return "";
+  const date = parseUtcDateTime(dateString);
+  if (!date) return "";
+  return date.toLocaleString(localeCode.value, {
+    timeZone: userTimeZone,
+    dateStyle: "short",
+    timeStyle: "short",
+  });
+};
+
+const formatStatus = (status) => {
+  const statusMap = {
+    "Por Hacer": "Por Hacer",
+    "En Progreso": "En Progreso",
+    Completado: "Completado",
+  };
+  return statusMap[status] || status;
+};
+
+// --- LÓGICA DE PROGRESO DIARIO MODIFICADA ---
+
+// Calculamos completadas basándonos SÓLO en las tareas de hoy
+const completedTodayTaskCount = computed(
+  () =>
+    todayTasks.value.filter(
+      (task) => String(task.estado).toLowerCase() === "completado",
+    ).length,
+);
+
+// El total son solo las tareas de hoy
+const totalTodayTaskCount = computed(() => todayTasks.value.length);
+
+const taskProgressPercent = computed(() =>
+  totalTodayTaskCount.value
+    ? Math.round(
+        (completedTodayTaskCount.value / totalTodayTaskCount.value) * 100,
+      )
+    : 0,
+);
+
+const statusClasses = (status) => {
+  switch (status) {
+    case "Por Hacer":
+      return "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400";
+    case "En Progreso":
+      return "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400";
+    case "Completado":
+      return "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400";
+    default:
+      return "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-400";
+  }
+};
+
+// --- COMPUTED PARA EL REGISTRO EMOCIONAL ---
+const selectedMoodLabel = computed(
+  () =>
+    moodOptions.value.find((o) => o.value === mood.value)?.label ??
+    t("dashboard.unknownMood"),
+);
+const energyLabel = computed(() => {
+  const val = Number(energy.value);
+  if (val <= 1) return t("dashboard.veryLowEnergy");
+  if (val === 2) return t("dashboard.lowEnergy");
+  if (val === 3) return t("dashboard.mediumEnergy");
+  if (val === 4) return t("dashboard.highEnergy");
+  return t("dashboard.veryHighEnergy");
+});
+
+const energyStatusClass = computed(() => {
+  const val = Number(energy.value);
+  if (val <= 2)
+    return "bg-red-100 text-red-700 dark:bg-red-500/10 dark:text-red-300";
+  if (val === 3)
+    return "bg-amber-100 text-amber-700 dark:bg-amber-500/10 dark:text-amber-300";
+  return "bg-green-100 text-green-700 dark:bg-green-500/10 dark:text-green-300";
+});
+
+const energyTrackStyle = computed(() => {
+  const percentage = ((Number(energy.value) - 1) / 4) * 100;
+  return {
+    background: `linear-gradient(90deg, #13a4ec ${percentage}%, #e7eff3 ${percentage}%)`,
+  };
+});
+
+const saveStatusClass = computed(() => {
+  if (saveStatus.value === "saved")
+    return "bg-green-100 text-green-700 dark:bg-green-500/10 dark:text-green-300";
+  if (saveStatus.value === "saving")
+    return "bg-amber-100 text-amber-700 dark:bg-amber-500/10 dark:text-amber-300";
+  if (saveStatus.value === "error")
+    return "bg-red-100 text-red-700 dark:bg-red-500/10 dark:text-red-300";
+  return "bg-gray-100 text-gray-600 dark:bg-white/5 dark:text-gray-300";
+});
+
+const saveStatusText = computed(() => {
+  if (saveStatus.value === "saved") return t("dashboard.savedStatus");
+  if (saveStatus.value === "saving") return t("dashboard.savingStatus");
+  if (saveStatus.value === "error") return t("dashboard.saveError");
+  return t("dashboard.unsavedStatus");
+});
+
+// --- ACCIONES ---
+async function saveEmotionalRecord() {
+  if (isSaving.value || saveTimer.value > 0) return;
+  isSaving.value = true;
+  saveStatus.value = "saving";
+  try {
+    const fecha = new Date().toISOString();
+    await createEmotionalRecord({
+      estadoAnimo: mood.value,
+      nivelEnergia: Number(energy.value),
+      notaOpcional: optionalNote.value,
+      fechaRegistro: fecha,
+    });
+    lastSavedAt.value = new Date(fecha).toLocaleString(localeCode.value, {
+      dateStyle: "short",
+      timeStyle: "short",
+    });
+    saveStatus.value = "saved";
+    saveTimer.value = 120;
+    saveTimerInterval = setInterval(() => {
+      saveTimer.value--;
+      if (saveTimer.value <= 0) clearInterval(saveTimerInterval);
+    }, 1000);
+  } catch (error) {
+    saveStatus.value = "error";
+    errorMessage.value = t("dashboard.saveError");
+  } finally {
+    isSaving.value = false;
+  }
+}
+
+function selectLanguage(lang) {
+  setLocale(lang);
+  languageMenuOpen.value = false;
+}
+
+const inactiveMoodClass =
+  "border-transparent text-subtle-light dark:text-subtle-dark hover:bg-gray-100 dark:hover:bg-white/5";
+const activeMoodClass =
+  "border-primary bg-primary/10 dark:bg-primary/20 text-primary";
+
+onMounted(getTodayTasks);
+watch(locale, getTodayTasks);
+onBeforeUnmount(() => clearInterval(saveTimerInterval));
+</script>
+<style src="../styles/dashboard.css"></style>

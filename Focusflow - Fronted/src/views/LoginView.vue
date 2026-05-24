@@ -86,10 +86,16 @@
                         {{ errors.password }}
                     </p>
                 </div>
+                <div class="w-full max-w-sm text-left mt-2">
+                    <p class="text-sm text-gray-600 dark:text-gray-400">
+                        <router-link to="/forgot-password" class="font-medium text-primary hover:underline">
+                            ¿Olvidaste tu contraseña?
+                        </router-link>
+                    </p>
+                </div>
 
 
-
-                <div class="mb-6">
+                <div class="mb-6 mt-4">
                     <div class="flex items-center">
                         <input id="rememberMe" type="checkbox" v-model="form.rememberMe"
                             class="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary" />
@@ -103,8 +109,16 @@
 
 
                 <button type="submit"
-                    class="w-full h-12 px-5 rounded-lg bg-primary text-white font-bold tracking-wide hover:bg-primary/90 transition-colors duration-300 flex items-center justify-center">
-                    Iniciar Sesión
+                    class="w-full h-12 px-5 rounded-lg bg-primary text-white font-bold tracking-wide hover:bg-primary/90 transition-colors duration-300 flex items-center justify-center"
+                    :disabled="loading">
+                    <span v-if="!loading">Iniciar Sesión</span>
+                    <svg v-else class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
+                        viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                        </circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z">
+                        </path>
+                    </svg>
                 </button>
             </form>
 
@@ -120,14 +134,15 @@
         </div>
 
         <div class="hidden md:flex w-1/2 items-center justify-center bg-gray-100 dark:bg-gray-900 h-full">
-            <img :src="loginIllustration" alt="Imagen de Freepik" class="max-w-full h-auto" />
+            <img :src="loginIllustration" alt="Tomado de Freepik" class="max-w-full h-auto" />
         </div>
     </div>
 </template>
 
 <script>
 import loginIllustration from "../assets/login-illustration.svg";
-import { login } from "../services/api";
+import { login, getProfile } from "../services/api";
+import { useToast } from "vue-toastification";
 
 export default {
     name: "LoginView",
@@ -146,6 +161,7 @@ export default {
             },
             loading: false,
             submitted: false,
+            toast: useToast()
         };
     },
     methods: {
@@ -186,36 +202,30 @@ export default {
 
         async handleSubmit() {
             this.submitted = true;
-
             const isValid = this.validateForm();
             if (!isValid) return;
 
             this.loading = true;
 
             try {
-                const response = await login(this.form.email, this.form.password);
+                await login(this.form.email, this.form.password, this.form.rememberMe);
 
-                // 👇 Si el usuario marcó "Recuérdame", guardamos en localStorage
-                if (this.form.rememberMe) {
-                    localStorage.setItem("token", response.token);
+                const profile = await getProfile();
+
+                if (profile.rol === 'admin') {
+                    this.$router.push("/admin-panel");
+                } else if (profile.rol === 'support') {
+                    this.$router.push("/support-dashboard");
                 } else {
-                    sessionStorage.setItem("token", response.token);
+                    this.$router.push("/dashboard");
                 }
 
-                this.loading = false;
-                alert("Login exitoso: " + JSON.stringify(response));
-                // Aquí puedes redirigir al dashboard con Vue Router
-                this.$router.push("/dashboard");
             } catch (error) {
+                this.toast.error(error.response?.data?.message || "Error al iniciar sesión. Verifica tus credenciales.");
+            } finally {
                 this.loading = false;
-                alert("Error en el login: " + (error.response?.data || error.message));
             }
         }
-
-
-
-    },
+    }
 };
 </script>
-
-<style src="../styles/login.css"></style>
