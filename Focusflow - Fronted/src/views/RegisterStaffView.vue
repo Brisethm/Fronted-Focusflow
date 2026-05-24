@@ -5,7 +5,7 @@
     <div class="w-full max-w-lg">
       <div class="mb-8 px-2 sm:px-0">
         <button
-          @click="$router.back()"
+          @click="router.back()"
           class="inline-flex items-center gap-2 text-sm font-semibold text-[#7f5a31] hover:text-slate-900 transition-colors"
         >
           <span class="material-symbols-outlined">arrow_back</span>
@@ -250,7 +250,7 @@
             <p class="text-sm text-slate-500">
               {{ t("registerStaff.alreadyHaveAccount") }}
               <a
-                @click.prevent="$router.push('/login')"
+                @click.prevent="router.push('/login')"
                 href="#"
                 class="font-semibold text-[#7f5a31] hover:text-slate-900"
                 >{{ t("registerStaff.login") }}</a
@@ -266,10 +266,16 @@
 <script>
 import { registerStaff } from "../services/api.js";
 import { useToast } from "vue-toastification";
+import { useRouter } from "vue-router";
 import { t } from "../stores/locale";
 
 export default {
   name: "CreateStaffView",
+  setup() {
+    return {
+      router: useRouter(),
+    };
+  },
   data() {
     return {
       userAdd: null,

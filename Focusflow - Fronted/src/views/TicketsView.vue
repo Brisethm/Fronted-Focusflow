@@ -7,7 +7,7 @@
       class="sticky top-0 z-10 flex h-16 items-center border-b border-border-light bg-card-light dark:border-border-dark dark:bg-card-dark/80 backdrop-blur-sm px-4"
     >
       <button
-        @click="$router.back()"
+        @click="router.back()"
         class="flex size-10 shrink-0 items-center justify-center rounded-full text-text-light-primary dark:text-text-dark-primary hover:bg-primary/10 transition-colors"
       >
         <span class="material-symbols-outlined text-2xl">arrow_back</span>
@@ -299,6 +299,7 @@
 import { defineAsyncComponent } from "vue";
 import { getAllTickets } from "../services/api.js";
 import { useToast } from "vue-toastification";
+import { useRouter } from "vue-router";
 
 const TICKET_POLL_MS = 60_000;
 const TICKET_POLL_SECS = TICKET_POLL_MS / 1000;
@@ -319,6 +320,11 @@ const parseUtcDateTime = (dateString) => {
 
 export default {
   name: "TicketsView",
+  setup() {
+    return {
+      router: useRouter(),
+    };
+  },
   components: {
     TicketsChatModal: defineAsyncComponent(
       () => import("../components/support/TicketsChatModal.vue"),

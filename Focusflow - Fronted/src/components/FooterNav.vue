@@ -103,12 +103,13 @@ const navItems = computed(() => [
 
 // ✅ Deriva el tab activo desde la ruta, sin depender de estado interno
 const currentRouteTab = computed(() => {
+  const currentPath = route?.path ?? "/";
   const matches = navItems.value
-    .filter((item) => item.href === route.path || route.path.startsWith(item.href + '/'))
+    .filter((item) => item.href === currentPath || currentPath.startsWith(item.href + '/'))
     .sort((a, b) => b.href.length - a.href.length);
   if (matches.length > 0) return matches[0].id;
 
-  const fallback = navItems.value.find((item) => route.path === item.href || route.path.startsWith(item.href));
+  const fallback = navItems.value.find((item) => currentPath === item.href || currentPath.startsWith(item.href));
   return fallback?.id ?? 'inicio';
 });
 
@@ -118,6 +119,6 @@ function handleSelect(id, href) {
   if (props.activeTab !== null) {
     emit("update:activeTab", id);
   }
-  router.push(href);
+  router?.push?.(href);
 }
 </script>

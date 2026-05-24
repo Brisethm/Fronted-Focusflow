@@ -7,7 +7,7 @@
 
         <div class="cards-grid">
             <!-- Tarjeta 1: Ir al Panel de Usuario -->
-            <div class="card" @click="$router.push('/dashboard')">
+            <div class="card" @click="router.push('/dashboard')">
                 <div class="icon-circle user-bg">
                     <i class="fas fa-user"></i>
                 </div>
@@ -17,7 +17,7 @@
             </div>
 
             <!-- Tarjeta 2: Atender PQRs -->
-            <div class="card" @click="$router.push('/tickets')">
+            <div class="card" @click="router.push('/tickets')">
                 <div class="icon-circle support-bg">
                     <i class="fas fa-comments"></i>
                 </div>
@@ -37,9 +37,15 @@
 
 <script>
 import { getProfile } from "../services/api.js";
+import { useRouter } from "vue-router";
 
 export default {
     name: "SupportDashboard",
+    setup() {
+        return {
+            router: useRouter(),
+        };
+    },
     data() {
         return {
             supportName: "",
@@ -50,7 +56,9 @@ export default {
 
             localStorage.removeItem("token");
             localStorage.removeItem("refreshToken");
-            this.$router.push("/login");
+            sessionStorage.removeItem("token");
+            sessionStorage.removeItem("refreshToken");
+            this.router.push("/login");
         }
     },
     async mounted() {

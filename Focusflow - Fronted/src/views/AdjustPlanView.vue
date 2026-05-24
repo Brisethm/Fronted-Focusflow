@@ -31,7 +31,6 @@
         </div>
 
         <div class="space-y-6 max-w-4xl mx-auto w-full">
-          <!-- Pausas Conscientes -->
           <div
             class="rounded-3xl border border-violet-200 bg-white/95 shadow-[0_20px_60px_rgba(139,92,246,0.12)] overflow-hidden"
           >
@@ -250,7 +249,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from "vue";
+import { reactive, ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import {
   getUserPlans,
@@ -261,97 +260,93 @@ import { useToast } from "vue-toastification";
 
 const router = useRouter();
 const toast = useToast();
+
 const loading = ref(false);
-
-const form = ref({
-  horaDescanso: "22:00",
-  pausasDiarias: 3,
-  enfoqueDiario: 1,
-});
-
-const hour = ref(22);
-const minute = ref(0);
 const existingPlan = ref(null);
 const questionnaireId = ref(null);
 
-const formattedHour = computed(() => hour.value.toString().padStart(2, "0"));
-const formattedMinute = computed(() =>
-  minute.value.toString().padStart(2, "0"),
+const DEFAULT_FORM = {
+  horaDescanso: "22:00",
+  pausasDiarias: 3,
+  enfoqueDiario: 1,
+};
+
+const form = reactive({ ...DEFAULT_FORM });
+
+const hour = ref(22);
+const minute = ref(0);
+
+const formattedHour = computed(() =>
+  String(hour.value).padStart(2, "0"),
 );
 
-function updateTimeString() {
-  form.value.horaDescanso = `${formattedHour.value}:${formattedMinute.value}`;
-}
+const formattedMinute = computed(() =>
+  String(minute.value).padStart(2, "0"),
+);
 
-function changeHour(delta) {
-  let newHour = hour.value + delta;
-  if (newHour < 0) newHour = 23;
-  if (newHour > 23) newHour = 0;
-  hour.value = newHour;
-  updateTimeString();
-}
+const updateTime = () => {
+  form.horaDescanso =
+    `${formattedHour.value}:${formattedMinute.value}`;
+};
 
-function changeMinute(delta) {
-  let newMinute = minute.value + delta;
-  if (newMinute < 0) newMinute = 55;
-  if (newMinute > 55) newMinute = 0;
-  minute.value = newMinute;
-  updateTimeString();
-}
+const changeHour = (delta) => {
+  hour.value = (hour.value + delta + 24) % 24;
+  updateTime();
+};
 
-function setTimeFromString(timeStr) {
-  if (!timeStr) return;
-  const [h, m] = timeStr.split(":").map(Number);
-  if (!isNaN(h)) hour.value = h;
-  if (!isNaN(m)) minute.value = m;
-  updateTimeString();
-}
+const changeMinute = (delta) => {
+  minute.value = (minute.value + delta + 60) % 60;
+  updateTime();
+};
 
-function increment(field) {
-  if (field === "pausasDiarias") form.value.pausasDiarias++;
-  if (field === "enfoqueDiario") form.value.enfoqueDiario++;
-}
+const setTime = (time = "22:00") => {
+  const [h, m] = time.split(":").map(Number);
 
-function decrement(field) {
-  if (field === "pausasDiarias" && form.value.pausasDiarias > 1)
-    form.value.pausasDiarias--;
-  if (field === "enfoqueDiario" && form.value.enfoqueDiario > 1)
-    form.value.enfoqueDiario--;
-}
+  hour.value = Number.isFinite(h) ? h : 22;
+  minute.value = Number.isFinite(m) ? m : 0;
+
+  updateTime();
+};
+
+const increment = (field) => form[field]++;
+
+const decrement = (field) => {
+  if (form[field] > 1) form[field]--;
+};
 
 async function loadPlan() {
   try {
-    const planes = await getUserPlans();
-    if (planes && planes.length > 0) {
-      const plan = planes[0];
-      existingPlan.value = plan;
-      let hora = plan.horaDescanso;
-      if (hora && hora.includes(":")) {
-        hora = hora.length > 5 ? hora.substring(0, 5) : hora;
-      }
-      form.value = {
-        horaDescanso: hora || "22:00",
-        pausasDiarias: plan.pausasDiarias,
-        enfoqueDiario: plan.enfoqueDiario,
-      };
-      setTimeFromString(form.value.horaDescanso);
-    }
-  } catch (error) {
+    const [plan] = await getUserPlans();
+
+    if (!plan) return;
+
+    existingPlan.value = plan;
+
+    Object.assign(form, {
+      horaDescanso:
+        plan.horaDescanso?.substring(0, 5) ??
+        DEFAULT_FORM.horaDescanso,
+      pausasDiarias:
+        plan.pausasDiarias ??
+        DEFAULT_FORM.pausasDiarias,
+      enfoqueDiario:
+        plan.enfoqueDiario ??
+        DEFAULT_FORM.enfoqueDiario,
+    });
+
+    setTime(form.horaDescanso);
+
+  } catch {
     console.log("No hay plan previo");
   }
 }
 
-onMounted(async () => {
-  const storedId = localStorage.getItem("questionnaireId");
-  if (storedId) questionnaireId.value = parseInt(storedId);
-  await loadPlan();
-  setTimeFromString(form.value.horaDescanso);
-});
-
 async function savePlan() {
   if (!questionnaireId.value) {
-    toast.error("Completa primero el cuestionario inicial", { timeout: 4000 });
-    return;
+    return toast.error(
+      "Completa primero el cuestionario inicial",
+      { timeout: 4000 }
+    );
   }
 
   loading.value = true;
@@ -359,33 +354,55 @@ async function savePlan() {
   try {
     const payload = {
       idCuestionario: questionnaireId.value,
-      horaDescanso: form.value.horaDescanso + ":00",
-      enfoqueDiario: form.value.enfoqueDiario,
-      pausasDiarias: form.value.pausasDiarias,
+      horaDescanso: `${form.horaDescanso}:00`,
+      enfoqueDiario: form.enfoqueDiario,
+      pausasDiarias: form.pausasDiarias,
     };
 
     if (existingPlan.value) {
       await updatePlan(existingPlan.value.idPlan, payload);
-      toast.success("Plan actualizado correctamente.", { timeout: 3000 });
+
+      toast.success(
+        "Plan actualizado correctamente",
+        { timeout: 3000 }
+      );
+
     } else {
+
       await createPersonalizedPlan(payload);
-      toast.success("Plan creado correctamente.", { timeout: 3000 });
+
+      toast.success(
+        "Plan creado correctamente",
+        { timeout: 3000 }
+      );
     }
 
-    setTimeout(() => {
-      router.push("/dashboard");
-    }, 1500);
-  } catch (error) {
-    console.error(error);
-    toast.error("Error al guardar el plan. Por favor, intenta de nuevo.", {
-      timeout: 4000,
-    });
+    setTimeout(
+      () => router.push("/dashboard"),
+      1500
+    );
+
+  } catch (err) {
+
+    console.error(err);
+
+    toast.error(
+      "Error al guardar el plan",
+      { timeout: 4000 }
+    );
+
   } finally {
     loading.value = false;
   }
 }
 
-function goBack() {
-  router.back();
-}
+const goBack = () => router.back();
+
+onMounted(async () => {
+  questionnaireId.value =
+    Number(localStorage.getItem("questionnaireId")) ||
+    null;
+
+  await loadPlan();
+});
 </script>

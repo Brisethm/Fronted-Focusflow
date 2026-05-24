@@ -6,7 +6,7 @@
       class="sticky top-0 z-10 flex h-16 items-center border-b border-border-light bg-card-light dark:border-border-dark dark:bg-card-dark/95 px-4"
     >
       <button
-        @click="$router.back()"
+        @click="router.back()"
         class="flex size-10 shrink-0 items-center justify-center rounded-full text-text-light-primary dark:text-text-dark-primary hover:bg-primary/10 transition-colors"
       >
         <span class="material-symbols-outlined text-2xl">arrow_back</span>
@@ -375,6 +375,7 @@
 import { defineAsyncComponent } from "vue";
 import { getMyTickets, createTicket } from "../services/api.js";
 import { useToast } from "vue-toastification";
+import { useRouter } from "vue-router";
 
 const userTimeZone =
   Intl.DateTimeFormat().resolvedOptions().timeZone || "America/Bogota";
@@ -393,6 +394,11 @@ const parseUtcDateTime = (dateString) => {
 
 export default {
   name: "SupportView",
+  setup() {
+    return {
+      router: useRouter(),
+    };
+  },
   components: {
     SupportChatModal: defineAsyncComponent(
       () => import("../components/support/SupportChatModal.vue"),

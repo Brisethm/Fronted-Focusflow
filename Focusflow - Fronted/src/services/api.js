@@ -1,8 +1,10 @@
 import axios from "axios";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "https://focusflow-backend-yr16.onrender.com";
+const TOKEN_KEY = "token";
+const REFRESH_TOKEN_KEY = "refreshToken";
 
-const api = axios.create({
+export const api = axios.create({
   baseURL: API_BASE_URL,
 });
 
@@ -15,7 +17,38 @@ function getRefreshTokenValue(data) {
 }
 
 function getStoredToken() {
-  return sessionStorage.getItem("token") || localStorage.getItem("token");
+  return sessionStorage.getItem(TOKEN_KEY) || localStorage.getItem(TOKEN_KEY);
+}
+
+function getStoredRefreshToken() {
+  return sessionStorage.getItem(REFRESH_TOKEN_KEY) || localStorage.getItem(REFRESH_TOKEN_KEY);
+}
+
+function usingPersistentStorage() {
+  return localStorage.getItem(REFRESH_TOKEN_KEY) !== null || localStorage.getItem(TOKEN_KEY) !== null;
+}
+
+function clearStoredAuth() {
+  [localStorage, sessionStorage].forEach((storage) => {
+    storage.removeItem(TOKEN_KEY);
+    storage.removeItem(REFRESH_TOKEN_KEY);
+  });
+}
+
+function persistAuth(data, rememberMe = true) {
+  const token = getTokenValue(data);
+  const refreshToken = getRefreshTokenValue(data);
+  
+  const targetStorage = rememberMe ? localStorage : sessionStorage;
+  const otherStorage = rememberMe ? sessionStorage : localStorage;
+
+  otherStorage.removeItem(TOKEN_KEY);
+  otherStorage.removeItem(REFRESH_TOKEN_KEY);
+
+  if (token) targetStorage.setItem(TOKEN_KEY, token);
+  if (refreshToken) targetStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
+
+  return token;
 }
 
 export function getAuthToken() {
@@ -26,67 +59,30 @@ export function getTicketHubUrl() {
   if (import.meta.env.VITE_TICKET_HUB_URL) {
     return import.meta.env.VITE_TICKET_HUB_URL;
   }
-
   return API_BASE_URL.replace(/\/api\/?$/i, "").replace(/\/$/, "") + "/ticketHub";
-}
-
-function getStoredRefreshToken() {
-  return sessionStorage.getItem("refreshToken") || localStorage.getItem("refreshToken");
-}
-
-function usingPersistentStorage() {
-  return localStorage.getItem("refreshToken") !== null || localStorage.getItem("token") !== null;
-}
-
-function clearStoredAuth() {
-  localStorage.removeItem("token");
-  localStorage.removeItem("refreshToken");
-  sessionStorage.removeItem("token");
-  sessionStorage.removeItem("refreshToken");
-}
-
-function persistAuth(data, rememberMe = true) {
-  const token = getTokenValue(data);
-  const refreshToken = getRefreshTokenValue(data);
-  const targetStorage = rememberMe ? localStorage : sessionStorage;
-  const otherStorage = rememberMe ? sessionStorage : localStorage;
-
-  otherStorage.removeItem("token");
-  otherStorage.removeItem("refreshToken");
-
-  if (token) {
-    targetStorage.setItem("token", token);
-  }
-
-  if (refreshToken) {
-    targetStorage.setItem("refreshToken", refreshToken);
-  }
-
-  return token;
 }
 
 api.interceptors.request.use((config) => {
   const token = getStoredToken();
-
   if (token) {
     config.headers = config.headers ?? {};
     config.headers.Authorization = `Bearer ${token}`;
   }
-
   return config;
 });
 
 api.interceptors.response.use(
   (response) => response,
+
   async (error) => {
     const originalRequest = error.config;
 
-    if (
-      error.response?.status === 401 &&
-      originalRequest &&
-      !originalRequest._retry &&
-      originalRequest.url !== "/Auth/refresh"
-    ) {
+    const isUnauthorized = error.response?.status === 401;
+    const isRetryable = originalRequest && !originalRequest._retry;
+    const isNotRefreshEndpoint =
+      originalRequest?.url !== "/Auth/refresh";
+
+    if (isUnauthorized && isRetryable && isNotRefreshEndpoint) {
       originalRequest._retry = true;
 
       const refreshToken = getStoredRefreshToken();
@@ -94,297 +90,227 @@ api.interceptors.response.use(
       if (refreshToken) {
         try {
           const res = await api.post("/Auth/refresh", { refreshToken });
-          const newToken = persistAuth(res.data, usingPersistentStorage());
+
+          const newToken = persistAuth(
+            res.data,
+            usingPersistentStorage()
+          );
 
           if (newToken) {
-            originalRequest.headers = originalRequest.headers ?? {};
-            originalRequest.headers.Authorization = `Bearer ${newToken}`;
+            originalRequest.headers ??= {};
+            originalRequest.headers.Authorization =
+              `Bearer ${newToken}`;
+
             return api.request(originalRequest);
           }
         } catch {
           clearStoredAuth();
-          window.location.href = "/login";
+          globalThis.location.href = "/login";
         }
       }
     }
 
-    return Promise.reject(error);
+    throw error;
   }
 );
 
 export async function register(email, password, nombre, rememberMe = true) {
-  const data = (
-    await api.post("api/Auth/register", {
-      email,
-      password,
-      nombre,
-    })
-  ).data;
-
+  const { data } = await api.post("api/Auth/register", { email, password, nombre });
   persistAuth(data, rememberMe);
-
   return data;
 }
+
 export async function registerStaff(email, password, nombre, rol) {
-  return (
-    await api.post("api/Auth/register-staff", {
-      email,
-      password,
-      nombre,
-      rol
-    })
-  ).data;
+  const { data } = await api.post("api/Auth/register-staff", { email, password, nombre, rol });
+  return data;
 }
 
 export async function login(email, password, rememberMe = true) {
-  const data = (await api.post("api/Auth/login", { email, password })).data;
-
+  const { data } = await api.post("api/Auth/login", { email, password });
   persistAuth(data, rememberMe);
-
   return data;
 }
 
 export async function resetPassword(email) {
-  return (await api.post("api/Auth/reset-password", { email })).data;
+  const { data } = await api.post("api/Auth/reset-password", { email });
+  return data;
 }
 
 export async function updatePassword(newPassword) {
-  return (await api.post("api/Auth/update-password", { newPassword })).data;
+  const { data } = await api.post("api/Auth/update-password", { newPassword });
+  return data;
 }
 
-export async function createEmotionalRecord({
-  estadoAnimo,
-  nivelEnergia,
-  notaOpcional,
-  fechaRegistro,
-}) {
-  return (
-    await api.post(
-      "api/RegistrosEmocionales",
-      {
-        estadoAnimo,
-        nivelEnergia,
-        notaOpcional,
-        fechaRegistro,
-      },
-      {
-        timeout: 10000,
-      }
-    )
-  ).data;
+export async function createEmotionalRecord(payload) {
+  const { data } = await api.post("api/RegistrosEmocionales", payload, { timeout: 10000 });
+  return data;
 }
 
 export async function submitQuestionnaire(payload) {
-  return (
-    await api.post("api/Cuestionarios", payload, {
-      timeout: 10000,
-    })
-  ).data;
+  const { data } = await api.post("api/Cuestionarios", payload, { timeout: 10000 });
+  return data;
 }
 
-export async function createTask({
-  titulo,
-  prioridad,
-  nivel_esfuerzo,
-  fecha_limite,
-  descripcion,
-  icono,
-  recordatorio,
-  estado = "En progreso",
-}) {
-  return (
-    await api.post("api/Tareas", {
-      titulo,
-      prioridad,
-      nivelEsfuerzo: nivel_esfuerzo,
-      estado,
-      descripcion,
-      fechaLimite: fecha_limite,
-      ...(icono && { icono }),
-      ...(recordatorio && { recordatorio }),
-    })
-  ).data;
-}
-export async function createPersonalizedPlan({
-  horaDescanso,
-  enfoqueDiario,
-  pausasDiarias,
-  idCuestionario,
-}) {
-  return (
-    await api.post(
-      "api/PlanesPersonalizados",
-      {
-        horaDescanso,
-        enfoqueDiario,
-        pausasDiarias,
-        idCuestionario,
-      },
-      {
-        timeout: 10000,
-      }
-    )
-  ).data;
-}
-export async function getTasks() {
-  return (await api.get("api/Tareas")).data;
-}
-export async function getTaskById(id) {
-  return (await api.get(`api/Tareas/${id}`)).data;
-}
-// Actualizar una tarea existente (PUT)
-export async function updateTask(id, taskData) {
-  return (await api.put(`api/Tareas/${id}`, taskData)).data;
-}
-
-// Eliminar una tarea (DELETE)
-export async function deleteTask(id) {
-  return (await api.delete(`api/Tareas/${id}`)).data;
+export async function createPersonalizedPlan(payload) {
+  const { data } = await api.post("api/PlanesPersonalizados", payload, { timeout: 10000 });
+  return data;
 }
 
 export async function getUserPlans() {
-  return (await api.get("api/PlanesPersonalizados")).data;
+  const { data } = await api.get("api/PlanesPersonalizados");
+  return data;
 }
 
 export async function updatePlan(idPlan, planData) {
-  return (await api.put(`api/PlanesPersonalizados/${idPlan}`, planData)).data;
+  const { data } = await api.put(`api/PlanesPersonalizados/${idPlan}`, planData);
+  return data;
 }
 
+export async function createTask({ titulo, prioridad, nivel_esfuerzo, fecha_limite, descripcion, icono, recordatorio, estado = "En progreso" }) {
+  const payload = {
+    titulo, prioridad, nivelEsfuerzo: nivel_esfuerzo, estado, descripcion, fechaLimite: fecha_limite,
+    ...(icono && { icono }),
+    ...(recordatorio && { recordatorio }),
+  };
+  const { data } = await api.post("api/Tareas", payload);
+  return data;
+}
+
+export async function getTasks() {
+  const { data } = await api.get("api/Tareas");
+  return data;
+}
+
+export async function getTaskById(id) {
+  const { data } = await api.get(`api/Tareas/${id}`);
+  return data;
+}
+
+export async function updateTask(id, taskData) {
+  const { data } = await api.put(`api/Tareas/${id}`, taskData);
+  return data;
+}
+
+export async function deleteTask(id) {
+  const { data } = await api.delete(`api/Tareas/${id}`);
+  return data;
+}
 
 export async function getFocusSessions() {
-  return (await api.get("api/SesionesEnfoque")).data;
+  const { data } = await api.get("api/SesionesEnfoque");
+  return data;
 }
 
-export async function createFocusSession({ duracionMinutos, tipo, fecha }) {
-  return (
-    await api.post(
-      "api/SesionesEnfoque",
-      {
-        duracionMinutos,
-        tipo,
-        fecha,
-      },
-      {
-        timeout: 10000,
-      }
-    )
-  ).data;
+export async function createFocusSession(payload) {
+  const { data } = await api.post("api/SesionesEnfoque", payload, { timeout: 10000 });
+  return data;
 }
-// --- ENDPOINTS DE TRANSACCIONES ---
 
-// Obtener todas las transacciones (GET)
 export async function getTransacciones() {
-  return (await api.get("api/Transacciones")).data;
+  const { data } = await api.get("api/Transacciones");
+  return data;
 }
 
-// Obtener una transacción específica por su ID (GET por ID)
 export async function getTransaccionById(id) {
-  return (await api.get(`api/Transacciones/${id}`)).data;
+  const { data } = await api.get(`api/Transacciones/${id}`);
+  return data;
 }
 
-// Crear una nueva transacción (POST)
 export async function createTransaccion(transaccionData) {
-  return (await api.post("api/Transacciones", transaccionData)).data;
+  const { data } = await api.post("api/Transacciones", transaccionData);
+  return data;
 }
 
 export async function updateTransaccion(id, transaccionData) {
-  return (await api.put(`api/Transacciones/${id}`, transaccionData)).data;
+  const { data } = await api.put(`api/Transacciones/${id}`, transaccionData);
+  return data;
 }
 
 export async function deleteTransaccion(id) {
-  return (await api.delete(`api/Transacciones/${id}`)).data;
+  const { data } = await api.delete(`api/Transacciones/${id}`);
+  return data;
 }
-// --- ENDPOINTS DE TICKETS (SOPORTE) ---
 
-// Obtener mis tickets (Usuario común)
 export async function getMyTickets() {
-  return (await api.get("api/Tickets/my-tickets")).data;
+  const { data } = await api.get("api/Tickets/my-tickets");
+  return data;
 }
 
-// Crear un nuevo ticket (PQR)
-export async function createTicket({ asunto, descripcion, categoria, prioridad }) {
-  return (await api.post("api/Tickets", { asunto, descripcion, categoria, prioridad })).data;
+export async function createTicket(payload) {
+  const { data } = await api.post("api/Tickets", payload);
+  return data;
 }
 
-// Obtener todos los tickets (Solo Admin/Support)
 export async function getAllTickets() {
-  return (await api.get("api/Tickets/all")).data;
+  const { data } = await api.get("api/Tickets/all");
+  return data;
 }
 
-// Obtener la conversación de un ticket específico
 export async function getTicketResponses(ticketId) {
-  return (await api.get(`api/Tickets/${ticketId}/responses`)).data;
+  const { data } = await api.get(`api/Tickets/${ticketId}/responses`);
+  return data;
 }
 
-// Enviar una respuesta en un ticket
 export async function sendTicketResponse(ticketId, mensaje) {
-  return (await api.post(`api/Tickets/${ticketId}/responses`, { mensaje })).data;
+  const { data } = await api.post(`api/Tickets/${ticketId}/responses`, { mensaje });
+  return data;
 }
 
-// Actualizar estado de un ticket (Solo Staff)
 export async function updateTicketStatus(ticketId, newStatus) {
-  // Enviamos el string directamente en el body como espera el backend
-  return (await api.put(`api/Tickets/${ticketId}/status`, JSON.stringify(newStatus), {
+  const { data } = await api.put(`api/Tickets/${ticketId}/status`, JSON.stringify(newStatus), {
     headers: { 'Content-Type': 'application/json' }
-  })).data;
+  });
+  return data;
 }
 
-// Cancelar/Cerrar ticket (Usuario)
 export async function cancelTicket(ticketId) {
-  return (await api.delete(`api/Tickets/${ticketId}`)).data;
+  const { data } = await api.delete(`api/Tickets/${ticketId}`);
+  return data;
 }
 
-
-// --- ENDPOINTS DE PERFIL USUARIO (EXTENDIDO) ---
-
-// Ya tenías getProfile, pero aquí lo reforzamos si necesitas más datos
 export async function getProfile() {
-  return (await api.get("api/PerfilUsuario")).data;
+  const { data } = await api.get("api/PerfilUsuario");
+  return data;
 }
 
-// Actualizar datos del perfil (nombre, edad, ocupación, etc.)
 export async function updateProfile(perfilData) {
-  return (await api.put("api/PerfilUsuario", perfilData)).data;
+  const { data } = await api.put("api/PerfilUsuario", perfilData);
+  return data;
 }
 
-// Eliminar cuenta (¡Cuidado con este!)
 export async function deleteAccount() {
-  return (await api.delete("api/PerfilUsuario")).data;
+  const { data } = await api.delete("api/PerfilUsuario");
+  return data;
 }
 
-// Obtener todos mis recordatorios activos/inactivos
 export async function getRecordatorios() {
-  return (await api.get("api/Recordatorios")).data;
+  const { data } = await api.get("api/Recordatorios");
+  return data;
 }
 
-// Obtener un recordatorio específico
 export async function getRecordatorioById(id) {
-  return (await api.get(`api/Recordatorios/${id}`)).data;
+  const { data } = await api.get(`api/Recordatorios/${id}`);
+  return data;
 }
 
-// Crear un nuevo recordatorio (Tarea o Plan de Sueño)
 export async function createRecordatorio({ mensaje, fechaHora, fecha_hora, tipo, activo = true }) {
-  return (
-    await api.post("api/Recordatorios", {
-      mensaje,
-      fechaHora: fechaHora ?? fecha_hora,
-      tipo,
-      activo
-    })
-  ).data;
+  const { data } = await api.post("api/Recordatorios", {
+    mensaje, fechaHora: fechaHora ?? fecha_hora, tipo, activo
+  });
+  return data;
 }
 
-// Actualizar un recordatorio (Ej: marcar como activo = false tras sonar)
 export async function updateRecordatorio(id, recordatorioData) {
-  const { fecha_hora, ...data } = recordatorioData;
-
-  return (await api.put(`api/Recordatorios/${id}`, {
-    ...data,
-    ...(data.fechaHora || fecha_hora ? { fechaHora: data.fechaHora ?? fecha_hora } : {})
-  })).data;
+  const { fecha_hora, ...dataToUpdate } = recordatorioData;
+  const payload = {
+    ...dataToUpdate,
+    ...(dataToUpdate.fechaHora || fecha_hora ? { fechaHora: dataToUpdate.fechaHora ?? fecha_hora } : {})
+  };
+  const { data } = await api.put(`api/Recordatorios/${id}`, payload);
+  return data;
 }
 
-// Eliminar un recordatorio
 export async function deleteRecordatorio(id) {
-  return (await api.delete(`api/Recordatorios/${id}`)).data;
+  const { data } = await api.delete(`api/Recordatorios/${id}`);
+  return data;
 }

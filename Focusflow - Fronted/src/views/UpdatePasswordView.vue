@@ -146,6 +146,7 @@
 import updatePasswordIllustration from "../assets/update-password-illustration.svg";
 import { createClient } from "@supabase/supabase-js";
 import { useToast } from "vue-toastification";
+import { useRouter } from "vue-router";
 
 const supabase = createClient(
     import.meta.env.VITE_SUPABASE_URL,
@@ -172,7 +173,8 @@ export default {
     },
     setup() {
         const toast = useToast();
-        return { toast };
+        const router = useRouter();
+        return { toast, router };
     },
     methods: {
         togglePassword() {
@@ -232,7 +234,7 @@ export default {
                         { timeout: 3000 }
                     );
                     setTimeout(() => {
-                        this.$router.push("/login");
+                        this.router.push("/login");
                     }, 2000);
                 }
             } catch (error) {

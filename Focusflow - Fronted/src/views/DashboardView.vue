@@ -14,7 +14,6 @@
             class="text-slate-700 dark:text-slate-200 inline-block"
             aria-label="Ir al perfil"
           >
-            <!-- Aquí pones el icono que elegimos o el contenido del botón -->
             <svg
               class="icon"
               viewBox="0 0 256 256"
