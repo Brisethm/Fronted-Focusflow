@@ -1,149 +1,221 @@
 <template>
-  <div class="bg-background-light dark:bg-background-dark font-display relative flex h-auto min-h-screen w-full flex-col justify-between overflow-x-hidden">
-    <div class="flex-grow">
-      <!-- Header: Botón eliminado y título centrado -->
-      <header
-        class="sticky top-0 z-10 flex items-center bg-background-light/80 px-4 py-3 backdrop-blur-sm dark:bg-background-dark/80"
-      >
-        <h1
-          class="flex-1 text-center text-lg font-bold text-slate-900 dark:text-white"
-        >
-          {{ t('wellness.title') }}
-        </h1>
-      </header>
+  <div
+    class="bg-background-light dark:bg-background-dark font-display flex min-h-screen flex-col"
+  >
+    <header
+      class="sticky top-0 z-10 bg-background-light/80 px-4 py-3 backdrop-blur-sm dark:bg-background-dark/80"
+    >
+      <h1 class="text-center text-lg font-bold text-slate-900 dark:text-white">
+        Bienestar
+      </h1>
+    </header>
 
-      <main class="p-4 sm:p-6">
-        <!-- Título y Descripción -->
-        <div class="mb-6">
-          <h2 class="text-3xl font-extrabold text-slate-900 dark:text-white">
-            {{ t('wellness.title') }}
-          </h2>
-          <p class="mt-2 text-slate-600 dark:text-slate-400">
-            {{ t('wellness.subtitle') }}
-          </p>
-        </div>
+    <main class="flex-1 p-4 sm:p-6">
+      <div class="mb-8">
+        <h2 class="text-3xl font-bold text-slate-900 dark:text-white">
+          Módulo de bienestar
+        </h2>
 
-        <div class="space-y-8">
-          <!-- Sección de Respiración -->
-          <section>
-            <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-4">
-              {{ t('wellness.breathingTitle') }}
-            </h3>
-            <div class="space-y-4">
-              
-              <!-- Ejercicio 1: Respiración Cuadrada -->
+        <p class="text-slate-600 dark:text-slate-400 mt-2">
+          Respiración, pausas activas y meditaciones guiadas para reducir estrés
+          y mejorar concentración.
+        </p>
+      </div>
+
+      <section v-for="section in sections" :key="section.title" class="mb-10">
+        <h3 class="mb-4 text-xl font-bold text-slate-900 dark:text-white">
+          <span class="material-symbols-outlined mr-2 align-middle">
+            {{ section.icon }}
+          </span>
+
+          {{ section.title }}
+        </h3>
+
+        <div class="space-y-4">
+          <div
+            v-for="video in section.videos"
+            :key="video.title"
+            class="rounded-xl bg-white p-4 shadow-sm dark:bg-slate-800"
+          >
+            <div class="flex gap-4">
               <div
-                class="flex items-center gap-4 rounded-xl bg-white p-4 shadow-sm dark:bg-slate-800/50"
+                class="flex h-16 w-16 items-center justify-center rounded-xl bg-primary/10"
               >
-                <div
-                  class="h-24 w-24 flex-shrink-0 rounded-lg bg-cover bg-center"
-                  style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDra2tNFX06RiuzI1ZjxXSB5GqsWzO2-bTg6wu7d_g98sMJ4jg37Uc4bbt2cDimivunb8I91_x3DL3pCdhW6FbjaddZKFf7S_KpOKsTqKy-0g7y-9TgNLOxGX2aV_Lmuj69IHomOoU2wS1YM8hOQ4bSxZTe6MYGJjus2_p2Z5pi-E5PsB3jWevhO3g3b0E8ozH_EilaXns-PSUc6IEipm3xSXoom0mJK1zLGSyrhh9PQtgBuPkYqc5BN6FDJx4YC2vTfXQg6wpQhCUl');"
-                ></div>
-                <div class="flex-1">
-                  <p class="text-sm font-medium text-primary">{{ t('wellness.breathingDuration1') }}</p>
-                  <p class="text-base font-bold text-slate-800 dark:text-slate-100">
-                    {{ t('wellness.breathingName1') }}
-                  </p>
-                  <p class="text-sm text-slate-500 dark:text-slate-400">
-                    {{ t('wellness.breathingDesc1') }}
-                  </p>
-                </div>
-                <button class="text-slate-400 dark:text-slate-500">
-                  <span class="material-symbols-outlined text-3xl">play_circle</span>
-                </button>
+                <span class="material-symbols-outlined text-3xl text-primary">
+                  {{ video.videoIcon }}
+                </span>
               </div>
 
-              <!-- Ejercicio 2: Técnica de la Caja (Desplegable) -->
-              <div
-                class="flex flex-col rounded-xl bg-white p-4 shadow-sm transition-all duration-300 dark:bg-slate-800/50"
-              >
-                <div class="flex items-center gap-4">
-                  <div
-                    class="h-20 w-20 flex-shrink-0 rounded-lg bg-cover bg-center"
-                    style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuA-lXBRuDEQxWNV887gETPFT4PjJ2r1njdMbDni95GdDMEGNmJd1KgxONto7fqZBhk3DP5_OdEHZdRX-Nl1yXDCJX0yxaTtND659uVDI8Gbo05eOh4Cnd48o2osDSSI4k5M8gOxr7uEw7IltCsAoAtLfIw0S7GcYOUhHzlTgWcSw9j290cVa2J9jswGERCNlN2YXnDhD2dTS_S08yGfBXc5OMllUJuOa4yOPXPlw3JmCwmlmEzwY_Eyk2EjOz2jTEa0V_IqiHhd7bNa');"
-                  ></div>
-                  <div class="flex-1">
-                    <p class="text-sm font-medium text-primary">11 minutos</p>
-                    <p class="text-base font-bold text-slate-800 dark:text-slate-100">
-                      Técnica: La Caja
-                    </p>
-                    <p class="text-sm text-slate-500 dark:text-slate-400">
-                      Inhala 4s, mantén 4s, exhala 4s.
-                    </p>
-                  </div>
-                  
-                  <button 
-                    @click="mostrarVideoCaja = !mostrarVideoCaja"
-                    class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary transition-colors hover:bg-primary/20 dark:bg-primary/20 dark:text-primary-light"
-                  >
-                    <span class="material-symbols-outlined">
-                      {{ mostrarVideoCaja ? 'expand_less' : 'play_arrow' }}
-                    </span>
-                  </button>
-                </div>
+              <div class="flex-1">
+                <p class="text-sm text-primary">
+                  {{ video.author }}
+                </p>
 
-                <div 
-                  v-show="mostrarVideoCaja" 
-                  class="mt-4 w-full overflow-hidden rounded-lg bg-slate-900 shadow-inner"
-                >
-                  <div class="aspect-video w-full">
-                    <iframe 
-                      class="h-full w-full border-0"
-                      src="https://www.youtube.com/embed/AXsBog5Q9BU" 
-                      title="TÉCNICA RESPIRACIÓN PARA LA ANSIEDAD - LA CAJA" 
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                      allowfullscreen
-                    ></iframe>
-                  </div>
-                  <div class="bg-slate-100 py-1.5 px-3 text-right dark:bg-slate-800">
-                    <p class="text-xs text-slate-500 dark:text-slate-400">
-                      Créditos: The Vortex Way
-                    </p>
-                  </div>
-                </div>
+                <h4 class="font-bold text-slate-800 dark:text-white">
+                  {{ video.title }}
+                </h4>
+              </div>
+
+              <button
+                @click="toggleVideo(video.id)"
+                class="h-10 w-10 rounded-full bg-primary/10"
+              >
+                <span class="material-symbols-outlined">
+                  {{
+                    expandedVideo === video.id ? "expand_less" : "play_arrow"
+                  }}
+                </span>
+              </button>
+            </div>
+
+            <div
+              v-show="expandedVideo === video.id"
+              class="mt-4 overflow-hidden rounded-xl"
+            >
+              <div class="aspect-video">
+                <iframe
+                  class="h-full w-full"
+                  :src="video.embed"
+                  :title="video.title"
+                  allowfullscreen
+                />
               </div>
             </div>
-          </section>
-
-          <!-- Sección de Pausas Activas -->
-          <section>
-            <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-4">
-              {{ t('wellness.activeBreaksTitle') }}
-            </h3>
-            <div class="space-y-4">
-              <div
-                class="flex items-center gap-4 rounded-xl bg-white p-4 shadow-sm dark:bg-slate-800/50"
-              >
-                <div
-                  class="h-24 w-24 flex-shrink-0 rounded-lg bg-cover bg-center"
-                  style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuB2JH5F4oLmCjzG77p9P5GGyGcNnOxhi-5FpfY8aBx-UXneqEfobztKWElQIcozpOveOgvmSJ3ZOMsPc8SAPiQbKSHbmSyf82kfiuaOe-OnuyyvDB622X2WGzkN9kyu5WjsZ1Ns1XoZ22ImNk5wTrtDkUJN6wP343bkCjZ_Ay_7GsGco7iG3LoBFeq9fdTqleBtq0LokrNFcbJ46oVjQzrmzbxREPfVq66DhV5HuShpjsDyzpJuhDA-YyUYUBTv_TnisxrVhIxcdK0F');"
-                ></div>
-                <div class="flex-1">
-                  <p class="text-sm font-medium text-primary">10 minutos</p>
-                  <p class="text-base font-bold text-slate-800 dark:text-slate-100">
-                    Estiramientos de oficina
-                  </p>
-                  <p class="text-sm text-slate-500 dark:text-slate-400">
-                    {{ t('wellness.activeBreaksDesc') }}
-                  </p>
-                </div>
-                <button class="text-slate-400 dark:text-slate-500">
-                  <span class="material-symbols-outlined text-3xl">play_circle</span>
-                </button>
-              </div>
-            </div>
-          </section>
+          </div>
         </div>
-      </main>
-    </div>
+      </section>
+    </main>
+
     <FooterNav />
   </div>
 </template>
 
 <script setup>
 import { ref } from "vue";
-import FooterNav from '../components/FooterNav.vue';
-import { t } from '../stores/locale';
+import FooterNav from "../components/FooterNav.vue";
 
-const mostrarVideoCaja = ref(false);
+const expandedVideo = ref(null);
+
+const toggleVideo = (id) => {
+  expandedVideo.value = expandedVideo.value === id ? null : id;
+};
+
+const sections = [
+  {
+    title: "Respiración",
+    icon: "air",
+
+    videos: [
+      {
+        id: 0,
+        videoIcon: "square",
+        title: "Respiración de la Caja",
+        author: "The Vortex Way",
+        embed: "https://www.youtube.com/embed/AXsBog5Q9BU",
+      },
+
+      {
+        id: 1,
+        videoIcon: "air",
+        title: "Respirar es vida | Pranayama",
+        author: "Anabel Otero",
+        embed: "https://www.youtube.com/embed/-LHUfN7n7Io",
+      },
+
+      {
+        id: 2,
+        videoIcon: "self_improvement",
+        title: "4-7-8 Relaxation Breathing",
+        author: "Hands-On Meditation",
+        embed: "https://www.youtube.com/embed/S6CmxoIkHd4",
+      },
+    ],
+  },
+
+  {
+    title: "Pausas activas",
+    icon: "accessibility",
+
+    videos: [
+      {
+        id: 3,
+        videoIcon: "front_hand",
+        title: "Ejercicios para túnel carpiano",
+        author: "Marcos Sacristán",
+        embed: "https://www.youtube.com/embed/zFwAaLhh2qw",
+      },
+
+      {
+        id: 4,
+        videoIcon: "airline_seat_recline_extra",
+        title: "Dolor cuello y hombros",
+        author: "Anabel Otero",
+        embed: "https://www.youtube.com/embed/8tyO0ti6NL0",
+      },
+
+      {
+        id: 5,
+        videoIcon: "self_improvement",
+        title: "Rutina cervicales 15 min",
+        author: "Marcos Sacristán",
+        embed: "https://www.youtube.com/embed/NEqp5YXLhs8",
+      },
+
+      {
+        id: 6,
+        videoIcon: "fitness_center",
+        title: "Pausa activa cuello",
+        author: "GYM HOME",
+        embed: "https://www.youtube.com/embed/E6NhedE6SeA",
+      },
+
+      {
+        id: 7,
+        videoIcon: "front_hand",
+        title: "Muñecas y brazos",
+        author: "ACHS",
+        embed: "https://www.youtube.com/embed/wgRunjcFwvA",
+      },
+    ],
+  },
+
+  {
+    title: "Meditaciones",
+    icon: "spa",
+
+    videos: [
+      {
+        id: 8,
+        videoIcon: "spa",
+        title: "Mindfulness para relajar mente",
+        author: "Mindful Science",
+        embed: "https://www.youtube.com/embed/xxmtGjcKgo4",
+      },
+
+      {
+        id: 9,
+        videoIcon: "psychology",
+        title: "Meditación principiantes",
+        author: "CuriosaMente",
+        embed: "https://www.youtube.com/embed/3oCC4NDgYrY",
+      },
+
+      {
+        id: 10,
+        videoIcon: "bedtime",
+        title: "Dormir profundamente",
+        author: "Mindful Science",
+        embed: "https://www.youtube.com/embed/SaeHBAsVaGg",
+      },
+
+      {
+        id: 11,
+        videoIcon: "self_improvement",
+        title: "Aquietar la mente",
+        author: "Mindful Science",
+        embed: "https://www.youtube.com/embed/NgmrVI5H5JE",
+      },
+    ],
+  },
+];
 </script>
