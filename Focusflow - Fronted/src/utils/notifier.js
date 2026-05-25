@@ -1,7 +1,7 @@
 export const scheduleNotification = (rec, callback) => {
   const fechaHora = rec.fecha_hora ?? rec.fechaHora;
   const idRecordatorio = rec.id_recordatorio ?? rec.idRecordatorio ?? rec.id;
-  const ahora = new Date().getTime();
+  const ahora = new Date().now();
   const tiempoDestino = new Date(fechaHora).getTime();
   const diferenciaMs = tiempoDestino - ahora;
 

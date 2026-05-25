@@ -127,7 +127,7 @@
                 <span class="material-symbols-outlined">badge</span>
               </div>
               <div class="flex-1 min-w-0">
-                <label
+                <label for="nombre"
                   class="block text-xs font-semibold uppercase tracking-[0.18em] text-slate-500"
                   >{{ t("registerStaff.fullName") }}</label
                 >
@@ -151,11 +151,13 @@
               </div>
               <div class="flex-1 min-w-0">
                 <label
+                  for="email"
                   class="block text-xs font-semibold uppercase tracking-[0.18em] text-slate-500"
                   >{{ t("registerStaff.email") }}</label
                 >
                 <input
                   type="email"
+                  id="email"
                   v-model="form.email"
                   required
                   placeholder="staff@focusflow.com"
@@ -173,7 +175,7 @@
                 <span class="material-symbols-outlined">lock</span>
               </div>
               <div class="flex-1 min-w-0 relative">
-                <label
+                <label for="password"
                   class="block text-xs font-semibold uppercase tracking-[0.18em] text-slate-500"
                   >{{ t("registerStaff.tempPassword") }}</label
                 >
@@ -205,11 +207,12 @@
                 <span class="material-symbols-outlined">manage_accounts</span>
               </div>
               <div class="flex-1 min-w-0">
-                <label
+                <label for="rol"
                   class="block text-xs font-semibold uppercase tracking-[0.18em] text-slate-500"
                   >{{ t("registerStaff.selectRole") }}</label
                 >
                 <select
+                  id="rol"
                   v-model="form.rol"
                   required
                   class="mt-2 w-full bg-transparent outline-none text-slate-900 placeholder:text-slate-400 appearance-none pr-8"

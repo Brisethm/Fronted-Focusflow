@@ -162,7 +162,7 @@ const parseUtcDateTime = (dateString) => {
 
 const formatDate = (dateString) => {
   const date = parseUtcDateTime(dateString)
-  if (!date || isNaN(date)) return dateString
+  if (!date || Number.isNaN(date)) return dateString
 
   return date.toLocaleString(localeCode.value, {
     timeZone: userTimeZone,

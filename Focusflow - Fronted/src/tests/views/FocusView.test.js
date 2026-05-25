@@ -30,14 +30,14 @@ describe('FocusView.vue', () => {
     api.createFocusSession.mockResolvedValue({})
     
     
-    global.Audio = vi.fn(function () {
+    globalThis.Audio = vi.fn(function () {
       return {
         play: vi.fn().mockResolvedValue()
       }
     })
 
     
-    global.confirm = vi.fn(() => true)
+    globalThis.confirm = vi.fn(() => true)
     
     vi.useFakeTimers()
   })
@@ -75,7 +75,7 @@ describe('FocusView.vue', () => {
     const pills = wrapper.findAll('.mode-pill')
     await pills.find(p => p.text() === 'focus.mode.pomodoro').trigger('click')
     
-    expect(global.confirm).toHaveBeenCalled()
+    expect(globalThis.confirm).toHaveBeenCalled()
   })
 
   it('gestiona correctamente los estados de Play, Pausa y Reanudar', async () => {

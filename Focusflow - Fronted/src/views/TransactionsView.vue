@@ -680,15 +680,15 @@ onMounted(() => {
   height: 52px;
   border: none;
   border-radius: 999px;
-  background: #13a4ec;
-  color: #ffffff;
+  background: #1d4ed8;
+  color: #ffffff !important;
   font-size: 0.98rem;
   font-weight: 800;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
-  box-shadow: 0 18px 32px rgba(19, 164, 236, 0.22);
+  box-shadow: 0 18px 32px rgba(29, 78, 216, 0.22);
   cursor: pointer;
   z-index: 20;
 }
@@ -728,10 +728,11 @@ onMounted(() => {
   height: 40px;
   border: none;
   border-radius: 14px;
-  background: rgba(15, 23, 42, 0.05);
-  color: #0f172a;
+  background-color: #f1f5f9 !important; 
+  color: #0f172a !important;
   font-size: 1.4rem;
   cursor: pointer;
+  transition: background-color 0.2s ease;
 }
 
 .transaction-card h2 {
@@ -799,10 +800,9 @@ onMounted(() => {
 
 .toggle-button.active {
   background-color: #ffffff;
-  color: #16a3fe;
+  color: #1d4ed8 !important;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
-
 .transaction-form {
   display: grid;
   gap: 16px;
@@ -838,11 +838,11 @@ onMounted(() => {
   width: 32px;
   height: 32px;
   border-radius: 10px;
-  background-color: #ebf6ff;
+  background-color: #eff6ff;
   display: flex;
   justify-content: center;
   align-items: center;
-  color: #16a3fe;
+  color: #1e40af !important;
 }
 
 .icon-wrapper svg {
@@ -892,8 +892,8 @@ onMounted(() => {
 
 .save-button {
   margin-top: 0;
-  background-color: #16a3fe;
-  color: white;
+  background-color: #1d4ed8;
+  color: #ffffff !important;
   border: none;
   border-radius: 20px;
   padding: 16px;
@@ -901,7 +901,7 @@ onMounted(() => {
   font-weight: 600;
   cursor: pointer;
   width: 100%;
-  box-shadow: 0 4px 12px rgba(22, 163, 254, 0.3);
+  box-shadow: 0 4px 12px rgba(29, 78, 216, 0.3);
 }
 
 .save-button:active {

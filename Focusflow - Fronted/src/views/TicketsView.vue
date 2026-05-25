@@ -637,28 +637,28 @@ export default {
   border-radius: 18px;
   display: grid;
   place-items: center;
-  background: rgba(59, 130, 246, 0.12);
-  color: #2563eb;
+  background: #eff6ff !important; /* Blue 50 */
+  color: #1e40af !important;      /* Blue 800 */
 }
 
 .ticket-icon.category-technical {
-  background: rgba(16, 185, 129, 0.12);
-  color: #047857;
+  background: #ecfdf5 !important; /* Emerald 50 */
+  color: #065f46 !important;      /* Emerald 800 */
 }
 
 .ticket-icon.category-general {
-  background: rgba(59, 130, 246, 0.12);
-  color: #1d4ed8;
+  background: #eff6ff !important; /* Blue 50 */
+  color: #1d4ed8 !important;      /* Blue 700 */
 }
 
 .ticket-icon.category-billing {
-  background: rgba(245, 158, 11, 0.12);
-  color: #b45309;
+  background: #fffbeb !important; /* Amber 50 */
+  color: #9a3412 !important;      /* Amber 800 */
 }
 
 .ticket-icon.category-feature_request {
-  background: rgba(168, 85, 247, 0.12);
-  color: #7c3aed;
+  background: #f5f3ff !important; /* Purple 50 */
+  color: #5b21b6 !important;      /* Purple 800 */
 }
 
 .badge {

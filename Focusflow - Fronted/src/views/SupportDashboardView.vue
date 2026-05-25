@@ -66,7 +66,7 @@ export default {
             const profile = await getProfile();
             this.supportName = profile.nombre.split(' ')[0]; // Solo el primer nombre
         } catch (error) {
-            console.error("Error al cargar el nombre");
+            console.error("Error al cargar el nombre del perfil de soporte:", error);
         }
     }
 };
@@ -167,8 +167,8 @@ export default {
 }
 
 .card:hover .card-btn {
-    background-color: #6366f1;
-    color: white;
-    border-color: #6366f1;
+  background-color: #4f46e5; 
+  color: #ffffff !important; 
+  border-color: #4f46e5;
 }
 </style>

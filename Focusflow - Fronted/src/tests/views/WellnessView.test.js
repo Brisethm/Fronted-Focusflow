@@ -56,10 +56,6 @@ it('expande el reproductor de video al hacer clic en el botón de play', async (
     await playBtn.trigger('click')
     expect(wrapper.vm.expandedVideo).toBe(null) // Debe volver a null
     
-    // El iframe no debería estar "visible" (v-show añade display: none)
-    // Verificamos que el div contenedor tenga display: none
-    const container = wrapper.find('div[v-show]') // Nota: si v-show no es un atributo, busca el div que envuelve el iframe
-    // O mejor aún: simplemente verifica que el estado es null
     expect(wrapper.vm.expandedVideo).toBe(null)
   })
 });

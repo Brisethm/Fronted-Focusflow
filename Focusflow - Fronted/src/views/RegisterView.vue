@@ -240,7 +240,7 @@ export default {
         this.validateField(field);
       });
 
-      return !Object.values(this.errors).some((e) => e);
+      return !Object.values(this.errors).some(Boolean);
     },
 
     async handleSubmit() {
@@ -253,7 +253,7 @@ export default {
       this.loading = true;
 
       try {
-        const response = await register(
+        await register(
           this.form.email,
           this.form.password,
           this.form.name
@@ -261,7 +261,6 @@ export default {
         this.loading = false;
         localStorage.setItem("userName", this.form.name);
         this.$router.push("/welcome");
-        alert("Registro exitoso: " + JSON.stringify(response));
       } catch (error) {
         this.loading = false;
         let message = "Error desconocido";

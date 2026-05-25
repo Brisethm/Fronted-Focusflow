@@ -229,7 +229,7 @@ describe("API Service", () => {
       await expect(responseErrorHandler(mockError)).rejects.toThrow();
 
       expect(localStorage.getItem("token")).toBeNull();
-      expect(window.location.href).toBe("/login");
+      expect(globalThis.location.href).toBe("/login");
     });
   });
 

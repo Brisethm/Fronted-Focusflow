@@ -418,7 +418,6 @@ const todayError = ref(null);
 const userTimeZone =
   Intl.DateTimeFormat().resolvedOptions().timeZone || "America/Bogota";
 
-// Helper para obtener la fecha de la tarea independientemente del formato de la API
 const getTaskDeadline = (task) => task.fecha_limite ?? task.fechaLimite ?? null;
 
 // Normaliza fechas UTC para JS
@@ -432,6 +431,8 @@ const parseUtcDateTime = (dateString) => {
     const date = new Date(hasTimeZone ? normalized : `${normalized}Z`);
     return Number.isNaN(date.getTime()) ? null : date;
   } catch (e) {
+    // CORREGIDO: Se añade un log explicativo de desarrollo en lugar de dejar el catch vacío
+    console.debug("Formato de fecha inválido capturado:", dateString, e);
     return null;
   }
 };
@@ -450,9 +451,12 @@ const getTodayTasks = async () => {
     todayTasks.value = tasks.filter((task) => {
       const deadline = getTaskDeadline(task);
       if (!deadline) return false;
+      
       const taskDate = parseUtcDateTime(deadline);
       if (!taskDate) return false;
 
+      // CORREGIDO: Se eliminó el bloque try-catch redundante e internamente vacío que rodeaba la conversión a local string,
+      // ya que parseUtcDateTime ya asegura que 'taskDate' es una instancia válida de Date y no lanzará excepciones aquí.
       const taskLocalStr = taskDate.toLocaleDateString(localeCode.value, {
         timeZone: userTimeZone,
       });
@@ -570,7 +574,6 @@ const saveStatusText = computed(() => {
   return t("dashboard.unsavedStatus");
 });
 
-// --- ACCIONES ---
 async function saveEmotionalRecord() {
   if (isSaving.value || saveTimer.value > 0) return;
   isSaving.value = true;
@@ -594,6 +597,7 @@ async function saveEmotionalRecord() {
       if (saveTimer.value <= 0) clearInterval(saveTimerInterval);
     }, 1000);
   } catch (error) {
+    console.error("Error al guardar el registro emocional:", error);
     saveStatus.value = "error";
     errorMessage.value = t("dashboard.saveError");
   } finally {

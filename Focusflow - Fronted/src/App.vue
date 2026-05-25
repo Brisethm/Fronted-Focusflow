@@ -1,3 +1,9 @@
+<template>
+  <div id="app">
+    <RouterView />
+  </div>
+</template>
+
 <script setup>
 import { onMounted } from "vue";
 import { useRouter } from "vue-router";
@@ -13,7 +19,7 @@ const supabase = createClient(
 );
 
 onMounted(async () => {
-  const hashParams = new URLSearchParams(window.location.hash.substring(1));
+  const hashParams = new URLSearchParams(globalThis.location.hash.substring(1));
   const accessToken = hashParams.get("access_token");
   const type = hashParams.get("type");
 
@@ -45,11 +51,8 @@ onMounted(async () => {
       });
     }
   } catch (error) {
-    console.error("Error al cargar recordatorios:", error);
+    // CORREGIDO: Se maneja la variable 'error' correctamente dentro del log para evitar advertencias de SonarLint
+    console.error("Error al inicializar y cargar los recordatorios de FocusFlow:", error);
   }
 });
 </script>
-
-<template>
-  <router-view />
-</template>

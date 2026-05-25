@@ -220,7 +220,7 @@ const planIntro = computed(() => {
 });
 
 /* ======================
-   CONFIG PLAN
+   CONFIG PLAN MAPPING
 ====================== */
 const profilePlanMapping = {
   saturado: { horaDescanso: "22:00:00", enfoqueDiario: 3, pausasDiarias: 3 },
@@ -235,79 +235,76 @@ const profilePlanMapping = {
 };
 
 const planDetails = computed(() => {
-  const plan =
-    profilePlanMapping[profile.value] || profilePlanMapping.inestable;
-
-  return {
-    horaDescanso: plan.horaDescanso,
-    enfoqueDiario: plan.enfoqueDiario,
-    pausasDiarias: plan.pausasDiarias,
-  };
+  return profilePlanMapping[profile.value] || profilePlanMapping.inestable;
 });
 
-/* ======================
-   CARDS
-====================== */
+const pausasTextMapping = {
+  critico: {
+    subtitle: "Pausa energética",
+    description: "Tu mente necesita respiro; haz pausas cortas para evitar agotamiento."
+  },
+  saturado: {
+    subtitle: "Relajación suave",
+    description: "Cinco minutos de pausa te ayudan a bajar la intensidad del día."
+  },
+  procrastinador: {
+    subtitle: "Pausa estratégica",
+    description: "Haz pequeñas desconexiones para recuperar foco sin bloquearte."
+  },
+  equilibrado: {
+    subtitle: "Pausa de recarga",
+    description: "Mantén tu buen ritmo con descansos conscientes que te recargan."
+  },
+  inestable: {
+    subtitle: "Pausa equilibrante",
+    description: "Pausas breves te ayudan a mantener equilibrio y claridad mental."
+  }
+};
+
+const descansoTextMapping = {
+  critico: "Dormir temprano te ayuda a recuperar energía y calmar la sobrecarga.",
+  saturado: "Una hora de descanso estable reduce el estrés acumulado.",
+  procrastinador: "Un horario fijo de sueño te da estructura y más energía.",
+  equilibrado: "Seguir este horario refuerza el equilibrio que ya tienes.",
+  inestable: "Dormir a esta hora mejora tu claridad y descanso emocional."
+};
+
+const enfoqueTextMapping = {
+  critico: "Una tarea prioritaria para avanzar sin generar presión extra.",
+  saturado: "Tres objetivos claros te permiten manejar mejor el ritmo.",
+  procrastinador: "Cinco tareas pequeñas te ayudan a crear impulso hoy.",
+  equilibrado: "Una sola meta diaria te permite mantener el balance perfecto.",
+  inestable: "Tres enfoques te ayudan a organizar tu jornada con fluidez."
+};
+
 const planCards = computed(() => {
-  const plan =
-    profilePlanMapping[profile.value] || profilePlanMapping.inestable;
+  const currentProfile = profile.value;
+  const plan = profilePlanMapping[currentProfile] || profilePlanMapping.inestable;
+  
+  const pausasData = pausasTextMapping[currentProfile] || pausasTextMapping.inestable;
+  const descansoDesc = descansoTextMapping[currentProfile] || descansoTextMapping.inestable;
+  const enfoqueDesc = enfoqueTextMapping[currentProfile] || enfoqueTextMapping.inestable;
 
   return [
     {
       title: "Pausas Conscientes",
       icon: "self_improvement",
-      subtitle:
-        profile.value === "critico"
-          ? "Pausa energética"
-          : profile.value === "saturado"
-            ? "Relajación suave"
-            : profile.value === "procrastinador"
-              ? "Pausa estratégica"
-              : profile.value === "equilibrado"
-                ? "Pausa de recarga"
-                : "Pausa equilibrante",
-      description:
-        profile.value === "critico"
-          ? "Tu mente necesita respiro; haz pausas cortas para evitar agotamiento."
-          : profile.value === "saturado"
-            ? "Cinco minutos de pausa te ayudan a bajar la intensidad del día."
-            : profile.value === "procrastinador"
-              ? "Haz pequeñas desconexiones para recuperar foco sin bloquearte."
-              : profile.value === "equilibrado"
-                ? "Mantén tu buen ritmo con descansos conscientes que te recargan."
-                : "Pausas breves te ayudan a mantener equilibrio y claridad mental.",
+      subtitle: pausasData.subtitle,
+      description: pausasData.description,
       wrapperClass: "p-6 rounded-3xl border bg-[#f5f3ff] border-[#ddd6fe]",
     },
     {
       title: "Ritual de Descanso",
       icon: "dark_mode",
       subtitle: `Ir a dormir a las ${plan.horaDescanso}`,
-      description:
-        profile.value === "critico"
-          ? "Dormir temprano te ayuda a recuperar energía y calmar la sobrecarga."
-          : profile.value === "saturado"
-            ? "Una hora de descanso estable reduce el estrés acumulado."
-            : profile.value === "procrastinador"
-              ? "Un horario fijo de sueño te da estructura y más energía."
-              : profile.value === "equilibrado"
-                ? "Seguir este horario refuerza el equilibrio que ya tienes."
-                : "Dormir a esta hora mejora tu claridad y descanso emocional.",
+      description: descansoDesc,
       wrapperClass: "p-6 rounded-3xl border bg-[#f5f3ff] border-[#ddd6fe]",
     },
     {
       title: "Enfoque Diario",
       icon: "checklist",
       subtitle: `${plan.enfoqueDiario} tareas prioritarias`,
-      description:
-        profile.value === "critico"
-          ? "Una tarea prioritaria para avanzar sin generar presión extra."
-          : profile.value === "saturado"
-            ? "Tres objetivos claros te permiten manejar mejor el ritmo."
-            : profile.value === "procrastinador"
-              ? "Cinco tareas pequeñas te ayudan a crear impulso hoy."
-              : profile.value === "equilibrado"
-                ? "Una sola meta diaria te permite mantener el balance perfecto."
-                : "Tres enfoques te ayudan a organizar tu jornada con fluidez.",
+      description: enfoqueDesc,
       wrapperClass: "p-6 rounded-3xl border bg-[#f5f3ff] border-[#ddd6fe]",
     },
   ];
@@ -325,7 +322,7 @@ function formatLocalDeadline(hour, minute = 0) {
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
 }
 
-function getTasksForProfile(profile) {
+function getTasksForProfile(currentProfile) {
   const tasks = {
     critico: [
       {
@@ -365,7 +362,7 @@ function getTasksForProfile(profile) {
     ],
   };
 
-  return tasks[profile] || [];
+  return tasks[currentProfile] || [];
 }
 
 /* ======================
@@ -388,8 +385,7 @@ async function createPlanAndTasks() {
     return true;
   }
 
-  const planData =
-    profilePlanMapping[profile.value] || profilePlanMapping.inestable;
+  const planData = profilePlanMapping[profile.value] || profilePlanMapping.inestable;
 
   try {
     await createPersonalizedPlan({
@@ -415,9 +411,7 @@ async function createPlanAndTasks() {
 ====================== */
 async function startDay() {
   loading.value = true;
-
   const planCreated = await createPlanAndTasks();
-
   loading.value = false;
 
   if (planCreated) {

@@ -37,8 +37,8 @@ describe('TransactionsView.vue', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     api.getTransacciones.mockResolvedValue(mockTransacciones)
-    global.alert = vi.fn()
-    global.confirm = vi.fn(() => true)
+    globalThis.alert = vi.fn()
+    globalThis.confirm = vi.fn(() => true)
   })
 
   it('renderiza el resumen y calcula el balance total correctamente', async () => {
@@ -99,7 +99,7 @@ describe('TransactionsView.vue', () => {
     // Intenta guardar con campos vacíos
     await wrapper.find('form.transaction-form').trigger('submit.prevent')
 
-    expect(global.alert).toHaveBeenCalledWith('transactions.completeFields')
+    expect(globalThis.alert).toHaveBeenCalledWith('transactions.completeFields')
     expect(api.createTransaccion).not.toHaveBeenCalled()
   })
 })

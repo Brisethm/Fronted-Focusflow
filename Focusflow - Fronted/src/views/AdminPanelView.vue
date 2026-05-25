@@ -96,28 +96,24 @@ export default {
   async mounted() {
     try {
       const profile = await getProfile();
-      this.adminName = profile.nombre?.split(" ")[0] || "Admin"; // Solo el primer nombre
+      this.adminName = profile.nombre?.split(" ")[0] || "Admin";
       this.canRegisterStaff = this.isAdminRole(profile.rol);
     } catch (error) {
-      console.error("Error al cargar el nombre");
+      console.error("Error al cargar el perfil del administrador:", error);
     }
 
-    // Apply a subtle light background to the page to contrast the panel
-    try {
+    if (globalThis.document !== undefined) {
       document.documentElement.style.backgroundColor = "#f7fbff";
       document.body.style.backgroundColor = "#f7fbff";
       document.body.style.transition = "background-color 0.25s ease";
-    } catch (e) {
-      // ignore in SSR or restricted envs
     }
   },
 
   beforeUnmount() {
-    // Reset page background when leaving the admin panel
-    try {
+    if (globalThis.document !== undefined) {
       document.documentElement.style.backgroundColor = "";
       document.body.style.backgroundColor = "";
-    } catch (e) {}
+    }
   },
 };
 </script>
@@ -220,10 +216,9 @@ export default {
   color: #475569;
   transition: all 0.2s;
 }
-
 .card:hover .card-btn {
-  background-color: #6366f1;
-  color: white;
-  border-color: #6366f1;
+  background-color: #4f46e5; 
+  color: #ffffff !important;
+  border-color: #4f46e5;
 }
 </style>

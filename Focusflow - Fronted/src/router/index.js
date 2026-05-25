@@ -54,6 +54,13 @@ function isSupportRole(role) {
   return normalizeRole(role) === "support";
 }
 
+function hasRequiredRole(meta, role) {
+  if (meta.requiereAdmin) return isAdminRole(role);
+  if (meta.requiereStaff) return isAdminRole(role) || isSupportRole(role);
+  if (meta.requiereSupport) return isSupportRole(role);
+  return true;
+}
+
 router.beforeEach(async (to, from, next) => {
   if (!to.meta.requiereAdmin && !to.meta.requiereStaff && !to.meta.requiereSupport) {
     return next();
@@ -61,36 +68,16 @@ router.beforeEach(async (to, from, next) => {
 
   try {
     const profile = await getProfile();
-    
-    if (to.meta.requiereAdmin) {
-      if (profile && isAdminRole(profile.rol)) {
-        return next(); 
-      } else {
-        console.warn("Acceso denegado: Se requiere ser Admin");
-        return next("/dashboard"); 
-      }
+    const userRole = profile?.rol;
+    if (profile && hasRequiredRole(to.meta, userRole)) {
+      return next();
     }
+    console.warn("Acceso denegado: No cumple con los roles requeridos para", to.name);
+    return next("/dashboard");
 
-    if (to.meta.requiereStaff) {
-      if (profile && (isAdminRole(profile.rol) || isSupportRole(profile.rol))) {
-        return next(); 
-      } else {
-        console.warn("Acceso denegado: Se requiere ser Staff");
-        return next("/dashboard"); 
-      }
-    }
-
-    if (to.meta.requiereSupport) {
-      if (profile && isSupportRole(profile.rol)) {
-        return next(); 
-      } else {
-        console.warn("Acceso denegado: Se requiere ser support");
-        return next("/dashboard"); 
-      }
-    }
   } catch (error) {
     console.error("Auth guard error:", error);
-    next("/login");
+    return next("/login");
   }
 });
 

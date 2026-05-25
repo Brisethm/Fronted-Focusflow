@@ -212,7 +212,7 @@ export default {
             Object.keys(this.errors).forEach((field) => {
                 this.validateField(field);
             });
-            return !Object.values(this.errors).some((e) => e);
+            return !Object.values(this.errors).some(Boolean);
         },
 
         async handleSubmit() {

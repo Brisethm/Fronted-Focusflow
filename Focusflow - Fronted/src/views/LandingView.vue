@@ -219,7 +219,7 @@ const handleSupport = () => {
 
 // Rotate text
 onMounted(() => {
-  interval = window.setInterval(() => {
+  interval = globalThis.window.setInterval(() => {
     currentIndex.value =
       (currentIndex.value + 1) % features.length
   }, 2500)
@@ -346,7 +346,7 @@ img {
   width: 2.5rem;
   height: 2.5rem;
   background: rgb(239 246 255);
-  color: #13a4ec;
+  color: #1d4ed8 !important;
   border-radius: 9999px;
   display: flex;
   align-items: center;
@@ -356,8 +356,8 @@ img {
 }
 
 .social-btn:hover {
-  background: #13a4ec;
-  color: white;
+  background: #1d4ed8;
+  color: #ffffff !important; 
 }
 
 /* =========================================

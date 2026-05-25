@@ -121,7 +121,7 @@
 
         <form @submit.prevent="handleSubmitTicket" class="space-y-4">
           <div class="space-y-1">
-            <label
+            <label for="asunto"
               class="text-sm font-semibold text-text-light-primary dark:text-text-dark-primary ml-1"
               >Asunto</label
             >
@@ -143,10 +143,12 @@
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div class="space-y-1">
               <label
+                for="categoria"
                 class="text-sm font-semibold text-text-light-primary dark:text-text-dark-primary ml-1"
                 >Categoría</label
               >
               <select
+                id="categoria"
                 v-model="form.categoria"
                 required
                 class="w-full px-4 py-2.5 rounded-lg border border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark text-text-light-primary dark:text-text-dark-primary focus:ring-2 focus:ring-primary focus:border-transparent outline-none appearance-none"
@@ -158,7 +160,7 @@
               </select>
             </div>
             <div class="space-y-1">
-              <label
+              <label for="prioridad"
                 class="text-sm font-semibold text-text-light-primary dark:text-text-dark-primary ml-1"
                 >Prioridad</label
               >
@@ -175,7 +177,7 @@
           </div>
 
           <div class="space-y-1">
-            <label
+            <label for="descripcion"
               class="text-sm font-semibold text-text-light-primary dark:text-text-dark-primary ml-1"
               >Descripción Detallada</label
             >
@@ -617,6 +619,7 @@ select {
 .animate-fade-in {
   animation: fadeIn 0.2s ease-out;
 }
+
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -663,30 +666,29 @@ select {
   border-radius: 16px;
   display: grid;
   place-items: center;
-  background: rgba(59, 130, 246, 0.12);
-  color: #2563eb;
+  background: #f1f5f9 !important; /* Gris pizarra muy claro (Slate 100) */
+  color: #1e293b !important;      /* Gris casi negro (Slate 800) -> CONTRASTE INSUPERABLE */
 }
 
 .ticket-icon.category-technical {
-  background: rgba(16, 185, 129, 0.12);
-  color: #047857;
+  background: #f1f5f9 !important;
+  color: #065f46 !important; /* Verde oscuro pino (Emerald 800) */
 }
 
 .ticket-icon.category-general {
-  background: rgba(59, 130, 246, 0.1);
-  color: #1d4ed8;
+  background: #f1f5f9 !important;
+  color: #1e40af !important; /* Azul rey oscuro (Blue 800) */
 }
 
 .ticket-icon.category-billing {
-  background: rgba(245, 158, 11, 0.12);
-  color: #b45309;
+  background: #f1f5f9 !important;
+  color: #9a3412 !important; /* Naranja quemado oscuro (Amber 800) */
 }
 
 .ticket-icon.category-feature_request {
-  background: rgba(168, 85, 247, 0.12);
-  color: #7c3aed;
+  background: #f1f5f9 !important;
+  color: #5b21b6 !important; /* Morado oscuro (Purple 800) */
 }
-
 .status-pill {
   padding: 0.35rem 0.6rem;
   border-radius: 9999px;
@@ -702,91 +704,6 @@ select {
   align-items: center;
   justify-content: space-between;
   margin-top: 12px;
-  padding-top: 12px;
-  border-top: 1px solid rgba(148, 163, 184, 0.18);
-}
-
-.meta-item {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.meta-item span:first-child {
-  color: #64748b;
-}
-
-.meta-action {
-  white-space: nowrap;
-}
-
-.ticket-card {
-  border: 1px solid rgba(148, 163, 184, 0.18);
-  background: rgba(255, 255, 255, 0.92);
-  border-radius: 24px;
-  padding: 16px;
-  transition:
-    transform 0.2s ease,
-    border-color 0.2s ease,
-    box-shadow 0.2s ease;
-}
-
-.ticket-card:hover {
-  transform: translateY(-2px);
-  border-color: rgba(59, 130, 246, 0.35);
-  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
-}
-
-.ticket-card-content {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-.ticket-icon {
-  min-width: 44px;
-  min-height: 44px;
-  border-radius: 16px;
-  display: grid;
-  place-items: center;
-  background: rgba(59, 130, 246, 0.1);
-  color: #2563eb;
-}
-
-.ticket-icon.category-technical {
-  background: rgba(16, 185, 129, 0.12);
-  color: #047857;
-}
-
-.ticket-icon.category-general {
-  background: rgba(59, 130, 246, 0.1);
-  color: #1d4ed8;
-}
-
-.ticket-icon.category-billing {
-  background: rgba(245, 158, 11, 0.12);
-  color: #b45309;
-}
-
-.ticket-icon.category-feature_request {
-  background: rgba(168, 85, 247, 0.12);
-  color: #7c3aed;
-}
-
-.status-pill {
-  padding: 0.35rem 0.6rem;
-  border-radius: 9999px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.ticket-card-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  align-items: center;
-  justify-content: space-between;
   padding-top: 12px;
   border-top: 1px solid rgba(148, 163, 184, 0.18);
 }
