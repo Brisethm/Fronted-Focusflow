@@ -7,6 +7,31 @@ export default defineConfig({
     vue(),
   ],
 
+  build: {
+    rollupOptions: {
+      onLog(level, log, handler) {
+        if (
+          log.code === 'INVALID_ANNOTATION' &&
+          log.id?.includes('@microsoft/signalr')
+        ) {
+          return
+        }
+
+        handler(level, log)
+      },
+      onwarn(warning, handler) {
+        if (
+          warning.code === 'INVALID_ANNOTATION' &&
+          warning.id?.includes('@microsoft/signalr')
+        ) {
+          return
+        }
+
+        handler(warning)
+      },
+    },
+  },
+
   resolve: {
     alias: {
       '@': fileURLToPath(
