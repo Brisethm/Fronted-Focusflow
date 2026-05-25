@@ -284,7 +284,7 @@ export default {
         this.touched[field] = true
         this.validateField(field)
       })
-      return fields.every((field) => !this.errors[field])
+      return fields.every((field) => this.errors[field] === "")
     },
     buildRecordatorioPayload(fechaHora, activo = true) {
       return {

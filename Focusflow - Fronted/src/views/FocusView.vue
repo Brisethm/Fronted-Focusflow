@@ -370,57 +370,69 @@
 </template>
 
 <script setup>
-import { ref, computed, onUnmounted } from 'vue'
+import { ref, computed, onUnmounted } from "vue";
 import { getTasks, createFocusSession } from "../services/api.js";
 import FooterNav from "../components/FooterNav.vue";
-import { t } from '../stores/locale'
+import { t } from "../stores/locale";
 // ──────────────────────────────────────────────────────────────────────────
 
-const CIRCUMFERENCE = 2 * Math.PI * 54
+const CIRCUMFERENCE = 2 * Math.PI * 54;
 
 const MODES = {
-  Pomodoro: { label: 'Pomodoro', defaultMin: 25, color: '#ef4444' },
-  Timeboxing: { label: 'Timeboxing', defaultMin: 45, color: '#13a4ec' },
-  Descanso: { label: 'Descanso', defaultMin: 5, color: '#10b981' },
-}
-const modeKeys = Object.keys(MODES)
-const presets = [5, 15, 25, 30, 45, 60, 90]
+  Pomodoro: { label: "Pomodoro", defaultMin: 25, color: "#ef4444" },
+  Timeboxing: { label: "Timeboxing", defaultMin: 45, color: "#13a4ec" },
+  Descanso: { label: "Descanso", defaultMin: 5, color: "#10b981" },
+};
+const modeKeys = Object.keys(MODES);
+const presets = [5, 15, 25, 30, 45, 60, 90];
 
 // State
-const mode = ref('Timeboxing')
-const minutes = ref(MODES['Timeboxing'].defaultMin)
-const totalSeconds = ref(minutes.value * 60)
-const secondsLeft = ref(totalSeconds.value)
-const running = ref(false)
-const completed = ref(false)
-const linkedTask = ref(null)
-const tasks = ref([])
-const taskSearch = ref('')
-const showTaskModal = ref(false)
-const showTimeModal = ref(false)
-const pendingMinutes = ref(minutes.value)
-const saving = ref(false)
-const saved = ref(false)
-let timer = null
+const mode = ref("Timeboxing");
+const minutes = ref(MODES["Timeboxing"].defaultMin);
+const totalSeconds = ref(minutes.value * 60);
+const secondsLeft = ref(totalSeconds.value);
+const running = ref(false);
+const completed = ref(false);
+const linkedTask = ref(null);
+const tasks = ref([]);
+const taskSearch = ref("");
+const showTaskModal = ref(false);
+const showTimeModal = ref(false);
+const pendingMinutes = ref(minutes.value);
+const saving = ref(false);
+const saved = ref(false);
+let timer = null;
 
 // Computed
-const accent = computed(() => MODES[mode.value].color)
-const dashOffset = computed(() =>
-  CIRCUMFERENCE * (1 - (totalSeconds.value > 0 ? secondsLeft.value / totalSeconds.value : 0))
-)
+const accent = computed(() => MODES[mode.value].color);
+const dashOffset = computed(
+  () =>
+    CIRCUMFERENCE *
+    (1 - (totalSeconds.value > 0 ? secondsLeft.value / totalSeconds.value : 0)),
+);
 const filteredTasks = computed(() =>
-  tasks.value.filter(t => t.titulo.toLowerCase().includes(taskSearch.value.toLowerCase()))
-)
+  tasks.value.filter((t) =>
+    t.titulo.toLowerCase().includes(taskSearch.value.toLowerCase()),
+  ),
+);
 
 // Load tasks
 tasks.value = await getTasks();
 
 // Helpers
-function pad(n) { return String(n).padStart(2, '0') }
-function formatTime(s) { return `${pad(Math.floor(s / 60))}:${pad(s % 60)}` }
+function pad(n) {
+  return String(n).padStart(2, "0");
+}
+function formatTime(s) {
+  return `${pad(Math.floor(s / 60))}:${pad(s % 60)}`;
+}
 
-function clearTimer() { if (timer) { clearInterval(timer); timer = null } }
-
+function clearTimer() {
+  if (timer) {
+    clearInterval(timer);
+    timer = null;
+  }
+}
 
 function startTimer() {
   clearTimer();
@@ -429,9 +441,13 @@ function startTimer() {
       secondsLeft.value = 0;
       clearTimer();
 
-      const campana = new Audio('https://actions.google.com/sounds/v1/alarms/ding.ogg');
-      campana.play().catch(err => console.debug('El navegador bloqueó el audio:', err));
-      if (mode.value === 'Descanso') {
+      const campana = new Audio(
+        "https://actions.google.com/sounds/v1/alarms/ding.ogg",
+      );
+      campana
+        .play()
+        .catch((err) => console.debug("El navegador bloqueó el audio:", err));
+      if (mode.value === "Descanso") {
         running.value = false;
         completed.value = true;
       } else {
@@ -445,7 +461,7 @@ function startTimer() {
           console.error("Error al guardar la sesión:", err);
         }
 
-        switchMode('Descanso');
+        switchMode("Descanso");
       }
     } else {
       secondsLeft.value--;
@@ -455,82 +471,84 @@ function startTimer() {
 
 function switchMode(m) {
   // 1. Si haces clic en el modo que ya está activo, no hace nada
-  if (mode.value === m) return
+  if (mode.value === m) return;
 
   // 2. Si el tiempo es menor al total y no ha terminado, significa que hay una sesión en curso
   if (secondsLeft.value < totalSeconds.value && !completed.value) {
-    const confirmar = confirm("Tienes una sesión en curso. ¿Seguro que quieres cambiar de modo y reiniciar el tiempo?");
+    const confirmar = confirm(
+      "Tienes una sesión en curso. ¿Seguro que quieres cambiar de modo y reiniciar el tiempo?",
+    );
     if (!confirmar) return; // Si le das a cancelar, la función se detiene y no se restablece nada
   }
 
   // 3. Si no hay sesión en curso (o confirmaste el cambio), se hace el cambio normal
-  clearTimer()
-  mode.value = m
-  minutes.value = MODES[m].defaultMin
-  totalSeconds.value = minutes.value * 60
-  secondsLeft.value = totalSeconds.value
-  running.value = false
-  completed.value = false
-  saved.value = false
+  clearTimer();
+  mode.value = m;
+  minutes.value = MODES[m].defaultMin;
+  totalSeconds.value = minutes.value * 60;
+  secondsLeft.value = totalSeconds.value;
+  running.value = false;
+  completed.value = false;
+  saved.value = false;
 }
 
 function handleStart() {
-  if (completed.value) return
+  if (completed.value) return;
   if (running.value) {
-    clearTimer()
-    running.value = false
+    clearTimer();
+    running.value = false;
   } else {
-    running.value = true
-    startTimer()
+    running.value = true;
+    startTimer();
   }
 }
 
 function handleReset() {
-  clearTimer()
-  running.value = false
-  completed.value = false
-  saved.value = false
-  secondsLeft.value = minutes.value * 60
-  totalSeconds.value = minutes.value * 60
+  clearTimer();
+  running.value = false;
+  completed.value = false;
+  saved.value = false;
+  secondsLeft.value = minutes.value * 60;
+  totalSeconds.value = minutes.value * 60;
 }
 
 function openTimeModal() {
-  pendingMinutes.value = minutes.value
-  showTimeModal.value = true
+  pendingMinutes.value = minutes.value;
+  showTimeModal.value = true;
 }
 
 function applyTime() {
-  clearTimer()
-  minutes.value = pendingMinutes.value
-  totalSeconds.value = pendingMinutes.value * 60
-  secondsLeft.value = totalSeconds.value
-  running.value = false
-  completed.value = false
-  saved.value = false
-  showTimeModal.value = false
+  clearTimer();
+  minutes.value = pendingMinutes.value;
+  totalSeconds.value = pendingMinutes.value * 60;
+  secondsLeft.value = totalSeconds.value;
+  running.value = false;
+  completed.value = false;
+  saved.value = false;
+  showTimeModal.value = false;
 }
 
 function selectTask(task) {
-  linkedTask.value = task
-  showTaskModal.value = false
-  taskSearch.value = ''
+  linkedTask.value = task;
+  showTaskModal.value = false;
+  taskSearch.value = "";
 }
 
 async function handleSaveSession() {
-  saving.value = true
+  saving.value = true;
   try {
     await createFocusSession({
       duracionMinutos: minutes.value,
       tipo: mode.value,
       fecha: new Date().toISOString(),
-    })
-    saved.value = true
+    });
+    saved.value = true;
   } finally {
-    saving.value = false
+    saving.value = false;
   }
 }
 
-onUnmounted(clearTimer)
+onUnmounted(clearTimer);
 </script>
 
 <style src="../styles/focus.css"></style>
