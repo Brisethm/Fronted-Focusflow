@@ -1,7 +1,7 @@
 {
-  "installCommand": "npm --prefix \"Focusflow - Fronted\" ci",
-  "buildCommand": "npm --prefix \"Focusflow - Fronted\" run build",
-  "outputDirectory": "Focusflow - Fronted/dist",
+  "installCommand": "npm ci",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
   "rewrites": [
     {
       "source": "/(.*)",
