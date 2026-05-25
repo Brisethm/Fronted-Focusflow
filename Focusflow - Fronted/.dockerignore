@@ -1,7 +1,41 @@
+# Dependencias y compilación
 node_modules
 dist
 coverage
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Entornos locales y llaves
+.env
+.env.local
+.env.*.local
+.env.development
+.env.test
+!.env.production
+
+# Control de versiones y configuración de editores
 .git
 .github
 .vscode
-npm-debug.log
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Herramientas de testing y logs
+src/tests
+vitest.config.*
+.sonar
+.sonarlint
+.eslintcache
+
+# Archivos de configuración de Docker
+Dockerfile
+.dockerignore
+docker-compose.yml
+
+# Documentación suelta
+README.md

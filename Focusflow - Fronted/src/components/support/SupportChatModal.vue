@@ -344,7 +344,7 @@ export default {
     normalizeTicketMessage(message) {
       return {
         ...message,
-        idRespuesta: message.idRespuesta ?? message.id ?? message.idResponse ?? `live-${Date.now()}-${Math.random()}`,
+        idRespuesta: message.idRespuesta ?? message.id ?? message.idResponse ?? `live-${Date.now()}-${crypto.randomUUID()}`,
         mensaje: message.mensaje ?? message.message ?? message.text ?? "",
         esSoporte: message.esSoporte ?? message.isSupport ?? message.esStaff ?? false,
         fecha: message.fecha ?? message.fechaRespuesta ?? message.createdAt ?? message.created_at ?? new Date().toISOString()

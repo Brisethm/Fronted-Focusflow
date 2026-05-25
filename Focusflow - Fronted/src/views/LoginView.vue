@@ -170,7 +170,7 @@ export default {
         },
         validateEmail() {
             const email = this.form.email.trim();
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            const emailRegex = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 
             if (!email) return "El correo es obligatorio";
             if (email.includes(" ")) return "El correo no debe contener espacios";

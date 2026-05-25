@@ -1,107 +1,222 @@
-# Focusflow Frontend
+# 🧠 FocusFlow — Frontend (Vue 3 + Vite + Supabase)
 
-Frontend de Focusflow construido con Vue 3, Vite, Vitest y Nginx para despliegue en Docker.
+Aplicación Web de cliente (SPA) desarrollada en **Vue 3 (Composition API)** con **Vite** para la plataforma **FocusFlow**, enfocada en productividad, gestión del tiempo, seguimiento emocional y finanzas básicas.
 
-## Requisitos
+El frontend implementa autenticación directa con **Supabase Auth**, consumo de endpoints REST mediante **Axios**, empaquetado optimizado, pruebas unitarias y de interfaz con **Vitest + Vue Test Utils**, y suscripciones en tiempo real mediante el cliente de **SignalR**.
 
-- Node.js 20.19 o superior
-- npm 10 o superior
-- Docker Desktop, si se va a ejecutar con contenedores
+---
 
-> La aplicacion esta dentro de la carpeta `Focusflow - Fronted`. Ejecuta los comandos desde esta carpeta, no desde la raiz del repositorio.
+# 🚀 Tecnologías Utilizadas
 
-## Instalacion
+| Tecnología | Uso |
+| --- | --- |
+| Vue 3 (Script Setup) | Framework progresivo de interfaz |
+| Vite | Motor de construcción y bundler ultra veloz |
+| Vue Router | Gestión y protección de rutas (Guards) |
+| Supabase JS Client | Autenticación y persistencia secundaria |
+| Axios | Cliente HTTP para consumir la API de .NET 8 |
+| @microsoft/signalr | Cliente para comunicación WebSockets bidireccional |
+| Vitest | Framework de testing nativo para Vite |
+| Vue Test Utils | Utilidades para pruebas de componentes del DOM |
+| Vue I18n | Internacionalización y soporte multiidioma |
+| Docker | Contenedorización segura (No-Root / Unprivileged) |
 
-Instalacion recomendada, usando el `package-lock.json` del proyecto:
+---
 
-```bash
-npm ci
+# 📂 Estructura del Proyecto
+
+El código fuente del cliente se organiza bajo las prácticas estándar de modularidad en Vue:
+
+```plaintext
+Focusflow Frontend /
+│
+├── src/
+│   ├── components/       → Componentes globales y reutilizables (Nav, Modales)
+│   ├── views/            → Vistas principales (Login, Dashboard, FocusView, Tasks)
+│   ├── services/         → Clientes de API (Axios) y conexión con backend .NET
+│   ├── stores/           → Estados globales (Idiomas, configuraciones locales)
+│   ├── utils/            → Helpers, validadores de seguridad y notificaciones (`notifier.js`)
+│   ├── assets/           → Estilos globales (Focus CSS), imágenes e iconos SVG
+│   ├── router/           → Definición de rutas y Guards de seguridad
+│   └── App.vue           → Componente raíz y renderizado de rutas (`RouterView`)
+│
+├── src/tests/            → Suite de pruebas automatizadas
+│   ├── views/            → Tests de interfaz de componentes (`FocusView.test.js`)
+│   └── utils/            → Tests de lógica utilitaria (`notifier.test.js`)
+│
+├── nginx.conf            → Configuración del servidor web de producción
+├── Dockerfile            → Construcción multi-etapa segura
+└── package.json          → Dependencias y scripts de ejecución
+
 ```
 
-Si necesitas reinstalar manualmente las librerias principales en otro PC, estos son los paquetes usados por el proyecto:
+---
 
-```bash
-npm install vue@^3.5.30 vue-toastification@^2.0.0-rc.5 vue-router@^5.0.7 axios@^1.16.1 @supabase/supabase-js@^2.106.1 @microsoft/signalr@^10.0.0
-npm install -D vite@^8.0.3 vitest@^4.1.7 @vitest/coverage-v8@^4.1.7 @vitejs/plugin-vue@^6.0.7 @vue/test-utils@^2.4.10 jsdom@^29.1.1
+# 🧩 Arquitectura General
+
+El flujo de control en el lado del cliente opera de la siguiente manera:
+
+```plaintext
+Vista (Usuario / DOM)
+        │
+        ▼
+Componente de Vue (.vue / State)
+        │
+        ▼
+Services (Axios HTTP / SignalR Hubs)
+        │
+        ▼
+API Backend (.NET 8) ──► Base de Datos / Supabase
+
 ```
 
-## Ejecucion local
+---
 
-```bash
-npm run dev
+# 🔐 Seguridad y Autenticación
+
+El cliente gestiona la seguridad de extremo a extremo mediante:
+
+* **Supabase Auth Integration:** Recuperación automática de sesiones y flujos de restablecimiento de contraseña mediante parámetros hash de URL en la inicialización de la app.
+* **Validación de Formularios Blindada:** Métodos de validación inmunes a ataques de denegación de servicio por expresiones regulares (**ReDoS**) y controles estrictos de longitud (`maxlength`).
+* **Route Guards:** Verificación asíncrona de tokens y roles de usuario (`admin`, `support`, `user`) antes de permitir el acceso a las vistas internas del sistema.
+
+Ejemplo de flujo de inicio:
+
+```javascript
+const hashParams = new URLSearchParams(globalThis.location.hash.substring(1));
+if (hashParams.get("type") === "recovery") {
+  await supabase.auth.setSession({ ... });
+  router.push("/update-password");
+}
+
 ```
 
-Compilar para produccion:
+---
 
-```bash
-npm run build
-```
+# 📡 Comunicación en Tiempo Real y Notificaciones
 
-Previsualizar la compilacion:
+La interactividad ágil de FocusFlow se apoya en dos tecnologías nativas del navegador:
 
-```bash
-npm run preview
-```
+* **SignalR Client WebSockets:** Conexión interactiva hacia el `ticketHub` del backend para la actualización instantánea de alertas de soporte técnico.
+* **Web Notifications API:** Programación reactiva basada en el desfase de marcas de tiempo del sistema (Date.now()). Permite disparar alertas visuales al usuario de forma nativa cuando se agotan los cronómetros de las sesiones de enfoque, minimizando el impacto de congelamiento de hilos que aplican los navegadores en pestañas inactivas.
 
-## Tests y cobertura
+---
 
-Ejecutar tests:
+# 🗂️ Funcionalidades Implementadas
 
-```bash
-npm test
-```
+### 👤 Autenticación y Perfil
 
-Generar cobertura para Sonar:
+* Login con persistencia en almacenamiento de sesión.
+* Recuperación de credenciales.
+* Enrutamiento dinámico según roles profesionales corregidos.
 
-```bash
-npm run coverage
-```
+### ✅ Gestión de Productividad
 
-El reporte que lee Sonar se genera en:
+* Creación, actualización y filtrado de tareas complejas.
+* Temporizadores dedicados para **Timeboxing**, **Pomodoro** y **Descansos**.
+* Ajustes de intervalos personalizados con modales dinámicos.
+
+### 🧠 Notificaciones Automáticas
+
+* Programación reactiva de recordatorios asíncronos mediante `setTimeout` calibrados con el reloj del sistema.
+
+---
+
+# ⚙️ Variables de Entorno
+
+Para levantar el proyecto, debes configurar un archivo de entorno en la raíz. Puedes guiarte de la plantilla del archivo `.env.example`:
 
 ```text
-coverage/lcov.info
+# Configuración de Supabase (Autenticación)
+VITE_SUPABASE_URL=tu_url_de_supabase_aqui
+VITE_SUPABASE_ANON_KEY=tu_anon_key_de_supabase_aqui
+
+# Endpoints de la API Backend de .NET
+VITE_API_BASE_URL=https://focusflow-backend-yr16.onrender.com/
+VITE_TICKET_HUB_URL=https://focusflow-backend-yr16.onrender.com/ticketHub
+
 ```
 
-## SonarQube / SonarCloud
+Ambos archivos están estrictamente protegidos del control de versiones mediante:
 
-La configuracion esta en `sonar-project.properties`. El analisis usa:
+```plaintext
+.gitignore
+.dockerignore
 
-- `sonar.sources=src`
-- `sonar.tests=src/tests`
-- `sonar.javascript.lcov.reportPaths=coverage/lcov.info`
-- `sonar.qualitygate.wait=true`
+```
 
-En GitHub Actions primero se ejecuta `npm ci`, luego `npm run coverage` y finalmente el escaneo con `projectBaseDir: Focusflow - Fronted`. Para que funcione, el repositorio debe tener configurado el secreto `SONAR_TOKEN`.
+---
 
-## Docker
+# 🐳 Dockerización Segura (DevSecOps)
 
-Construir la imagen:
+El proyecto utiliza una estrategia de empaquetado industrial:
+
+1. **Build Inteligente:** Descarga e instala dependencias bloqueando scripts de terceros mediante el flag `--ignore-scripts`.
+2. **Servidor Web No-Root:** Sirve el empaquetado estático utilizando la variante **`nginxinc/nginx-unprivileged:alpine`**, eliminando por completo los privilegios de ejecución como `root`.
+
+Construir la imagen local:
 
 ```bash
 docker build -t focusflow-frontend .
+
 ```
 
-Ejecutar el contenedor:
+Ejecutar el contenedor en el puerto seguro de escucha `8080`:
 
 ```bash
-docker run --rm -p 5137:80 focusflow-frontend
+docker run -d -p 8080:8080 --name focusflow-frontend-app focusflow-frontend
+
 ```
 
-Abrir la aplicacion en:
+---
 
-```text
-http://localhost:5137
-```
+# 🚀 Instalación y Ejecución Local
 
-Tambien se puede usar Docker Compose:
+Clonar el repositorio del frontend:
 
 ```bash
-docker compose up --build
+git clone https://github.com/TU-USUARIO/focusflow-frontend.git
+cd focusflow-frontend
+
 ```
 
-Para detenerlo:
+Instalar dependencias de desarrollo de forma limpia:
 
 ```bash
-docker compose down
+npm install
+
+```
+
+Ejecutar el servidor local en modo desarrollo (Vite):
+
+```bash
+npm run dev
+
+```
+
+Compilar el proyecto optimizado para producción:
+
+```bash
+npm run build
+
+```
+
+---
+
+# 🧪 Suite de Testing Automatizado
+
+Las pruebas unitarias y de integración se ejecutan de forma aislada a través del entorno de **Vitest** con soporte asíncrono para componentes de carga pesada utilizando bloques `<Suspense>` virtuales.
+
+Ejecutar todas las pruebas del Frontend:
+
+```bash
+npm run test
+
+```
+
+Ejecutar únicamente la suite de pruebas del cronómetro de enfoque:
+
+```bash
+npx vitest src/tests/views/FocusView.test.js
+
 ```
