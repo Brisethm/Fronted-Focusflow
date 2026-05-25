@@ -264,6 +264,7 @@
 </template>
 
 <script>
+import userAddAsset from "../assets/user-add.svg";
 import { registerStaff } from "../services/api.js";
 import { useToast } from "vue-toastification";
 import { useRouter } from "vue-router";
@@ -278,7 +279,7 @@ export default {
   },
   data() {
     return {
-      userAdd: null,
+      userAdd: userAddAsset,
       form: {
         nombre: "",
         email: "",
@@ -291,47 +292,6 @@ export default {
     };
   },
 
-  async mounted() {
-    // Prefer a resolved URL to the added SVG asset (works with Vite/npm builds)
-    try {
-      this.userAdd = new URL("../assets/user-add.svg", import.meta.url).href;
-      return;
-    } catch (e) {
-      // fall through to legacy checks
-    }
-
-    // Fallback: probe common paths for svg/png assets
-    try {
-      const r = await fetch("/src/assets/user-add.svg", { method: "HEAD" });
-      if (r.ok) {
-        this.userAdd = "/src/assets/user-add.svg";
-        return;
-      }
-    } catch {}
-
-    try {
-      const r2 = await fetch("/assets/user-add.svg", { method: "HEAD" });
-      if (r2.ok) {
-        this.userAdd = "/assets/user-add.svg";
-        return;
-      }
-    } catch {}
-
-    try {
-      const res = await fetch("/src/assets/user-add.png", { method: "HEAD" });
-      if (res.ok) {
-        this.userAdd = "/src/assets/user-add.png";
-        return;
-      }
-    } catch (e) {}
-
-    try {
-      const res2 = await fetch("/assets/user-add.png", { method: "HEAD" });
-      if (res2.ok) this.userAdd = "/assets/user-add.png";
-    } catch (e) {
-      // leave null -> fallback SVG will render
-    }
-  },
   methods: {
     t,
     async handleRegisterStaff() {

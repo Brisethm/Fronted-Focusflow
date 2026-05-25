@@ -1,15 +1,12 @@
 {
-  "dependencies": {
-    "@microsoft/signalr": "^10.0.0",
-    "@supabase/supabase-js": "^2.106.1",
-    "@tailwindcss/vite": "^4.3.0",
-    "tailwindcss": "^4.3.0",
-    "vue-router": "^5.0.4"
-  },
-  "devDependencies": {
-    "@vitejs/plugin-vue": "^6.0.7",
-    "@vue/test-utils": "^2.4.10",
-    "jsdom": "^29.1.1",
-    "vitest": "^4.1.7"
+  "name": "fronted-focusflow",
+  "private": true,
+  "scripts": {
+    "install:app": "npm --prefix \"Focusflow - Fronted\" ci",
+    "dev": "npm --prefix \"Focusflow - Fronted\" run dev",
+    "build": "npm --prefix \"Focusflow - Fronted\" run build",
+    "preview": "npm --prefix \"Focusflow - Fronted\" run preview",
+    "test": "npm --prefix \"Focusflow - Fronted\" test",
+    "coverage": "npm --prefix \"Focusflow - Fronted\" run coverage"
   }
 }

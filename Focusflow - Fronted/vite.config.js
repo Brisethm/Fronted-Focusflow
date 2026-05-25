@@ -1,12 +1,10 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import tailwindcss from '@tailwindcss/vite'
 import { fileURLToPath, URL } from 'node:url'
 
 export default defineConfig({
   plugins: [
     vue(),
-    tailwindcss(),
   ],
 
   resolve: {
@@ -23,7 +21,16 @@ export default defineConfig({
     setupFiles: './src/tests/setup.js',
     coverage: {
       provider: 'v8',
-      reporter: ['text', 'html'],
+      reporter: ['text', 'html', 'lcov'],
+      reportsDirectory: 'coverage',
+      all: true,
+      include: ['src/**/*.{js,vue}'],
+      exclude: [
+        'src/tests/**',
+        'src/main.js',
+        'src/router/**',
+        '**/*.config.*',
+      ],
     }
   }
 })
