@@ -1,9 +1,9 @@
-import { flushPromises, mount } from "@vue/test-utils";
+import { flushPromises } from "@vue/test-utils";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import TicketsChatModal from "../../components/support/TicketsChatModal.vue";
+import { baseTicket, mountChatModal } from "./ticketChatModalTestUtils.js";
 import * as api from "../../services/api.js";
 
-// Mock de SignalR
 const signalRMocks = vi.hoisted(() => ({
   mockOn: vi.fn(),
   mockInvoke: vi.fn(),
@@ -28,7 +28,6 @@ vi.mock("@microsoft/signalr", () => ({
   })),
 }));
 
-// Mock de API
 vi.mock("../../services/api.js", () => ({
   getTicketResponses: vi.fn(),
   sendTicketResponse: vi.fn(),
@@ -37,7 +36,6 @@ vi.mock("../../services/api.js", () => ({
   getTicketHubUrl: vi.fn(() => "http://localhost/hub"),
 }));
 
-// Mock de Toast
 vi.mock("vue-toastification", () => ({
   useToast: () => ({
     error: vi.fn(),
@@ -47,10 +45,10 @@ vi.mock("vue-toastification", () => ({
 
 describe("TicketsChatModal.vue", () => {
   const mockTicket = {
+    ...baseTicket,
     idTicket: 456,
     asunto: "Error de carga",
     descripcion: "El usuario no puede ver sus tareas",
-    estado: "open",
     fechaCreacion: "2023-10-15T10:00:00Z",
   };
 
@@ -68,10 +66,8 @@ describe("TicketsChatModal.vue", () => {
     api.getTicketResponses.mockResolvedValue(mockResponses);
   });
 
-  it("renderiza la información del ticket y los mensajes del usuario", async () => {
-    const wrapper = mount(TicketsChatModal, {
-      props: { ticket: mockTicket },
-    });
+  it("renderiza la informacion del ticket y los mensajes del usuario", async () => {
+    const { wrapper } = mountChatModal(TicketsChatModal, mockTicket);
 
     await flushPromises();
 
@@ -81,9 +77,7 @@ describe("TicketsChatModal.vue", () => {
   });
 
   it("permite al personal de soporte cambiar el estado del ticket", async () => {
-    const wrapper = mount(TicketsChatModal, {
-      props: { ticket: mockTicket },
-    });
+    const { wrapper } = mountChatModal(TicketsChatModal, mockTicket);
 
     const select = wrapper.find("select");
     await select.setValue("resolved");
@@ -94,7 +88,7 @@ describe("TicketsChatModal.vue", () => {
     expect(wrapper.emitted()["status-updated"][0]).toEqual(["resolved"]);
   });
 
-  it('envía una respuesta y cambia el estado a "En Revisión" automáticamente si estaba abierto', async () => {
+  it('envia una respuesta y cambia el estado a "En Revision" automaticamente si estaba abierto', async () => {
     const confirmedRes = {
       idRespuesta: 10,
       mensaje: "Estamos trabajando en ello",
@@ -103,26 +97,24 @@ describe("TicketsChatModal.vue", () => {
     };
     api.sendTicketResponse.mockResolvedValueOnce(confirmedRes);
 
-    const wrapper = mount(TicketsChatModal, {
-      props: { ticket: mockTicket },
-    });
+    const { chat } = mountChatModal(TicketsChatModal, mockTicket);
+    const chatWrapper = chat();
 
-    await wrapper.setData({ newMessage: "Estamos trabajando en ello" });
-    await wrapper.find("form").trigger("submit.prevent");
+    await chatWrapper.setData({ newMessage: "Estamos trabajando en ello" });
+    await chatWrapper.find("form").trigger("submit.prevent");
 
     expect(api.sendTicketResponse).toHaveBeenCalledWith(
       456,
       "Estamos trabajando en ello",
     );
-    // El estado local debe cambiar a in_progress
-    expect(wrapper.vm.localTicket.estado).toBe("in_progress");
-    expect(wrapper.emitted()["status-updated"]).toBeTruthy();
+    expect(chatWrapper.vm.localTicket.estado).toBe("in_progress");
+    expect(chatWrapper.emitted()["status-updated"]).toBeTruthy();
   });
 
-  it("bloquea el envío de mensajes si el ticket está cerrado", async () => {
-    const closedTicket = { ...mockTicket, estado: "closed" };
-    const wrapper = mount(TicketsChatModal, {
-      props: { ticket: closedTicket },
+  it("bloquea el envio de mensajes si el ticket esta cerrado", async () => {
+    const { wrapper } = mountChatModal(TicketsChatModal, {
+      ...mockTicket,
+      estado: "closed",
     });
 
     expect(wrapper.find("form").exists()).toBe(false);
@@ -130,33 +122,23 @@ describe("TicketsChatModal.vue", () => {
   });
 
   it("evita duplicar mensajes recibidos por tiempo real", async () => {
-    const wrapper = mount(TicketsChatModal, {
-      props: { ticket: mockTicket },
-    });
+    const { chat } = mountChatModal(TicketsChatModal, mockTicket);
+    const chatWrapper = chat();
     await flushPromises();
 
-    // Atacamos directamente tu método de procesamiento igual que en SupportChatModal
-    const duplicate = {
-      idRespuesta: 1,
-      mensaje: "No carga mi lista",
-      esSoporte: false,
-      fecha: "2023-10-15T10:05:00Z",
-    };
-    wrapper.vm.handleRealtimeMessage([duplicate]);
-    await wrapper.vm.$nextTick();
+    chatWrapper.vm.handleRealtimeMessage([mockResponses[0]]);
+    await chatWrapper.vm.$nextTick();
+    expect(chatWrapper.vm.responses.length).toBe(1);
 
-    expect(wrapper.vm.responses.length).toBe(1); // No se duplica
-
-    // Inyectamos uno nuevo
-    const nuevo = {
-      idRespuesta: 2,
-      mensaje: "Prueba live",
-      esSoporte: false,
-      fecha: new Date().toISOString(),
-    };
-    wrapper.vm.handleRealtimeMessage([nuevo]);
-    await wrapper.vm.$nextTick();
-
-    expect(wrapper.vm.responses.length).toBe(2); // Se agrega correctamente
+    chatWrapper.vm.handleRealtimeMessage([
+      {
+        idRespuesta: 2,
+        mensaje: "Prueba live",
+        esSoporte: false,
+        fecha: new Date().toISOString(),
+      },
+    ]);
+    await chatWrapper.vm.$nextTick();
+    expect(chatWrapper.vm.responses.length).toBe(2);
   });
 });

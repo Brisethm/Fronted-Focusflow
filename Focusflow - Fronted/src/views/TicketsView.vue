@@ -300,23 +300,20 @@ import { defineAsyncComponent } from "vue";
 import { getAllTickets } from "../services/api.js";
 import { useToast } from "vue-toastification";
 import { useRouter } from "vue-router";
+import {
+  formatTicketDate,
+  getTicketCategoryIcon,
+  getTicketCategoryIconClass,
+  normalizeTicket,
+  translateTicketCategory,
+  translateTicketPriority,
+  translateTicketStatus,
+} from "../utils/tickets.js";
 
 const TICKET_POLL_MS = 60_000;
 const TICKET_POLL_SECS = TICKET_POLL_MS / 1000;
-const userTimeZone =
-  Intl.DateTimeFormat().resolvedOptions().timeZone || "America/Bogota";
 const TICKET_CACHE_KEY = "focusflow:staff:tickets";
 const INITIAL_VISIBLE_TICKETS = 15;
-
-const parseUtcDateTime = (dateString) => {
-  if (!dateString) return null;
-  const normalized = String(dateString).includes("T")
-    ? String(dateString)
-    : String(dateString).replace(" ", "T");
-  const hasTimeZone = /(?:Z|[+-]\d{2}:?\d{2})$/i.test(normalized);
-  const date = new Date(hasTimeZone ? normalized : `${normalized}Z`);
-  return Number.isNaN(date.getTime()) ? null : date;
-};
 
 export default {
   name: "TicketsView",
@@ -493,16 +490,7 @@ export default {
     // ─── UTILIDADES ───────────────────────────────────────────────────────────
 
     formatDate(dateStr) {
-      const date = parseUtcDateTime(dateStr);
-      if (!date) return dateStr;
-      return date.toLocaleDateString("es-CO", {
-        timeZone: userTimeZone,
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-      });
+      return formatTicketDate(dateStr, { includeTime: true });
     },
 
     translateStatus(status) {
@@ -556,35 +544,18 @@ export default {
     },
 
     getCategoryIcon(category) {
-      return (
-        {
-          general: "description",
-          technical: "build_circle",
-          billing: "paid",
-          feature_request: "lightbulb",
-        }[category] || "description"
-      );
+      return getTicketCategoryIcon(category);
     },
 
     getCategoryIconClass(category) {
-      return (
-        {
-          general: "category-general",
-          technical: "category-technical",
-          billing: "category-billing",
-          feature_request: "category-feature_request",
-        }[category] || "category-general"
-      );
+      return getTicketCategoryIconClass(category);
     },
 
     normalizeTicket(ticket) {
-      return {
-        ...ticket,
-        displayDate: this.formatDate(ticket.fechaCreacion),
-        displayStatus: this.translateStatus(ticket.estado),
-        displayCategory: this.translateCategory(ticket.categoria),
-        displayPriority: this.translatePriority(ticket.prioridad),
-      };
+      return normalizeTicket(ticket, {
+        includeTime: true,
+        includePriority: true,
+      });
     },
   },
 };

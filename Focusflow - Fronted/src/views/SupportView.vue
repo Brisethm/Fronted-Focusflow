@@ -378,21 +378,18 @@ import { defineAsyncComponent } from "vue";
 import { getMyTickets, createTicket } from "../services/api.js";
 import { useToast } from "vue-toastification";
 import { useRouter } from "vue-router";
+import {
+  formatTicketDate,
+  getTicketCategoryIcon,
+  getTicketCategoryIconClass,
+  getTicketStatusClass,
+  normalizeTicket,
+  translateTicketCategory,
+  translateTicketStatus,
+} from "../utils/tickets.js";
 
-const userTimeZone =
-  Intl.DateTimeFormat().resolvedOptions().timeZone || "America/Bogota";
 const TICKET_CACHE_KEY = "focusflow:support:tickets";
 const INITIAL_VISIBLE_TICKETS = 10;
-
-const parseUtcDateTime = (dateString) => {
-  if (!dateString) return null;
-  const normalized = String(dateString).includes("T")
-    ? String(dateString)
-    : String(dateString).replace(" ", "T");
-  const hasTimeZone = /(?:Z|[+-]\d{2}:?\d{2})$/i.test(normalized);
-  const date = new Date(hasTimeZone ? normalized : `${normalized}Z`);
-  return Number.isNaN(date.getTime()) ? null : date;
-};
 
 export default {
   name: "SupportView",
@@ -517,40 +514,21 @@ export default {
     },
 
     normalizeTicket(ticket) {
-      return {
-        ...ticket,
-        displayStatus: this.translateStatus(ticket.estado),
-        displayCategory: this.translateCategory(ticket.categoria),
-        displayDate: this.formatDate(ticket.fechaCreacion),
-      };
+      return normalizeTicket(ticket, {
+        categoryLabels: {
+          technical: "Bug / Tecnico",
+        },
+      });
     },
 
     // ─── UTILIDADES ───────────────────────────────────────────────────────────
 
     formatDate(dateStr) {
-      const date = parseUtcDateTime(dateStr);
-      if (!date) return dateStr;
-      return date.toLocaleDateString("es-CO", {
-        timeZone: userTimeZone,
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-      });
+      return formatTicketDate(dateStr);
     },
 
     getStatusClass(status) {
-      return (
-        {
-          open: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
-          in_progress:
-            "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
-          resolved:
-            "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
-          closed:
-            "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400",
-        }[status] ??
-        "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
-      );
+      return getTicketStatusClass(status);
     },
 
     translateStatus(status) {
@@ -576,25 +554,11 @@ export default {
     },
 
     getCategoryIcon(category) {
-      return (
-        {
-          general: "description",
-          technical: "build_circle",
-          billing: "paid",
-          feature_request: "lightbulb",
-        }[category] || "description"
-      );
+      return getTicketCategoryIcon(category);
     },
 
     getCategoryIconClass(category) {
-      return (
-        {
-          general: "category-general",
-          technical: "category-technical",
-          billing: "category-billing",
-          feature_request: "category-feature_request",
-        }[category] || "category-general"
-      );
+      return getTicketCategoryIconClass(category);
     },
   },
 };
