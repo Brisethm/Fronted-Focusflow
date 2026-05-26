@@ -370,7 +370,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onUnmounted } from "vue";
+import { ref, computed, onMounted, onUnmounted } from "vue";
 import { getTasks, createFocusSession } from "../services/api.js";
 import FooterNav from "../components/FooterNav.vue";
 import { t } from "../stores/locale";
@@ -412,12 +412,11 @@ const dashOffset = computed(
 );
 const filteredTasks = computed(() =>
   tasks.value.filter((t) =>
-    t.titulo.toLowerCase().includes(taskSearch.value.toLowerCase()),
+    String(t.titulo ?? "").toLowerCase().includes(taskSearch.value.toLowerCase()),
   ),
 );
 
-// Load tasks
-tasks.value = await getTasks();
+onMounted(loadTasks);
 
 // Helpers
 function pad(n) {
@@ -425,6 +424,16 @@ function pad(n) {
 }
 function formatTime(s) {
   return `${pad(Math.floor(s / 60))}:${pad(s % 60)}`;
+}
+
+async function loadTasks() {
+  try {
+    const data = await getTasks();
+    tasks.value = Array.isArray(data) ? data : [];
+  } catch (err) {
+    console.error("Error al cargar las tareas de enfoque:", err);
+    tasks.value = [];
+  }
 }
 
 function clearTimer() {
@@ -551,4 +560,4 @@ async function handleSaveSession() {
 onUnmounted(clearTimer);
 </script>
 
-<style src="../styles/focus.css"></style>
+<style src="../styles/focus.css" scoped></style>
