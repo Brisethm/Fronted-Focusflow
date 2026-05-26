@@ -384,8 +384,6 @@ import {
   getTicketCategoryIconClass,
   getTicketStatusClass,
   normalizeTicket,
-  translateTicketCategory,
-  translateTicketStatus,
 } from "../utils/tickets.js";
 
 const TICKET_CACHE_KEY = "focusflow:support:tickets";
@@ -516,7 +514,7 @@ export default {
     normalizeTicket(ticket) {
       return normalizeTicket(ticket, {
         categoryLabels: {
-          technical: "Bug / Tecnico",
+          technical: "Bug / Técnico",
         },
       });
     },

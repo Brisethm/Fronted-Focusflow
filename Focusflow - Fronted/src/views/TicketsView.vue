@@ -305,9 +305,6 @@ import {
   getTicketCategoryIcon,
   getTicketCategoryIconClass,
   normalizeTicket,
-  translateTicketCategory,
-  translateTicketPriority,
-  translateTicketStatus,
 } from "../utils/tickets.js";
 
 const TICKET_POLL_MS = 60_000;
